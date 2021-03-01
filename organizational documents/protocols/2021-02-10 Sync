@@ -1,0 +1,59 @@
+Date: 2021-02-10
+
+Participants: Prof. Gerald Quirchmayr (Univie), Dr. Maria Leitner (AIT), Elias Ladenburger
+
+**Open Action Items**
+
+- [ ] Clarify when to officially hand in the proposal for the thesis.
+- [ ] Prepare all necessary documents for the proposal.
+- [ ] Prepare a workspace which all stakeholders can access.
+- [ ] Define target group of the platform.
+
+
+# Meeting Protocol
+
+## Executive Summary
+
+All stakeholders met to align on the research project for the Master's thesis of Elias Ladenburger.
+Everyone is aligned that Mr. Ladenburger develops a platform for the Austrian Institute of Technology (AIT) which can be used to perform trainings for organizational leaders.
+
+## Memory Protocol
+
+### Main objectives
+
+There are two main goals related to the cybersecurity domain:
+- educate organizational leadership ("executives") on cybersecurity risks and how to deal with them ("cybersecurity awareness") and
+- motivate and enable executives to spread this cybersecurity awareness within their organization ("managers as multipliers").
+
+### Scope of the project
+
+- Focus on developing and evaluating the platform that allows the training of executives.
+    - The previous approach of also developing a cultural framework would exceed the scope of a Master's thesis.
+    - Instead, the main focus of the research project will be on developing a platform, that assists in achieving the aforementioned objectives. 
+    - The platform will expand upon a previously conceptualized scenario-based approach of the AIT.
+    - The previous focus on "gamification" is broadened to include any type of learner-centric approach.
+- The platform must be rigorously evaluated.
+    - Can the platform help developing scenarios?
+    - Can executives, who undergo training on this platform identify and react to cybersecurity issues?
+    - Does training with the platform support executives become role-models for cybersecurity awareness?
+
+### Ad hoc requirements to the platform
+
+- The platform should help improve the situational awareness and problem awareness of the training participants.
+- The platform must allow the creation of scenarios, such as through some sort of admin-interface.
+- The platform must facilitate cooperative learning, such as allowing a group to simultaneously take the same decisions within a scenario.
+- It should be possible to adjust the trainings to the target audience, specifically considering:
+    - the industry of the participant's organization,
+    - the position of each participant within the organization's hierarchy and
+    - the existing knowledge of the participants.
+    
+    
+### Further Remarks
+
+- Keywords to research:
+    - management principles,
+    - scenario-based learning,
+    - case-based learning,
+    - experiential learning and
+    - problem-based learning.
+    

@@ -13,4 +13,6 @@ The thesis itself follows a design science research approach as outlined by Hevn
 
 ## Further Resources
 
-The most recent version of the Exposé can be found [here](https://www.overleaf.com/read/jhhyrjxmhbwy) (read only). 
+The most recent version of the Exposé can be found [here](https://www.overleaf.com/read/jhhyrjxmhbwy) (read only).
+
+Design decisions regarding the platform can be found [here](https://gitlab.com/ladenburger-labs/masterarbeit/-/wikis/Questions-on-the-nature-of-the-platform).

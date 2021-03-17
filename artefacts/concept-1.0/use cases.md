@@ -22,7 +22,7 @@ Saving scenario-progress will not be supported.
 
 ### Description
 1. The learner starts the scenario.
-2. The learner 
+2. The learner inserts their meta information.
 
 ### Alternatives
 

@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-03-16T22:49:13.506Z" agent="5.0 (Windows)" etag="ENtaBD2nkYha8iQi8-ie" version="14.4.8" type="gitlab" pages="4">
+<mxfile host="app.diagrams.net" modified="2021-03-18T09:32:41.697Z" agent="5.0 (Windows)" etag="1cLGs17edZSlGCqG8fLD" version="14.4.9" type="gitlab" pages="4">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Entire_Domain">
     <mxGraphModel dx="1865" dy="1756" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -401,7 +401,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="YBZuPH5mCjDXpLuSwGHa" name="Scenario_Design">
-    <mxGraphModel dx="1730" dy="978" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="1038" dy="587" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="8-NGuv1zwmkcrwSwAf9n-0" />
         <mxCell id="8-NGuv1zwmkcrwSwAf9n-1" parent="8-NGuv1zwmkcrwSwAf9n-0" />
@@ -447,7 +447,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="XWE8DCE6unmG_nTmBcOP-9" value="Inject" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" parent="8-NGuv1zwmkcrwSwAf9n-1" vertex="1">
-          <mxGeometry x="140" y="815.01" width="160" height="138" as="geometry">
+          <mxGeometry x="140" y="815.01" width="160" height="124.99" as="geometry">
             <mxRectangle x="550" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -492,7 +492,7 @@
             <mxPoint x="420" y="785.01" as="targetPoint" />
             <mxPoint as="offset" />
             <Array as="points">
-              <mxPoint x="480" y="829.01" />
+              <mxPoint x="480" y="828" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -703,7 +703,7 @@
         <mxCell id="XWE8DCE6unmG_nTmBcOP-78" value="" style="line;html=1;strokeWidth=1;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="XWE8DCE6unmG_nTmBcOP-73" vertex="1">
           <mxGeometry y="78" width="160" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="XWE8DCE6unmG_nTmBcOP-79" value="0..*" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=0;align=left;verticalAlign=bottom;entryX=0;entryY=0.5;entryDx=0;entryDy=0;rounded=0;exitX=1.006;exitY=0.114;exitDx=0;exitDy=0;exitPerimeter=0;" parent="8-NGuv1zwmkcrwSwAf9n-1" source="XWE8DCE6unmG_nTmBcOP-0" edge="1" target="XWE8DCE6unmG_nTmBcOP-60">
+        <mxCell id="XWE8DCE6unmG_nTmBcOP-79" value="0..*" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=0;align=left;verticalAlign=bottom;entryX=0;entryY=0.5;entryDx=0;entryDy=0;rounded=0;exitX=1.006;exitY=0.114;exitDx=0;exitDy=0;exitPerimeter=0;" parent="8-NGuv1zwmkcrwSwAf9n-1" source="XWE8DCE6unmG_nTmBcOP-0" target="XWE8DCE6unmG_nTmBcOP-60" edge="1">
           <mxGeometry x="-0.75" y="-5" relative="1" as="geometry">
             <mxPoint x="-20.000000000000057" y="435.0020000000002" as="sourcePoint" />
             <mxPoint x="-20" y="294" as="targetPoint" />
@@ -721,13 +721,39 @@
         <mxCell id="XWE8DCE6unmG_nTmBcOP-83" value="&lt;div&gt;If an inject has &lt;b&gt;no transitions&lt;/b&gt; it is an &lt;b&gt;exit point.&lt;/b&gt;&lt;/div&gt;&lt;div&gt;If an inject has only &lt;b&gt;one transition &lt;/b&gt;it is an &lt;b&gt;informative inject.&lt;/b&gt;&lt;/div&gt;&lt;div&gt;If an inject has multiple transitions it is a &lt;b&gt;choice inject&lt;/b&gt;.&lt;br&gt;&lt;b&gt;&lt;/b&gt;&lt;/div&gt;" style="shape=note;size=15;align=left;spacingLeft=10;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" parent="8-NGuv1zwmkcrwSwAf9n-1" vertex="1">
           <mxGeometry x="620" y="867.01" width="250" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="TTgoCMx9XMNW56YPVa4S-1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;endArrow=none;endFill=0;dashed=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="8-NGuv1zwmkcrwSwAf9n-1" source="TTgoCMx9XMNW56YPVa4S-0" target="XWE8DCE6unmG_nTmBcOP-3">
+        <mxCell id="TTgoCMx9XMNW56YPVa4S-1" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;endArrow=none;endFill=0;dashed=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="8-NGuv1zwmkcrwSwAf9n-1" source="TTgoCMx9XMNW56YPVa4S-0" target="XWE8DCE6unmG_nTmBcOP-3" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="70" y="345" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="TTgoCMx9XMNW56YPVa4S-0" value="&lt;div&gt;Saving a &lt;b&gt;copy&lt;/b&gt; of previous scenarios upon editing allows &lt;b&gt;versioning&lt;/b&gt;. &lt;br&gt;&lt;/div&gt;&lt;div&gt;It allows allows to &lt;b&gt;evaluate&lt;/b&gt; how changes to a scenario &lt;b&gt;impact game statistics&lt;/b&gt;.&lt;/div&gt;" style="shape=note;size=15;align=left;spacingLeft=10;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="8-NGuv1zwmkcrwSwAf9n-1">
+        <mxCell id="TTgoCMx9XMNW56YPVa4S-0" value="&lt;div&gt;Saving a &lt;b&gt;copy&lt;/b&gt; of previous scenarios upon editing allows &lt;b&gt;versioning&lt;/b&gt;. &lt;br&gt;&lt;/div&gt;&lt;div&gt;It allows allows to &lt;b&gt;evaluate&lt;/b&gt; how changes to a scenario &lt;b&gt;impact game statistics&lt;/b&gt;.&lt;/div&gt;" style="shape=note;size=15;align=left;spacingLeft=10;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" parent="8-NGuv1zwmkcrwSwAf9n-1" vertex="1">
           <mxGeometry x="380" y="315" width="250" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="FiOCYFPAyBkpIuonJjLS-0" value="Task" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" vertex="1" parent="8-NGuv1zwmkcrwSwAf9n-1">
+          <mxGeometry x="140" y="1000" width="160" height="124.99" as="geometry">
+            <mxRectangle x="550" y="140" width="160" height="26" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FiOCYFPAyBkpIuonJjLS-2" value="+ iframe" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rounded=0;shadow=0;html=0;" vertex="1" parent="FiOCYFPAyBkpIuonJjLS-0">
+          <mxGeometry y="26" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="FiOCYFPAyBkpIuonJjLS-3" value="" style="line;html=1;strokeWidth=1;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="FiOCYFPAyBkpIuonJjLS-0">
+          <mxGeometry y="52" width="160" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="FiOCYFPAyBkpIuonJjLS-4" value="+display_inject()" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rounded=0;shadow=0;html=0;" vertex="1" parent="FiOCYFPAyBkpIuonJjLS-0">
+          <mxGeometry y="60" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="FiOCYFPAyBkpIuonJjLS-5" value="" style="endArrow=block;endSize=10;endFill=0;shadow=0;strokeWidth=1;rounded=0;elbow=vertical;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="8-NGuv1zwmkcrwSwAf9n-1" source="FiOCYFPAyBkpIuonJjLS-0" target="XWE8DCE6unmG_nTmBcOP-9">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="210" y="1034" as="sourcePoint" />
+            <mxPoint x="210" y="940" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FiOCYFPAyBkpIuonJjLS-7" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;endArrow=none;endFill=0;" edge="1" parent="8-NGuv1zwmkcrwSwAf9n-1" source="FiOCYFPAyBkpIuonJjLS-6" target="FiOCYFPAyBkpIuonJjLS-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="FiOCYFPAyBkpIuonJjLS-6" value="A task is a mini-game, that requires the learner to solve a puzzle. This will not show up in the prototype, but may be interesting future work and improve learning effects." style="shape=note;size=15;align=left;spacingLeft=10;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="8-NGuv1zwmkcrwSwAf9n-1">
+          <mxGeometry x="395" y="1020" width="250" height="120" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

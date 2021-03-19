@@ -31,10 +31,6 @@ Saving scenario-progress will not be supported.
 ### Alternatives 
 
 ### Assumptions
-[^1]: "solving" an inject can be one of the following:
-* continue to end of scenario if inject links to no transition. 
-* continue to next inject if inject only links to one transition.
-* choose transition and continue to inject referenced by said transition if inject links to multiple transitions.
 
 ### Grounding
 
@@ -140,22 +136,19 @@ Creation of the scenario has been canceled.
 1. The user selects "create scenario".
 1. The user inserts a name of the scenario.
 1. The user inserts a short description of the scenario.
-1. (Optional:) the user uploads a thumbnail-image for the scenario.[^2] 
+1. (Optional:) the user uploads a thumbnail-image for the scenario.[^2]
 1. The user adds a description of the target group for the scenario:
     1. Role[^3],
     1. Industry[^4] and
     1. Experience / Prior Knowledge.[^5]
 1. (Optional:) The user adds tags for categorizing the scenario.
+1. The user adds any number of stories.
 
 ### Alternatives 
 
 ### Assumptions
-[^2]: The benefit of this step may need to be reevaluated in the future. It is likely to introduce a high level of complexity.
 
 ### Grounding
-[^3]: 
-[^4]: 
-[^5]: 
 
 ## UC2.2 Edit Scenario
 
@@ -176,12 +169,26 @@ The scenario has been modified.
 Modification of the scenario has been canceled.
 
 ### Non-Scope
+Editing scenario-statistics will not be possible.
 
 ### Description
+1. The user selects an existing scenario.
+1. The user selects "edit scenario".
+1. The user performs one or more changes:
+    1. change a name of the scenario.
+    1. change the description of the scenario.
+    1. change, add or delete the thumbnail-image for the scenario. 
+    1. change the definition of the target group.
+    1. edit any number of stories:
+        1. edit story title.
+        1. edit inject transitions.
+        1. edit injects.
+1. (Optional:) The user adds or deletes tags for categorizing the scenario.
 
 ### Alternatives 
 
 ### Assumptions
+It should be possible to match scenario statistics to the version of a scenario, so as to compare effectiveness of modifications.
 
 ### Grounding
 
@@ -198,16 +205,21 @@ A scenario designer.
 - A scenario exists.
 
 ### Successful Outcome(s)
-The scenario has been modified.
+The scenario has been deleted.
 
 ### Alternative Outcomes
-Modification of the scenario has been canceled.
+Deleting the scenario has been aborted.
 
 ### Non-Scope
+Deleting specific versions (history) of a scenario will not be supported.
 
 ### Description
+1. The user selects an existing scenario.
+1. The user selects "delete scenario".
+1. The user confirms their choice.
 
 ### Alternatives 
+Instead of confirmation, the user selects "cancel".
 
 ### Assumptions
 
@@ -293,3 +305,13 @@ Modification of the scenario has been canceled.
 ### Assumptions
 
 ### Grounding
+
+## Footnotes
+[^1]: "solving" an inject can be one of the following:
+    * continue to end of scenario if inject links to no transition. 
+    * continue to next inject if inject only links to one transition.
+    * choose transition and continue to inject referenced by said transition if inject links to multiple transitions.
+[^2]: The benefit of this step may need to be reevaluated in the future. It is likely to introduce a high level of complexity.
+[^3]:
+[^4]:
+[^5]:

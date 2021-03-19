@@ -138,9 +138,9 @@ Creation of the scenario has been canceled.
 1. The user inserts a short description of the scenario.
 1. (Optional:) the user uploads a thumbnail-image for the scenario.[^2]
 1. The user adds a description of the target group for the scenario:
-    1. Role[^3],
-    1. Industry[^4] and
-    1. Experience / Prior Knowledge.[^5]
+    1. Role,
+    1. Industry and
+    1. Experience / Prior Knowledge.
 1. (Optional:) The user adds tags for categorizing the scenario.
 1. The user adds any number of stories.
 
@@ -219,7 +219,7 @@ Deleting specific versions (history) of a scenario will not be supported.
 1. The user confirms their choice.
 
 ### Alternatives 
-Instead of confirmation, the user selects "cancel".
+Instead of confirmation, the user selects "cancel", in this case, the user is shown the scenario view.
 
 ### Assumptions
 
@@ -229,22 +229,25 @@ Instead of confirmation, the user selects "cancel".
 ### Overview
 
 ### Actors
-A scenario designer.
+- An autheticated user (learner).
 
 ### Preconditions
-- The user is authenticated. 
-- The user has the role "scenario designer".
+- The user is authenticated.
 - A scenario exists.
+- The scenario has been played by the user at least once already.
 
 ### Successful Outcome(s)
-The scenario has been modified.
+The user has viewed their own results.
 
 ### Alternative Outcomes
-Modification of the scenario has been canceled.
 
 ### Non-Scope
 
 ### Description
+1. The user selects one of their previously played games.
+1. The user views a summary of the game and feedback on their performance.
+1. (Optional): The user views their decisions and feedback on their decisions.
+1. The user selects "close".
 
 ### Alternatives 
 
@@ -256,7 +259,7 @@ Modification of the scenario has been canceled.
 ### Overview
 
 ### Actors
-A scenario designer.
+A trainer.
 
 ### Preconditions
 - The user is authenticated. 
@@ -264,14 +267,19 @@ A scenario designer.
 - A scenario exists.
 
 ### Successful Outcome(s)
-The scenario has been modified.
+A trainer has viewed the results of a game.
 
 ### Alternative Outcomes
-Modification of the scenario has been canceled.
+
 
 ### Non-Scope
 
 ### Description
+1. The trainer selects one previously played game.
+1. The user views a summary of the game.
+1. (Optional): The user may give feedback on the game.
+1. (Optional): The user views transitions.
+1. The user selects "close".
 
 ### Alternatives 
 
@@ -289,18 +297,25 @@ A scenario designer.
 - The user is authenticated. 
 - The user has the role "scenario designer".
 - A scenario exists.
+- A scenario has been played at least once.
 
 ### Successful Outcome(s)
-The scenario has been modified.
+The statistics of the scenario have been viewed.
 
 ### Alternative Outcomes
-Modification of the scenario has been canceled.
 
 ### Non-Scope
 
 ### Description
+1. The user selects one scenario.
+1. The user views consolidated statistics for the scenario.
+    * number of times played.
+    * most frequent mistakes.
+    * ...
+1. The user selects "close".
 
 ### Alternatives 
+1. Instead of viewing results consolidated for all scenario versions, the user may also view statistics for only one version of that scenario.
 
 ### Assumptions
 
@@ -312,6 +327,3 @@ Modification of the scenario has been canceled.
     * continue to next inject if inject only links to one transition.
     * choose transition and continue to inject referenced by said transition if inject links to multiple transitions.
 [^2]: The benefit of this step may need to be reevaluated in the future. It is likely to introduce a high level of complexity.
-[^3]:
-[^4]:
-[^5]:

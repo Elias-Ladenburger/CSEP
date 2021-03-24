@@ -11,6 +11,25 @@ Hence the working title for the research project is _executive execution platfor
 
 The thesis itself follows a design science research approach as outlined by Hevner et al. (2004). The problem-definition and initial goal-setting is done in close collaboration with practitioning stakeholders, namely the Austrian Institute of Technology (AIT). Requirements for the end-product are collected both from the business stakeholder and an existing body of knowledge. These requirements are then iteratively and incrementally implemented, following along the lines of the spiral model as proposed by Boehm (1998), seeking continuous feedback from the business stakeholder and comparing the results against the body of knowledge. Any findings that are made along the way are then feed back into the body of knowledge. 
 
+## File Structure
+
+- artefacts
+    - _all tangible artefacts related to the research project_
+    - concept_1.0
+        - diagrams
+            - _diagrams to outline and visualize the concept_
+        - ideation
+            - _losse collection of ideas related to the project_
+        - stakeholder requirements
+            - _original set of requirements made by stakeholders_
+- organizational documents
+    - _documents that relate to the management of the research project_
+    - sync protocols
+        - _documentation of all sync meetings related to the research project_
+- source
+    - _the source code for and all files necessary for running the prototype_
+- README.md (you are here)
+
 ## Further Resources
 
 The most recent version of the Exposé can be found [here](https://www.overleaf.com/read/jhhyrjxmhbwy) (read only).

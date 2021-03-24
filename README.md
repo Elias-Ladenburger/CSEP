@@ -22,6 +22,8 @@ The thesis itself follows a design science research approach as outlined by Hevn
             - _losse collection of ideas related to the project_
         - stakeholder requirements
             - _original set of requirements made by stakeholders_
+    - project level
+        - _artefacts that impact the entire project_
 - organizational documents
     - _documents that relate to the management of the research project_
     - sync protocols

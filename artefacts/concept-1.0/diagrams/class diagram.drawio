@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-03-27T11:19:21.118Z" agent="5.0 (Windows)" etag="bzDIOK2NO-ySkSf6QkdC" version="14.5.3" type="gitlab" pages="5">
+<mxfile host="app.diagrams.net" modified="2021-03-27T11:19:35.904Z" agent="5.0 (Windows)" etag="Pu29rqiYujLukVXeQuZP" version="14.5.3" type="gitlab" pages="5">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Entire_Domain">
     <mxGraphModel dx="1865" dy="1756" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -824,7 +824,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="KTH3ILOTCQx-SrCn-zUQ-0" value="ScenarioVariable" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=1;marginBottom=0;rounded=0;shadow=0;strokeWidth=1;" vertex="1" parent="8-NGuv1zwmkcrwSwAf9n-1">
-          <mxGeometry x="10" y="245" width="160" height="164" as="geometry">
+          <mxGeometry x="10" y="245" width="160" height="125" as="geometry">
             <mxRectangle x="550" y="140" width="160" height="26" as="alternateBounds" />
           </mxGeometry>
         </mxCell>

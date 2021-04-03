@@ -1,26 +1,26 @@
 class GraphElement:
     """A generic element of a graph"""
-    def __init__(self, title: str):
-        self.title = title
+    def __init__(self, label: str):
+        self.label = label
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             # don't attempt to compare against unrelated types
             return NotImplemented
-        return self.title == other.title
+        return self.label == other.label
 
 
 class GraphNode(GraphElement):
-    def __init__(self, title: str):
-        super().__init__(title)
+    def __init__(self, label: str):
+        super().__init__(label)
 
 
 class GraphEdge(GraphElement):
     """
     A directed connection between one GraphNode to another.
     """
-    def __init__(self, title: str, source_node: GraphNode, target_node: GraphNode):
-        super().__init__(title=title)
+    def __init__(self, source_node: GraphNode, target_node: GraphNode, label: str = ""):
+        super().__init__(label=label)
         self._source_node = source_node
         self._target_node = target_node
 

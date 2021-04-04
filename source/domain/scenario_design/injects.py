@@ -1,5 +1,5 @@
-from domain.scenario.auxiliary import Image
-from domain.scenario.graphs import GraphNode
+from domain.scenario_design.auxiliary import Image
+from domain.scenario_design.graphs import GraphNode
 
 
 class Inject(GraphNode):

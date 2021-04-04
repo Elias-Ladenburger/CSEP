@@ -1,8 +1,8 @@
 from flask import Flask, render_template
+from game_blueprint import game_gp
 
-
-app = Flask(__name__)
-
+app = Flask(__name__, static_folder="static")
+app.register_blueprint(game_gp)
 
 @app.route("/")
 def index():

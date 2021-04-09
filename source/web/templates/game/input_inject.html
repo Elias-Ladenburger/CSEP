@@ -1,0 +1,19 @@
+{% extends 'base_game.html' %}
+{% block inject %}
+
+ <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+<h3>Scenario Rules</h3>
+<div class="container-fluid bg-white text-black-50">
+    <p>You have found some information the Carl Andersson, the personal assistant of the COO.<br>
+    You could try to craft a personalized mail to Carl so that he begins to trust you.<br>
+    You could also try and find some information on Max Mastermind, who is your actual target.</p>
+    <form action="{{url_for('games.inject_wordcloud', game_id=1, inject_id=2)}}">
+        <input id="input1"></input>
+        <button type="submit" class="btn btn-primary">Continue</button>
+    </form>
+</div>
+
+
+{% endblock %}

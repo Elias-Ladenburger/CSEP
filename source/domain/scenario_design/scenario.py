@@ -1,8 +1,8 @@
 from typing import List
 
-from domain.scenario.graphs import Graph
-from domain.scenario.injects import Inject
-from domain.scenario.transitions import Transition
+from domain.scenario_design.graphs import Graph
+from domain.scenario_design.injects import Inject
+from domain.scenario_design.transitions import Transition
 
 
 class StoryGraph(Graph):

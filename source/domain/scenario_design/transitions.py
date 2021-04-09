@@ -1,5 +1,5 @@
-from domain.scenario.graphs import GraphEdge
-from domain.scenario.scenario import Inject
+from domain.scenario_design.graphs import GraphEdge
+from domain.scenario_design.injects import Inject
 
 
 class Transition(GraphEdge):

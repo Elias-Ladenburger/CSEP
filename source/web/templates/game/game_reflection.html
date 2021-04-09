@@ -1,0 +1,21 @@
+{% extends 'base_game.html' %}
+{% block inject %}
+
+ <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+<h3>Game finished!</h3>
+<div class="container-fluid bg-white text-black-50">
+    <p>Please take a moment to reflect on the game you have just completed. What have you learned?</p>
+    <form class="form" action="{{url_for('games.find_game')}}">
+        <div class="container-fluid">
+            <input id="input1"/>
+            <input id="input2"/>
+            <input id="input3"/>
+        <button type="submit" class="btn btn-primary">Submit learnings</button>
+            </div>
+    </form>
+</div>
+
+
+{% endblock %}

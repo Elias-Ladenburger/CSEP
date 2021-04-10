@@ -1,0 +1,11 @@
+{% extends 'feedback.html' %}
+
+{% block feedback %}
+<div class="text-left">
+    <h3>Current Stats and Variables</h3>
+    {% for game_var in game_variables %}
+        <h5>{{game_var}}: {{game_variables[game_var]}}</h5>
+    {% endfor %}
+    </div>
+{% endblock %}
+

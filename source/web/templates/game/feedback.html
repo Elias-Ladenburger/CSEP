@@ -1,0 +1,16 @@
+{% extends 'base_game.html' %}
+{% block inject %}
+
+    <div class="container-fluid">
+        <div class="row">
+        <div class="col-8">
+            {% block feedback %}
+            {% endblock %}
+        </div>
+        <div class="col align-content-center align-middle">
+                <a href="{{url_for('games.game_end', game_id=1, inject_id=next_inject_id)}}" class="btn btn-primary">Continue</a>
+        </div>
+            </div>
+    </div>
+
+{% endblock %}

@@ -1,9 +1,8 @@
-from random import randint
-
 from flask import Blueprint, render_template, redirect, url_for, request
 
-from domain.game_play.game_content import Game
-from domain.scenario_design.scenario import Scenario
+from domain.game_play.mock_interface import MockGameProvider
+game_provider = MockGameProvider()
+
 
 game_gp = Blueprint('games', __name__,
                         template_folder='templates/game', url_prefix="/games")
@@ -29,43 +28,38 @@ def multiplayer_overview():
 @game_gp.route("/<game_id>")
 def game_start(game_id):
     template_name = "game_start.html"
-    return render_template(template_name, scenario_name="Going Phishing", game_id=game_id)
+    game = game_provider.get_game()
+    return render_template(template_name, scenario_name=game.name, game_id=game_id)
 
 @game_gp.route("/<game_id>/stats")
 def stats_page(game_id):
     template_name = "stats_page.html"
-    game_variables = {"Budget": 100000, "Reputation loss": "Medium"}
-
-
-    tmp_id = request.args.get("inject_id", -1)
-    if tmp_id and int(tmp_id) > 0:
-        inject_id = tmp_id
-    else:
-        inject_id = 1
-
-    return render_template(template_name, scenario_name="Going Phishing", game_id=game_id,
-                           next_inject_id=inject_id, game_variables=game_variables)
+    game = game_provider.get_game()
+    inject_id = request.args.get("inject_id", 1)
+    if isinstance(inject_id, int):
+        inject_id = int(inject_id)
+    return render_template(template_name, scenario_name=game.name, game_id=game_id,
+                           next_inject_id=inject_id, game_variables=game.variables)
 
 @game_gp.route("/<game_id>/end")
 def game_end(game_id):
     template_name = "game_end.html"
-    return render_template(template_name, scenario_name="Going Phishing", game_id=game_id)
+    game = game_provider.get_game()
+    return render_template(template_name, scenario_name=game.name, game_id=game_id)
 
 @game_gp.route("/<game_id>/reflection")
 def game_reflection(game_id: int):
     template_name = "game_reflection.html"
-    #TODO: close game
-    return render_template(template_name, scenario_name="Going Phishing", game_id=game_id)
+    game = game_provider.get_game()
+    game.end_game()
+    return render_template(template_name, scenario_name=game.name, game_id=game_id)
 
 @game_gp.route("/<game_id>/injects/<inject_id>/show")
 def inject_page(game_id: int, inject_id: int):
-    rand_number = randint(1, 100)
+    game = game_provider.get_game()
+    inject = game.get_inject_by_id(inject_id=int(inject_id))
     template_name = "choice_inject.html"
-    if rand_number % 3 == 0:
-        template_name = "input_inject.html"
-    elif rand_number % 2 == 0:
-        template_name = "informative_inject.html"
-    return render_template(template_name, scenario_name="Going Phishing", game_id=game_id, inject_id=inject_id)
+    return render_template(template_name, scenario_name=game.name, game_id=game_id, inject_id=inject_id)
 
 @game_gp.route("/<game_id>/injects/<inject_id>/feedback")
 def inject_feedback(game_id: int, inject_id: int):

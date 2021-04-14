@@ -12,7 +12,6 @@ class Game:
         self.end_time = None
         self.is_open = True
         self.variables = copy.deepcopy(scenario.variables)
-        self._injects = self._merge_injects()  # convenience accessor
 
     def end_game(self):
         self.is_open = False
@@ -35,20 +34,16 @@ class Game:
         return self.variables
 
     def get_inject_by_id(self, inject_id):
-        return self._injects[inject_id]
-
-    def _merge_injects(self):
-        injects = dict()
-        cur_id = 1
-        for story in self.scenario.stories:
-            for inject in story.story_graph.injects:
-                injects[cur_id] = inject
-                cur_id += 1
-        return injects
+        return_value = self.scenario.get_inject_by_id(inject_id)
+        return return_value
 
     @property
     def name(self):
         return self.scenario.title
+
+    @property
+    def first_inject(self):
+        return self.scenario.stories[0].entry_node
 
     def __str__(self):
         return_str = "Game: " + self.scenario.title
@@ -56,8 +51,10 @@ class Game:
             return_str += "\n" + str(story)
         return return_str
 
+
 class GroupGame(Game):
     pass
+
 
 class SoloGame(Game):
     pass

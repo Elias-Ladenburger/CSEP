@@ -3,6 +3,5 @@
 
  <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-<a href="{{url_for('games.inject_page', game_id=game_id, inject_id=transition.to_inject.inject_id)}}" class="btn btn-primary">Continue</a>
-
+<a href="{{url_for('games.game_end', game_id=game_id)}}" class="btn btn-primary">Continue</a>
 {% endblock %}

@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, request
 
 from domain.game_play.mock_interface import MockGameProvider
+from domain.scenario_design.injects import Inject
+
 game_provider = MockGameProvider()
 
 
@@ -29,7 +31,8 @@ def multiplayer_overview():
 def game_start(game_id):
     template_name = "game_start.html"
     game = game_provider.get_game()
-    return render_template(template_name, scenario_name=game.name, game_id=game_id)
+    inject_id = game.first_inject.id
+    return render_template(template_name, scenario_name=game.name, game_id=game_id, inject_id=inject_id)
 
 @game_gp.route("/<game_id>/stats")
 def stats_page(game_id):
@@ -54,21 +57,30 @@ def game_reflection(game_id: int):
     game.end_game()
     return render_template(template_name, scenario_name=game.name, game_id=game_id)
 
+
 @game_gp.route("/<game_id>/injects/<inject_id>/show")
 def inject_page(game_id: int, inject_id: int):
     game = game_provider.get_game()
-    inject = game.get_inject_by_id(inject_id=int(inject_id))
-    template_name = "choice_inject.html"
-    return render_template(template_name, scenario_name=game.name, game_id=game_id, inject_id=inject_id)
+    inject, transitions = game.get_inject_by_id(inject_id=int(inject_id))
+    if not transitions:
+        template_name = "final_inject.html"
+    elif len(transitions) == 1:
+        template_name = "informative_inject.html"
+    else:
+        template_name = "choice_inject.html"
+    return render_template(template_name, scenario_name=game.name, game_id=game_id,
+                           inject=inject, transitions=transitions)
+
 
 @game_gp.route("/<game_id>/injects/<inject_id>/feedback")
 def inject_feedback(game_id: int, inject_id: int):
     template_name = "feedback_statistics.html"
     return render_template(template_name, scenario_name="Going Phishing",  game_id=game_id,
-                           next_inject_id=(int(inject_id)+1))
+                           next_inject_id=inject_id)
+
 
 @game_gp.route("/<game_id>/injects/<inject_id>/feedback_wordcloud")
 def inject_wordcloud(game_id: int, inject_id: int):
     template_name = "feedback_wordcloud.html"
     return render_template(template_name, scenario_name="Going Phishing",  game_id=game_id,
-                           next_inject_id=(int(inject_id) + 1))
+                           next_inject_id=inject_id)

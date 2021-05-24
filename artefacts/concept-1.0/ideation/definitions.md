@@ -17,7 +17,8 @@ Note that the nodes of a story are hereafter referred to as *injects* and the ed
 ## Inject
 An inject provides the user with information or a task, thus advancing the scenario. It can be understood as a possible state that a game may reach. 
 
-An inject may reference and be referenced by any number of *transitions*. An inject that only refers to one transition is an *informational inject*, while an inject that refers to multiple transitions is an *input inject*. An inject that is not referenced by a transition is called an *entry point*, whereas an inject that references no further transitions is called an *exit point*. 
+An inject may reference and be referenced by any number of *transitions*. An inject that only refers to one transition is an *informational inject*, while an inject that refers to multiple transitions is an *input inject*. 
+An inject that is not referenced by a transition is called an *entry point*, whereas an inject that references no further transitions is called an *exit point*. 
 
 An inject that neither refers to nor is referred by transitions is considered illegal. For the sake of simplicity, this case will not be considered further.
 

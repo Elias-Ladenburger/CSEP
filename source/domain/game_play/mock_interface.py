@@ -1,5 +1,4 @@
 
-
 from domain.game_play.game_content import Game
 from domain.scenario_design.auxiliary import DataType
 from domain.scenario_design.injects import PlainInject, Transition, Inject
@@ -42,8 +41,8 @@ class MockGameProvider:
                                    "What will your preparation look like?")
 
         second_inject = Inject(title="Second Inject",
-                                text="Interesting choice... "
-                                     "let's see, if your preparation pays off. How will you proceed?")
+                               text="Interesting choice... "
+                                    "let's see, if your preparation pays off. How will you proceed?")
 
         first_to_second = Transition(from_inject=intro_inject, to_inject=second_inject,
                                      label="Research on Social Media")

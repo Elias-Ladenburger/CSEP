@@ -40,7 +40,7 @@ class Transition(GraphEdge):
         """
         :param from_inject: The inject which this transition is attached to.
         :param to_inject: The inject which this transition will lead to.
-        :param label: A brief description that will be shown to a scenario_design player.
+        :param label: A brief description that will be shown to a scenario player.
         Behavior for empty values is undefined at the moment.
         """
         super().__init__(label=label, source_node=from_inject, target_node=to_inject)
@@ -88,6 +88,10 @@ class Inject(PlainInject):
     def transitions(self, new_transitions: List[Transition]):
         self._transitions = new_transitions
 
+    @transitions.deleter
+    def transitions(self):
+        self._transitions = []
+
     def add_transition(self, transition: Transition):
         self._transitions.append(transition)
 
@@ -123,4 +127,15 @@ class Inject(PlainInject):
         for transition in self.transitions:
             return_str += "\nOption " + transition.label + " points to " + transition.to_inject.label
         return return_str
+
+
+class InjectFactory:
+
+    @staticmethod
+    def create_inject(self):
+        return Inject(title="", text="")
+
+    @staticmethod
+    def create_transition(self):
+        return Transition
 

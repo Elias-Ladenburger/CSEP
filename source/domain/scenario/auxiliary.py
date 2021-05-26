@@ -37,6 +37,10 @@ class ScenarioVariable:
                 return True
         return False
 
+    def __eq__(self, other):
+        if isinstance(other, ScenarioVariable):
+            return self.name == other.name
+
 
 class LegalOperator:
     _manipulation_operators = {'/': operator.truediv,
@@ -108,7 +112,7 @@ class TransitionCondition:
     A transition may have a condition which, if met, leads to another inject or a different outcome.
     """
 
-    def __init__(self, variable: ScenarioVariable, variable_threshold, comparison_operator):
+    def __init__(self, variable: ScenarioVariable, comparison_operator, variable_threshold):
         if variable.is_value_legal(variable_threshold):
             self.variable = variable
             self.threshold = variable_threshold
@@ -116,9 +120,9 @@ class TransitionCondition:
         else:
             raise ValueError("The threshold is not a valid value for the data type of this variable!")
 
-    def evaluate_condition(self, game_variables):
+    def evaluate_condition(self, game_variables, variable_values):
         if self.variable not in game_variables:
             raise ValueError("This variable is not in the game's variables. Cannot evaluate condition!")
         else:
-            current_value = game_variables[self.variable]
+            current_value = variable_values[self.variable.name]
             return self.operator(current_value, self.threshold)

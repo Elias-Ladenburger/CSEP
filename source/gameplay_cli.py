@@ -3,7 +3,7 @@ from domain.game_play.mock_interface import MockGameProvider
 
 def play_game():
     game_provider = MockGameProvider()
-    game = game_provider.get_game()
+    game = game_provider.get_branching_game()
     show_introduction(game)
     next_inject = game.first_inject
     while next_inject:
@@ -46,11 +46,11 @@ def handle_input(game, inject):
 
 
 def handle_stats(game):
-    stats = game.variables
+    stats = game._variables
     visible_stats = game.get_visible_stats()
     print("## Visible stats ##")
     for var_name in visible_stats:
-        print(str(var_name.name) + ": " + str(game.variables[var_name]))
+        print(str(var_name.name) + ": " + str(game._variables[var_name]))
 
 
 def handle_end(game):

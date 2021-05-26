@@ -4,6 +4,7 @@ from datetime import datetime
 from domain.scenario_design.auxiliary import DataType
 from domain.scenario_design.injects import PlainInject, Transition
 from domain.scenario_design.scenario import Scenario, ScenarioVariable
+from infrastructure.database import CustomDatabase
 
 
 class Game:
@@ -15,6 +16,7 @@ class Game:
         self.is_open = True
         self.current_story_index = 0
         self.variables = copy.deepcopy(scenario.variables)
+        self.variable_values = copy.deepcopy(scenario._variable_values)
         self._history = []
 
     def end_game(self):
@@ -88,7 +90,7 @@ class Game:
                 old_value = self.variables[change.var]
                 self.variables[change.var] = change.get_new_value(old_value)
         if transition.condition:
-            if transition.condition.evaluate_condition(self.variables):
+            if transition.condition.evaluate_condition(self.variables, self.variable_values):
                 return transition.alternative_inject
         return transition.to_inject
 
@@ -116,8 +118,36 @@ class Game:
 
 
 class GroupGame(Game):
-    pass
+    def __init__(self, scenario: Scenario):
+        super().__init__(scenario)
+        self.breakpoints = []
+
+    def add_breakpoint(self, story_index):
+        """
+        Add a breakpoint which prevents players from moving past a specific story.
+        :param story_index: The index of the story which players cannot move past.
+        :return:
+        """
+        self.breakpoints.append(story_index)
+
+    def remove_breakpoint(self, story_index):
+        self.breakpoints.remove(story_index)
 
 
-class SoloGame(Game):
-    pass
+class GameFactory:
+    @staticmethod
+    def create_singleplayer_game(scenario: Scenario):
+        game = Game(scenario)
+        GameRepository.save_game(game)
+        return game
+
+    @staticmethod
+    def create_multiplayer_game(scenario: Scenario):
+        return GroupGame(scenario)
+
+
+class GameRepository:
+    @staticmethod
+    def save_game(game: Game):
+        db = CustomDatabase()
+        db.insert_one("games", game)

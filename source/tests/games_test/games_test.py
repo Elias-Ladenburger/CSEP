@@ -1,6 +1,6 @@
 import unittest
 
-from domain.game_play.game_content import Game
+from domain.scenario_design.game import Game
 from domain.scenario_design.injects import PlainInject
 from domain.scenario_design.scenario import Scenario, Story, StoryGraph
 from domain.scenario_design.transitions import Transition

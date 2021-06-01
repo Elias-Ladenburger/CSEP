@@ -4,7 +4,7 @@ This is the working-repository for the research project that is the basis for th
 
 ## Goal
 
-The goal of this research project is to build a platform, with which organizational leaders can be educated in matters of cybersecurity to an extent, that they carry this knowledge back into their respective organizations ("train the managers").
+The goal of this research project is to build a platform with which organizational leaders can be educated in matters of cybersecurity, to an extent that they carry this knowledge back into their respective organizations ("train the managers").
 Hence the working title for the research project is _executive execution platform_ (EEP).
 
 ## Approach

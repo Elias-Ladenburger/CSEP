@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-06-02T10:45:23.136Z" agent="5.0 (Windows)" etag="shIf06OnZ4cIYa8DdUKx" version="14.7.3" type="gitlab" pages="2">
+<mxfile host="app.diagrams.net" modified="2021-06-02T11:07:15.961Z" agent="5.0 (Windows)" etag="Sd-NIbr0lnPpEofamuVW" version="14.7.3" type="gitlab" pages="2">
   <diagram id="prtHgNgQTEPvFCAcTncT" name="Overall project goals">
     <mxGraphModel dx="1422" dy="883" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -57,7 +57,7 @@
         <mxCell id="VvCy3HrPZXNjmE30q2jB-10" value="&lt;b&gt;Empower&lt;/b&gt; leaders to act as role models" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
           <mxGeometry x="17" y="410" width="216" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-11" value="Incentivize leaders&lt;b&gt; &lt;/b&gt;to &lt;br&gt;act as role models " style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#eeeeee;strokeColor=#36393d;" parent="1" vertex="1">
+        <mxCell id="VvCy3HrPZXNjmE30q2jB-11" value="Persuade leaders&lt;b&gt; &lt;/b&gt;to &lt;br&gt;act as role models " style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#eeeeee;strokeColor=#36393d;" parent="1" vertex="1">
           <mxGeometry x="338" y="410" width="216" height="80" as="geometry" />
         </mxCell>
         <mxCell id="VvCy3HrPZXNjmE30q2jB-46" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="VvCy3HrPZXNjmE30q2jB-37" target="VvCy3HrPZXNjmE30q2jB-41" edge="1">

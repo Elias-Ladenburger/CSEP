@@ -1,9 +1,12 @@
-<mxfile host="app.diagrams.net" modified="2021-06-02T09:33:30.148Z" agent="5.0 (Windows)" etag="hOnczsM0PQsHPIoi9JCP" version="14.7.3" type="gitlab">
-  <diagram id="prtHgNgQTEPvFCAcTncT" name="Page-1">
+<mxfile host="app.diagrams.net" modified="2021-06-02T10:45:23.136Z" agent="5.0 (Windows)" etag="shIf06OnZ4cIYa8DdUKx" version="14.7.3" type="gitlab" pages="2">
+  <diagram id="prtHgNgQTEPvFCAcTncT" name="Overall project goals">
     <mxGraphModel dx="1422" dy="883" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="7FLArTDHX7X6j5TxRk26-1" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="278.25" y="100" width="240" height="130" as="geometry" />
+        </mxCell>
         <mxCell id="VvCy3HrPZXNjmE30q2jB-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="VvCy3HrPZXNjmE30q2jB-3" target="VvCy3HrPZXNjmE30q2jB-5" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
@@ -130,23 +133,164 @@
         <mxCell id="VvCy3HrPZXNjmE30q2jB-58" value="Focus on &lt;b&gt;functionality&lt;/b&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
           <mxGeometry x="17" y="860" width="216" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="tp6RY4bJ1NjJef7CurDI-2" value="&lt;h1&gt;Goal Hierarchy of the Platform for Strategic Awareness Games&lt;br&gt;&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="31" y="20" width="469" height="120" as="geometry" />
+        <mxCell id="VvCy3HrPZXNjmE30q2jB-8" value="objective is in scope" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
+          <mxGeometry x="290.25" y="115" width="216" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="tp6RY4bJ1NjJef7CurDI-3" value="" style="group" parent="1" vertex="1" connectable="0">
-          <mxGeometry x="560" y="30" width="239" height="150" as="geometry" />
+        <mxCell id="VvCy3HrPZXNjmE30q2jB-9" value="objective is &lt;b&gt;not&lt;/b&gt; in scope" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#eeeeee;strokeColor=#36393d;" parent="1" vertex="1">
+          <mxGeometry x="290.25" y="175" width="216" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-53" value="&lt;div style=&quot;font-size: 14px&quot; align=&quot;left&quot;&gt;&lt;font style=&quot;font-size: 14px&quot;&gt;&lt;b&gt;Legend&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;align=left;verticalAlign=top;" parent="tp6RY4bJ1NjJef7CurDI-3" vertex="1">
-          <mxGeometry width="239" height="150" as="geometry" />
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="SjyZ8XknO0-v9I0toJlO" name="Platform goals">
+    <mxGraphModel dx="1422" dy="883" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="CU8Qi5BCLa8-cDDQ8xQR-0" />
+        <mxCell id="CU8Qi5BCLa8-cDDQ8xQR-1" parent="CU8Qi5BCLa8-cDDQ8xQR-0" />
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1" source="QXCvbc_47ZnhxCkCQvPK-0" target="u9qHh5k7K4HDHofocfTl-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="178" y="200" />
+              <mxPoint x="448" y="200" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-8" value="An objective that is in scope" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="tp6RY4bJ1NjJef7CurDI-3" vertex="1">
-          <mxGeometry x="11.5" y="60" width="216" height="40" as="geometry" />
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1" source="QXCvbc_47ZnhxCkCQvPK-0" target="MvdfkfJBQlmkQbf5OWuL-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="178" y="200" />
+              <mxPoint x="708" y="200" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-9" value="An objective that is not in scope" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#eeeeee;strokeColor=#36393d;" parent="tp6RY4bJ1NjJef7CurDI-3" vertex="1">
-          <mxGeometry x="11.5" y="100" width="216" height="40" as="geometry" />
+        <mxCell id="QXCvbc_47ZnhxCkCQvPK-0" value="Focus on &lt;b&gt;functionality&lt;/b&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="70" y="70" width="216" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-32" value="Theoretical foundation" style="ellipse;whiteSpace=wrap;html=1;" parent="tp6RY4bJ1NjJef7CurDI-3" vertex="1">
-          <mxGeometry x="72.5" y="10" width="120" height="40" as="geometry" />
+        <mxCell id="9I3fcUtxAZ7ye3t_w5pG-0" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="326" y="45" width="240" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="9I3fcUtxAZ7ye3t_w5pG-1" value="objective is in scope" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="338" y="60" width="216" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="9I3fcUtxAZ7ye3t_w5pG-2" value="objective is &lt;b&gt;not&lt;/b&gt; in scope" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#eeeeee;strokeColor=#36393d;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="338" y="120" width="216" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="u9qHh5k7K4HDHofocfTl-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1" target="u9qHh5k7K4HDHofocfTl-2" source="QXCvbc_47ZnhxCkCQvPK-0">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="148" y="150" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="178" y="180" />
+              <mxPoint x="178" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1" source="u9qHh5k7K4HDHofocfTl-2" target="MvdfkfJBQlmkQbf5OWuL-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="50" y="280" />
+              <mxPoint x="50" y="401" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1" source="u9qHh5k7K4HDHofocfTl-2" target="MvdfkfJBQlmkQbf5OWuL-20">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="50" y="280" />
+              <mxPoint x="50" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="u9qHh5k7K4HDHofocfTl-2" value="Enable the &lt;b&gt;participation&lt;/b&gt; in trainings " style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="70" y="240" width="216" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1" source="u9qHh5k7K4HDHofocfTl-3" target="MvdfkfJBQlmkQbf5OWuL-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="320" y="280" />
+              <mxPoint x="320" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1" source="u9qHh5k7K4HDHofocfTl-3" target="MvdfkfJBQlmkQbf5OWuL-8">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="320" y="280" />
+              <mxPoint x="320" y="625" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1" source="u9qHh5k7K4HDHofocfTl-3" target="MvdfkfJBQlmkQbf5OWuL-7">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="320" y="280" />
+              <mxPoint x="320" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="u9qHh5k7K4HDHofocfTl-3" value="Enable the &lt;b&gt;design&lt;/b&gt; of learning scenarios" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="340" y="240" width="216" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-1" value="&lt;div&gt;Enable &lt;b&gt;groups of &lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;participants &lt;/b&gt;to play the &lt;br&gt;&lt;/div&gt;&lt;div&gt;same game&lt;/div&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="70" y="361" width="216" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1" source="MvdfkfJBQlmkQbf5OWuL-2" target="MvdfkfJBQlmkQbf5OWuL-11">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="580" y="280" />
+              <mxPoint x="580" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1" source="MvdfkfJBQlmkQbf5OWuL-2" target="MvdfkfJBQlmkQbf5OWuL-13">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="580" y="280" />
+              <mxPoint x="580" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1" source="MvdfkfJBQlmkQbf5OWuL-2" target="MvdfkfJBQlmkQbf5OWuL-14">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="580" y="280" />
+              <mxPoint x="580" y="625" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1" source="MvdfkfJBQlmkQbf5OWuL-2" target="MvdfkfJBQlmkQbf5OWuL-15">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="580" y="280" />
+              <mxPoint x="580" y="740" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-2" value="Provide &lt;b&gt;feedback on the&lt;/b&gt; &lt;b&gt;effectiveness &lt;/b&gt;of the learning scenarios" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="600" y="240" width="216" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-5" value="Enable &lt;b&gt;creation &lt;/b&gt;of learning scenarios" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="340" y="360" width="216" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-7" value="Enable &lt;b&gt;editing &lt;/b&gt;of learning scenarios" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="338" y="480" width="216" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-8" value="Enable &lt;b&gt;deletion&lt;/b&gt; of learning scenarios" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="340" y="585" width="216" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-11" value="Show feedback &lt;b&gt;after each solution&lt;/b&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="600" y="361" width="216" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-13" value="Show feedback at the &lt;b&gt;end of each game&lt;/b&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="600" y="480" width="216" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-14" value="Show feedback after &lt;b&gt;multiple games&lt;/b&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="600" y="585" width="216" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-15" value="Show feedback for &lt;b&gt;entire scenarios&lt;/b&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="600" y="700" width="216" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MvdfkfJBQlmkQbf5OWuL-20" value="&lt;div&gt;Enable the &lt;b&gt;facilitation&lt;/b&gt; of &lt;br&gt;&lt;/div&gt;&lt;div&gt;group games&lt;/div&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="CU8Qi5BCLa8-cDDQ8xQR-1">
+          <mxGeometry x="70" y="480" width="216" height="80" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

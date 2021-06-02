@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-06-02T09:26:59.530Z" agent="5.0 (Windows)" etag="t2LhXnTCZTj6wIDuS6Ko" version="14.7.3" type="gitlab">
+<mxfile host="app.diagrams.net" modified="2021-06-02T09:30:48.290Z" agent="5.0 (Windows)" etag="VvAcJ55m8wVgg-V9zhwt" version="14.7.3" type="gitlab">
   <diagram id="prtHgNgQTEPvFCAcTncT" name="Page-1">
     <mxGraphModel dx="1422" dy="883" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -15,7 +15,7 @@
         <mxCell id="VvCy3HrPZXNjmE30q2jB-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="VvCy3HrPZXNjmE30q2jB-3" target="VvCy3HrPZXNjmE30q2jB-4" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-3" value="Increase Cybersecurity Resilience among the non-technical experts within an organization" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
+        <mxCell id="VvCy3HrPZXNjmE30q2jB-3" value="Develop a &lt;b&gt;culture of cybersecurity awareness&lt;/b&gt; within an organization" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
           <mxGeometry x="270" y="130" width="216" height="80" as="geometry" />
         </mxCell>
         <mxCell id="VvCy3HrPZXNjmE30q2jB-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="VvCy3HrPZXNjmE30q2jB-4" target="VvCy3HrPZXNjmE30q2jB-10" edge="1">
@@ -29,7 +29,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-4" value="Have leaders serve &lt;br&gt;as &lt;b&gt;mentors and role models&lt;/b&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
+        <mxCell id="VvCy3HrPZXNjmE30q2jB-4" value="Have leaders serve &lt;br&gt;as &lt;b&gt;role models&lt;/b&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
           <mxGeometry x="270" y="270" width="216" height="80" as="geometry" />
         </mxCell>
         <mxCell id="VvCy3HrPZXNjmE30q2jB-5" value="Increase cybersecurity resilience through other means" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#eeeeee;strokeColor=#36393d;" parent="1" vertex="1">
@@ -49,20 +49,8 @@
         <mxCell id="VvCy3HrPZXNjmE30q2jB-10" value="&lt;b&gt;Empower&lt;/b&gt; leaders to act as role models" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
           <mxGeometry x="270" y="410" width="216" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-11" value="&lt;b&gt;Incentivize &lt;/b&gt;executives to &lt;br&gt;act as role models " style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#eeeeee;strokeColor=#36393d;" parent="1" vertex="1">
+        <mxCell id="VvCy3HrPZXNjmE30q2jB-11" value="&lt;b&gt;Incentivize &lt;/b&gt;leaders&lt;b&gt; &lt;/b&gt;to &lt;br&gt;act as role models " style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#eeeeee;strokeColor=#36393d;" parent="1" vertex="1">
           <mxGeometry x="591" y="410" width="216" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="VvCy3HrPZXNjmE30q2jB-30" target="VvCy3HrPZXNjmE30q2jB-10" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-30" value="Bloom&#39;s taxonomy (knowledge and skill-based goals) (1991)" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="60" y="410" width="120" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="VvCy3HrPZXNjmE30q2jB-33" target="VvCy3HrPZXNjmE30q2jB-4" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-33" value="&lt;div&gt;Fayol (1925),&lt;br&gt;&lt;/div&gt;&lt;div&gt;Lewin (1947),&lt;/div&gt;&lt;div&gt;Schein (1990),&lt;/div&gt;&lt;div&gt;...&lt;br&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="70" y="270" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="VvCy3HrPZXNjmE30q2jB-46" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="VvCy3HrPZXNjmE30q2jB-37" target="VvCy3HrPZXNjmE30q2jB-41" edge="1">
           <mxGeometry relative="1" as="geometry">
@@ -88,7 +76,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-37" value="&lt;b&gt;Train &lt;/b&gt;leaders using a &lt;b&gt;computer-supported, scenario-based &lt;/b&gt;approach" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
+        <mxCell id="VvCy3HrPZXNjmE30q2jB-37" value="&lt;b&gt;Educate &lt;/b&gt;leaders using a &lt;b&gt;computer-supported, collaborative scenario-based &lt;/b&gt;approach" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
           <mxGeometry x="270" y="560" width="216" height="80" as="geometry" />
         </mxCell>
         <mxCell id="VvCy3HrPZXNjmE30q2jB-55" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="VvCy3HrPZXNjmE30q2jB-41" target="VvCy3HrPZXNjmE30q2jB-54" edge="1">
@@ -116,17 +104,11 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-41" value="Provide the &lt;b&gt;educational platform&lt;/b&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
+        <mxCell id="VvCy3HrPZXNjmE30q2jB-41" value="Provide a &lt;b&gt;platform &lt;/b&gt;for &lt;b&gt;conducting trainings&amp;nbsp;&lt;/b&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
           <mxGeometry x="17" y="710" width="216" height="80" as="geometry" />
         </mxCell>
         <mxCell id="VvCy3HrPZXNjmE30q2jB-42" value="Educate using other approaches" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#eeeeee;strokeColor=#36393d;" parent="1" vertex="1">
           <mxGeometry x="591" y="560" width="216" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-45" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="VvCy3HrPZXNjmE30q2jB-44" target="VvCy3HrPZXNjmE30q2jB-37" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-44" value="&lt;div&gt;Active Learning&lt;/div&gt;&lt;div&gt;PBL, SBL, Gamification &lt;br&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="60" y="560" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="VvCy3HrPZXNjmE30q2jB-47" value="Provide a curriculum" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#eeeeee;strokeColor=#36393d;" parent="1" vertex="1">
           <mxGeometry x="591" y="710" width="216" height="80" as="geometry" />
@@ -140,7 +122,7 @@
         <mxCell id="VvCy3HrPZXNjmE30q2jB-56" value="Focus on other quality properties" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#eeeeee;strokeColor=#36393d;" parent="1" vertex="1">
           <mxGeometry x="591" y="860" width="216" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="VvCy3HrPZXNjmE30q2jB-58" value="Focus on &lt;b&gt;feature set&lt;/b&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
+        <mxCell id="VvCy3HrPZXNjmE30q2jB-58" value="Focus on &lt;b&gt;functionality&lt;/b&gt;" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" parent="1" vertex="1">
           <mxGeometry x="17" y="860" width="216" height="80" as="geometry" />
         </mxCell>
         <mxCell id="tp6RY4bJ1NjJef7CurDI-2" value="&lt;h1&gt;Goal Hierarchy of the Platform for Strategic Awareness Games&lt;br&gt;&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">

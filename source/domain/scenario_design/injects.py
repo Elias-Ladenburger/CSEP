@@ -40,7 +40,7 @@ class Transition(GraphEdge):
         """
         :param from_inject: The inject which this transition is attached to.
         :param to_inject: The inject which this transition will lead to.
-        :param label: A brief description that will be shown to a scenario player.
+        :param label: A brief description that will be shown to a scenario_design player.
         Behavior for empty values is undefined at the moment.
         """
         super().__init__(label=label, source_node=from_inject, target_node=to_inject)

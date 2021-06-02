@@ -8,7 +8,7 @@ from infrastructure.database import CustomDatabase
 
 
 class Game:
-    """A scenario that is currently being played or has been played."""
+    """A scenario_design that is currently being played or has been played."""
     def __init__(self, scenario: Scenario):
         self.scenario = scenario
         self.start_time = datetime.now()

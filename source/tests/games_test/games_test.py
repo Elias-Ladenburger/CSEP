@@ -11,7 +11,7 @@ class InjectTest(unittest.TestCase):
 
     def test_create_game_with_only_informative_injects(self):
         second_last_inject = PlainInject(title="Almost Done", text="Welcome to the story!")
-        last_inject = PlainInject(title="Finish", text="You have completed the scenario!")
+        last_inject = PlainInject(title="Finish", text="You have completed the scenario_design!")
 
         final_transition = Transition(from_inject=second_last_inject, to_inject=last_inject)
 
@@ -26,7 +26,7 @@ class InjectTest(unittest.TestCase):
         intro_graph = StoryGraph(injects=[intro_inject], transitions=[first_to_second, second_to_last])
         introduction = Story(title="introduction", entry_node=intro_inject, story_graph=intro_graph)
 
-        scenario = Scenario(title="Going Phishing", description="A scenario where you capture credentials by phishing.")
+        scenario = Scenario(title="Going Phishing", description="A scenario_design where you capture credentials by phishing.")
         scenario.add_story(introduction)
         scenario.add_story(final_chapter)
         game = Game(scenario)
@@ -35,7 +35,7 @@ class InjectTest(unittest.TestCase):
 
     def test_create_game_with_only_choice_injects(self):
         second_last_inject = PlainInject(title="Almost Done", text="Welcome to the story!")
-        last_inject = PlainInject(title="Finish", text="You have completed the scenario!")
+        last_inject = PlainInject(title="Finish", text="You have completed the scenario_design!")
 
         final_transition = Transition(from_inject=second_last_inject, to_inject=last_inject, label="Walk straight ahead")
         other_final_transition = Transition(from_inject=second_last_inject, to_inject=last_inject, label="Turn left")
@@ -53,7 +53,7 @@ class InjectTest(unittest.TestCase):
         intro_graph = StoryGraph(injects=[intro_inject], transitions=[first_to_second, second_to_last, other_first_second, other_second_third])
         introduction = Story(title="introduction", entry_node=intro_inject, story_graph=intro_graph)
 
-        scenario = Scenario(title="Going Phishing", description="A scenario where you capture credentials by phishing.")
+        scenario = Scenario(title="Going Phishing", description="A scenario_design where you capture credentials by phishing.")
         scenario.add_story(introduction)
         scenario.add_story(final_chapter)
         game = Game(scenario)

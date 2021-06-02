@@ -7,7 +7,7 @@ from domain.scenario_design.injects import PlainInject, Transition, Inject
 
 
 class Story(GraphNode):
-    """A _Story_ is a collection of injects within a scenario"""
+    """A _Story_ is a collection of injects within a scenario_design"""
 
     def __init__(self, title: str, entry_node: PlainInject,
                  injects: List[PlainInject] = [], transitions: List[Transition] = []):
@@ -84,8 +84,8 @@ class Scenario:
     """A container for multiple stories"""
     def __init__(self, title: str, description: str):
         """
-        :param title: How this scenario is called
-        :param description: A brief human-understandable description of the scenario
+        :param title: How this scenario_design is called
+        :param description: A brief human-understandable description of the scenario_design
         """
         self.title = title
         self.description = description
@@ -110,7 +110,7 @@ class Scenario:
     
     def add_variable(self, var: ScenarioVariable, starting_value=None):
         if var in self._variables:
-            raise ValueError("Cannot insert two scenario variables of the same name!")
+            raise ValueError("Cannot insert two scenario_design variables of the same name!")
         self._variables.append(var)
         self.set_variable_starting_value(var, starting_value)
     
@@ -123,7 +123,7 @@ class Scenario:
         if var.is_value_legal(starting_value):
             self._variable_values[var.name] = starting_value
         else:
-            raise ValueError("Trying to assign an illegal value to this scenario variable!")
+            raise ValueError("Trying to assign an illegal value to this scenario_design variable!")
 
     def get_inject_by_id(self, inject_id):
         for story in self.stories:

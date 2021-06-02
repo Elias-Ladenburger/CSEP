@@ -18,7 +18,7 @@ class DataType(Enum):
 
 
 class ScenarioVariable:
-    """A variable that simulates the environment of a scenario."""
+    """A variable that simulates the environment of a scenario_design."""
 
     def __init__(self, name: str, datatype: DataType, private: bool = False):
         self.name = name

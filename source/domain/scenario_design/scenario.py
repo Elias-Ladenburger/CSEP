@@ -3,14 +3,14 @@ from typing import List
 
 from domain.scenario_design.auxiliary import ScenarioVariable
 from domain.scenario_design.graphs import GraphNode
-from domain.scenario_design.injects import PlainInject, Transition, Inject
+from domain.scenario_design.injects import SimpleInject, Transition, Inject
 
 
 class Story(GraphNode):
     """A _Story_ is a collection of injects within a scenario_design"""
 
-    def __init__(self, title: str, entry_node: PlainInject,
-                 injects: List[PlainInject] = [], transitions: List[Transition] = []):
+    def __init__(self, title: str, entry_node: SimpleInject,
+                 injects: List[SimpleInject] = [], transitions: List[Transition] = []):
         """
         :param title: A short descriptive title of the story to be able to gauge what it is about
         :param entry_node: the first inject that is shown when this story is started
@@ -27,11 +27,11 @@ class Story(GraphNode):
     def injects(self):
         return self._injects
 
-    def add_inject(self, inject: PlainInject):
+    def add_inject(self, inject: SimpleInject):
         self._injects[inject.inject_id] = inject
         self._transitions[inject.inject_id] = []
 
-    def remove_inject(self, inject: PlainInject):
+    def remove_inject(self, inject: SimpleInject):
         self._injects.pop(inject.inject_id)
         self._transitions.pop(inject.inject_id)
         for other_injects in self._transitions:
@@ -70,7 +70,7 @@ class Story(GraphNode):
         # viable_transitions = self._transitions.get(transition.from_inject.inject_id, [])
         # viable_transitions.remove(transition)
 
-    def _initialize_injects(self, injects: List[PlainInject]):
+    def _initialize_injects(self, injects: List[SimpleInject]):
         self.add_inject(self.entry_node)
         for inject in injects:
             self.add_inject(inject)
@@ -100,7 +100,7 @@ class Scenario:
     @property
     def variable_values(self):
         """Returns a tuple of """
-        return self._variables, self._variable_values
+        return self._variable_values
 
     def add_story(self, story: Story):
         self.stories.append(story)

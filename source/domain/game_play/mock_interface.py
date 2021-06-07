@@ -1,5 +1,5 @@
 
-from domain.scenario_design.game import Game
+from domain.scenario_design.game import Game, GameFactory
 from domain.scenario_design.auxiliary import DataType, TransitionCondition
 from domain.scenario_design.injects import Transition, Inject, ConditionalTransition
 from domain.scenario_design.scenario import Scenario, Story, ScenarioVariable
@@ -7,7 +7,7 @@ from domain.scenario_design.scenario import Scenario, Story, ScenarioVariable
 
 class MockScenarioBuilder:
     @classmethod
-    def build_game(cls):
+    def build_scenario(cls):
         scenario = Scenario(title="Going Phishing",
                                    description="""A scenario_design where you capture credentials by phishing.
                                         You play a notorious cybercriminal, who seeks financial gain by 
@@ -117,15 +117,17 @@ class MockGameProvider:
     """A scenario_design that is currently being played or has been played."""
     @staticmethod
     def get_simple_game():
-        scenario = MockScenarioBuilder.build_game()
-        return Game(scenario)
+        scenario = MockScenarioBuilder.build_scenario()
+        game = GameFactory.create_singleplayer_game(scenario)
+        return game
 
     @staticmethod
     def get_branching_game():
-        scenario = BranchingScenarioBuilder.build_game()
-        return Game(scenario)
+        scenario = BranchingScenarioBuilder.build_scenario()
+        game = GameFactory.create_singleplayer_game(scenario)
+        return game
 
     @staticmethod
     def get_variable_game():
-        scenario = VariableScenarioBuilder.build_game()
+        scenario = VariableScenarioBuilder.build_scenario()
         return Game(scenario)

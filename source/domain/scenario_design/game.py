@@ -2,7 +2,7 @@ import copy
 from datetime import datetime
 
 from domain.scenario_design.auxiliary import DataType
-from domain.scenario_design.injects import PlainInject, Transition
+from domain.scenario_design.injects import SimpleInject, Transition
 from domain.scenario_design.scenario import Scenario, ScenarioVariable
 from infrastructure.database import CustomDatabase
 
@@ -16,12 +16,16 @@ class Game:
         self.is_open = True
         self.current_story_index = 0
         self.variables = copy.deepcopy(scenario.variables)
-        self.variable_values = copy.deepcopy(scenario._variable_values)
+        self.variable_values = copy.deepcopy(scenario.variable_values)
         self._history = []
 
-    def end_game(self):
-        self.is_open = False
-        self.end_time = datetime.now()
+    @property
+    def name(self):
+        return self.scenario.title
+
+    @property
+    def first_inject(self):
+        return self.scenario.stories[0].entry_node
 
     def set_game_variable(self, var: ScenarioVariable, new_value):
         if var.is_value_legal(new_value):
@@ -48,7 +52,7 @@ class Game:
     def get_inject(self, inject_candidate):
         if isinstance(inject_candidate, int):
             return self.get_inject_by_id(inject_candidate)
-        elif isinstance(inject_candidate, PlainInject):
+        elif isinstance(inject_candidate, SimpleInject):
             return inject_candidate
         else:
             raise TypeError("the parameter must be of type 'int' or 'Inject'!")
@@ -83,7 +87,7 @@ class Game:
         """Evaluate the conditions and variable changes of a given transition.
 
         :param transition: the Transition to evaluate.
-        :return: The inject which this transition points to.
+        :return: The Inject which this transition points to.
         """
         if transition.state_changes:
             for change in transition.state_changes:
@@ -102,13 +106,9 @@ class Game:
             self.end_game()
             return None
 
-    @property
-    def name(self):
-        return self.scenario.title
-
-    @property
-    def first_inject(self):
-        return self.scenario.stories[0].entry_node
+    def end_game(self):
+        self.is_open = False
+        self.end_time = datetime.now()
 
     def __str__(self):
         return_str = "Game: " + self.scenario.title
@@ -138,7 +138,7 @@ class GameFactory:
     @staticmethod
     def create_singleplayer_game(scenario: Scenario):
         game = Game(scenario)
-        GameRepository.save_game(game)
+        # GameRepository.save_game(game)
         return game
 
     @staticmethod

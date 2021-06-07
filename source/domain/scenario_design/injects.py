@@ -4,7 +4,7 @@ from domain.scenario_design.auxiliary import Image, TransitionCondition, StateCh
 from domain.scenario_design.graphs import GraphNode, GraphEdge
 
 
-class PlainInject(GraphNode):
+class SimpleInject(GraphNode):
     """An inject in a story."""
     def __init__(self, title: str, text: str, image: Image = None, inject_id=None):
         super().__init__(label=title, node_id=inject_id)
@@ -21,9 +21,20 @@ class PlainInject(GraphNode):
     def transitions(self):
         return None
 
+    @property
+    def title(self):
+        return self.label
+
+    @title.setter
+    def set_title(self, new_title: str):
+        self.label = new_title
+
     def solve(self, solution):
         """Solving an inject means to provide a solution ot the inject and
-        receiving a transition that points to the next inject in return."""
+        receiving a transition that points to the next inject in return.
+
+        :param solution: The solution to this inject. Can be either a string or a Transition or a number.
+        :return: A transition that points to the next inject. Returns None if there is no next inject."""
         return None
 
     def __str__(self):
@@ -36,7 +47,7 @@ class PlainInject(GraphNode):
 class Transition(GraphEdge):
     """A transition can be understood as a weighted, directed Edge pointing from one Inject to another."""
 
-    def __init__(self, from_inject: PlainInject, to_inject: PlainInject, label: str = ""):
+    def __init__(self, from_inject: SimpleInject, to_inject: SimpleInject, label: str = ""):
         """
         :param from_inject: The inject which this transition is attached to.
         :param to_inject: The inject which this transition will lead to.
@@ -57,20 +68,20 @@ class Transition(GraphEdge):
 
 
 class ConditionalTransition(Transition):
-    def __init__(self, from_inject: PlainInject, to_inject: PlainInject, label: str,
-                 condition: TransitionCondition, alternative_inject: PlainInject):
+    def __init__(self, from_inject: SimpleInject, to_inject: SimpleInject, label: str,
+                 condition: TransitionCondition, alternative_inject: SimpleInject):
         super().__init__(from_inject=from_inject, to_inject=to_inject, label=label)
         self.condition = condition
         self.alternative_inject = alternative_inject
 
 
 class ChangingTransition(Transition):
-    def __init__(self, from_inject: PlainInject, to_inject: PlainInject, label: str, state_changes: List[StateChange]):
+    def __init__(self, from_inject: SimpleInject, to_inject: SimpleInject, label: str, state_changes: List[StateChange]):
         super().__init__(from_inject=from_inject, to_inject=to_inject, label=label)
         self.changes = state_changes
 
 
-class Inject(PlainInject):
+class Inject(SimpleInject):
     """An inject that refers to more than one other inject and
         therefore requires the player to make a choice."""
 
@@ -96,6 +107,10 @@ class Inject(PlainInject):
         self._transitions.append(transition)
 
     def solve(self, solution):
+        """
+        :param solution: The solution to this inject. Can be either a string or a Transition or a number.
+        :return: A transition that points to the next inject. Returns None if there is no next inject.
+        """
         if not self.transitions:
             return None
         elif len(self.transitions) == 1:

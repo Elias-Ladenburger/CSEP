@@ -1,6 +1,6 @@
 from behave import *
 
-from domain.scenario_design.game import GameFactory
+from domain.scenario_design.game import GameFactory, Game
 from domain.scenario_design.injects import Inject
 from domain.scenario_design.scenario import Scenario, Story
 
@@ -24,8 +24,13 @@ def step_impl(context):
     context.execute_steps('''
     Given one scenario
     ''')
+    context.execute_steps('''
+    Given one source inject to start from
+    ''')
+    context.source_inject = context.scenario.stories[0].entry_node
+    context.game = GameFactory.create_singleplayer_game(context.scenario)
 
 
 @then('the game must end.')
 def step_impl(context):
-    context.game.end_game()
+    next_inject = context.game.solve_inject(context.source_inject, 0)

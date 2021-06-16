@@ -1,31 +1,11 @@
 from flask import Flask, render_template
-from game_blueprint import game_gp
+from flask_user import roles_required
 
-app = Flask(__name__, static_folder="static")
-app.register_blueprint(game_gp)
+from web.app_factory import AppFactory
 
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-
-@app.route("/motivation")
-def motivation_page():
-    return render_template("motivation.html")
-
-@app.route("/approach")
-def approach_page():
-    return render_template("approach.html")
-
-@app.route("/concept")
-def concept_page():
-    return render_template("concept.html")
-
-@app.route("/scenarios")
-def scenarios_page():
-    return render_template("index.html")
+app = AppFactory.create_app()
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=True)
 

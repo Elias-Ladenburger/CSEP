@@ -1,0 +1,21 @@
+
+{
+    "SECRET_KEY": "This is an INSECURE secret!! DO NOT use this in production!!",
+    "MONGODB_SETTINGS": {
+        "db": "csep-dev",
+        "host": "mongodb+srv://db_readwrite:8LMHkYjhNsXqa78f@univie-ladenburger-fygpi.mongodb.net/semtech?retryWrites=true&w=majority"
+    },
+    "USER_APP_NAME": "CSEP app",
+    "USER_ENABLE_EMAIL": "False",
+    "USER_ENABLE_USERNAME": "True",
+    "USER_REQUIRE_RETYPE_PASSWORD": "False",
+
+    "MAIL_SERVER" : "smtp.univie.ac.at",
+    "MAIL_PORT" : 465,
+    "MAIL_USE_SSL" : true,
+    "MAIL_USE_TLS" : false,
+    "MAIL_USERNAME" : "ladenburge19@univie.ac.at",
+    "MAIL_PASSWORD" : "Der30Magie",
+    "MAIL_DEFAULT_SENDER" : "'Cybersecurity Scenario Education Platform' <csep@univie.ac.at>"
+
+}

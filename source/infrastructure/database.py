@@ -1,5 +1,6 @@
 import pymongo
 from bson import ObjectId
+from bson.errors import InvalidId
 
 
 class CustomDatabase:

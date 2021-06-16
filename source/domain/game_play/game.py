@@ -14,6 +14,8 @@ class Game:
         self.start_time = datetime.now()
         self.end_time = None
         self.is_open = True
+        self.is_in_progress = False
+
         self.current_story_index = 0
         self.variables = copy.deepcopy(scenario.variables)
         self.variable_values = copy.deepcopy(scenario.variable_values)
@@ -121,6 +123,13 @@ class GroupGame(Game):
     def __init__(self, scenario: Scenario):
         super().__init__(scenario)
         self.breakpoints = []
+        self.participants = []
+        self._trainers = []
+        self.observers = []
+
+    @property
+    def trainer(self):
+        return self._trainers
 
     def add_breakpoint(self, story_index):
         """

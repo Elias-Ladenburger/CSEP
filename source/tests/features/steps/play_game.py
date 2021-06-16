@@ -1,13 +1,13 @@
 from behave import *
 
-from domain.scenario_design.game import GameFactory, Game
+from domain.game_play.game import GameFactory
 from domain.scenario_design.injects import Inject
 from domain.scenario_design.scenario import Scenario, Story
 
-use_step_matcher("re")
+use_step_matcher("parse")
 
 
-@given("one scenario")
+@step("a learning scenario")
 def step_impl(context):
     learning_scenario = Scenario(title="test scenario", description="test description")
 
@@ -17,6 +17,11 @@ def step_impl(context):
 
     context.scenario = learning_scenario
     return context.scenario
+
+
+@given("one scenario")
+def step_impl(context):
+    context.execute_steps("Given a learning scenario")
 
 
 @given(u'a game in progress')
@@ -34,3 +39,28 @@ def step_impl(context):
 @then('the game must end.')
 def step_impl(context):
     next_inject = context.game.solve_inject(context.source_inject, 0)
+
+
+@given("a trainer")
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Given a trainer')
+
+
+@given("a participant that belongs to a target group")
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Given a participant that belongs to a target group')
+
+
+@step("an inject hint that is defined for this target group")
+def step_impl(context):
+    raise NotImplementedError(u'STEP: And an inject hint that is defined for this target group')
+
+
+@when("the participant sees this inject")
+def step_impl(context):
+    raise NotImplementedError(u'STEP: When the participant sees this inject')
+
+
+@then("the participant should see the hint")
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Then the participant should see the hint')

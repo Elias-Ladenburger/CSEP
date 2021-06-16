@@ -27,12 +27,9 @@ Feature: Solve Inject
     When the player selects choice at index 1
     Then this must throw an value error.
 
-  Scenario: Solve an Input Inject
-    Given one input inject to start from
-
 
   Scenario: Solve Last Inject
-    Given one scenario
+    Given a learning scenario
     And a game in progress
     When the player selects choice at index 0
     Then the game must end.

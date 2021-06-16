@@ -1,5 +1,5 @@
 
-from domain.scenario_design.game import Game, GameFactory
+from domain.game_play.game import Game, GameFactory
 from domain.scenario_design.auxiliary import DataType, TransitionCondition
 from domain.scenario_design.injects import Transition, Inject, ConditionalTransition
 from domain.scenario_design.scenario import Scenario, Story, ScenarioVariable

@@ -45,8 +45,7 @@ class Story(GraphNode):
     def get_inject_by_id(self, inject_id):
         if inject_id in self._injects:
             inject = self._injects[inject_id]
-            transitions = self._transitions.get(inject_id, None)
-            return inject, transitions
+            return inject
         return None
 
     def add_transition(self, transition: Transition):
@@ -99,7 +98,6 @@ class Scenario:
 
     @property
     def variable_values(self):
-        """Returns a tuple of """
         return self._variable_values
 
     def add_story(self, story: Story):
@@ -130,8 +128,4 @@ class Scenario:
             inject = story.get_inject_by_id(inject_id)
             if inject:
                 return inject
-        return None, None
-
-    @property
-    def variables(self):
-        return self._variables
+        return None

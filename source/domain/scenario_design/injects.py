@@ -1,7 +1,14 @@
+from enum import Enum
 from typing import List
 
 from domain.scenario_design.auxiliary import Image, TransitionCondition, StateChange
 from domain.scenario_design.graphs import GraphNode, GraphEdge
+
+
+class InjectType(Enum):
+    SIMPLE = 0
+    SEQUENTIAL = 1
+    BRANCHING = 2
 
 
 class SimpleInject(GraphNode):
@@ -10,12 +17,12 @@ class SimpleInject(GraphNode):
         super().__init__(label=title, node_id=inject_id)
         self.text = text
         self.image = image or Image()
-        self.inject_id = self._hash
-        self._type = "Inject"
+        self.inject_id = self.id  # alias
+        self._type = InjectType.SIMPLE
 
     @property
     def type(self):
-        return "exit_point"
+        return self._type
 
     @property
     def transitions(self):
@@ -76,7 +83,8 @@ class ConditionalTransition(Transition):
 
 
 class ChangingTransition(Transition):
-    def __init__(self, from_inject: SimpleInject, to_inject: SimpleInject, label: str, state_changes: List[StateChange]):
+    def __init__(self, from_inject: SimpleInject, to_inject: SimpleInject,
+                 label: str, state_changes: List[StateChange]):
         super().__init__(from_inject=from_inject, to_inject=to_inject, label=label)
         self.changes = state_changes
 
@@ -86,9 +94,9 @@ class Inject(SimpleInject):
         therefore requires the player to make a choice."""
 
     def __init__(self, title: str, text: str, image: Image = None, inject_id=None,
-                 transitions: List[Transition] = []):
+                 transitions: List[Transition] = None):
         super().__init__(title=title, text=text, image=image, inject_id=inject_id)
-        self._type = "Choice Inject"
+        self._type = InjectType.BRANCHING
         self._transitions = transitions
 
     @property
@@ -111,6 +119,7 @@ class Inject(SimpleInject):
         :param solution: The solution to this inject. Can be either a string or a Transition or a number.
         :return: A transition that points to the next inject. Returns None if there is no next inject.
         """
+        solution = self._parse_solution(solution)
         if not self.transitions:
             return None
         elif len(self.transitions) == 1:
@@ -121,6 +130,16 @@ class Inject(SimpleInject):
             return self._solve_transitions_object(solution)
         else:
             raise ValueError("The provided solution has an invalid format. Must be of type 'int' or 'Transition'!")
+
+    @staticmethod
+    def _parse_solution(solution):
+        if isinstance(solution, int):
+            return solution
+        elif isinstance(solution, str):
+            if solution.isnumeric():
+                return int(solution)
+        else:
+            raise TypeError("Solution for choice injects must be of type int!")
 
     def _solve_single_transition(self):
         return self.transitions[0]

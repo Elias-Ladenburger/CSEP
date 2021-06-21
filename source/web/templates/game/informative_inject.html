@@ -1,8 +1,8 @@
 {% extends 'base_inject.html' %}
-{% block transitions %}
+{% block transition %}
 
  <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-<a href="{{url_for('games.inject_page', game_id=game_id, inject_id=transition.to_inject.inject_id)}}" class="btn btn-primary">Continue</a>
+<a href="{{url_for('games.solution_page', game_id=game_id, inject_id=inject.id)}}" class="btn btn-primary">Continue</a>
 
 {% endblock %}

@@ -5,11 +5,14 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
 <div class="container-fluid bg-white text-black-50">
-    <h3>{{inject.label}}</h3>
+    <h3>{{inject.title}}</h3>
     <p>{{inject.text}}</p>
     {% block transition %}
     {% endblock %}
 </div>
-
+    <div class="row justify-content-end">
+        <div class="col-10"></div>
+        <a href="{{url_for('games.stats_page', game_id=game_id, inject_id=inject.id)}}" class="btn btn-primary">Stats</a>
+    </div>
 
 {% endblock %}

@@ -1,62 +1,66 @@
 from domain.game_play.mock_interface import MockGameProvider
 
 
-def play_game():
-    game_provider = MockGameProvider()
-    game = game_provider.get_branching_game()
-    show_introduction(game)
-    next_inject = game.first_inject
-    while next_inject:
-        show_next_inject(next_inject)
-        print("Please input the number that corresponds to your choice.")
-        print("Write 'stats' to see your current stats.")
-        print("Write 'q' to quit the game.")
-        next_inject = handle_input(game, inject=next_inject)
-    handle_end(game)
+class MockPlayer:
+    def __init__(self):
+        game_provider = MockGameProvider()
+        self._game = game_provider.get_branching_game()
 
+    def play_game(self):
+        self._show_introduction()
+        next_inject = self._game.start_game()
+        while next_inject:
+            inject_id = next_inject.id
+            self._show_next_inject(inject_id)
+            print("Please input the number that corresponds to your choice.")
+            print("Write 'stats' to see your current stats.")
+            print("Write 'q' to quit the game.")
+            next_inject = self._handle_input(inject_id=inject_id)
+        self._handle_end()
 
-def show_introduction(game):
-    print("Now playing " + game.name)
+    def _show_introduction(self,):
+        print("Now playing " + self._game.name)
 
+    def _show_next_inject(self, inject_id):
+        inject = self._game.get_inject_by_id(inject_id)
 
-def show_next_inject(inject):
-    print(inject.label)
-    print(inject.text)
+        if not inject:
+            exit()
 
-    if inject.transitions:
-        for i in range(0, len(inject.transitions)):
-            print(str(i) + ": " + inject.transitions[i].label)
-    else:
-        print("0: Continue")
+        print(inject.label)
+        print(inject.text)
 
+        if inject.transitions:
+            for i in range(0, len(inject.transitions)):
+                print(str(i) + ": " + inject.transitions[i].label)
+        else:
+            print("0: Continue")
 
-def handle_input(game, inject):
-    answer = input()
-    if answer == "stats":
-        handle_stats(game)
-        return inject.id
-    elif answer == "q":
-        exit()
-    elif answer.isnumeric():
-        return game.solve_inject(inject=inject, solution=int(answer))
-    else:
-        exit()
-    print()
-    return answer
+    def _handle_input(self, inject_id):
+        answer = input()
+        if answer == "stats":
+            self._handle_stats()
+            return inject_id
+        elif answer == "q":
+            exit()
+        elif answer.isnumeric():
+            return self._game.solve_inject(inject=inject_id, solution=int(answer))
+        else:
+            exit()
+        print()
+        return answer
 
+    def _handle_stats(self):
+        visible_stats = self._game.get_visible_stats()
+        print("## Visible stats ##")
+        for var_name in visible_stats:
+            print(str(var_name.name) + ": " + str(self._game._variables[var_name]))
 
-def handle_stats(game):
-    stats = game._variables
-    visible_stats = game.get_visible_stats()
-    print("## Visible stats ##")
-    for var_name in visible_stats:
-        print(str(var_name.name) + ": " + str(game._variables[var_name]))
-
-
-def handle_end(game):
-    game.end_game()
-    print("You have finished the game. Thank you for playing!")
+    def _handle_end(self):
+        self._game.end_game()
+        print("You have finished the game. Thank you for playing!")
 
 
 if __name__ == "__main__":
-    play_game()
+    player = MockPlayer()
+    player.play_game()

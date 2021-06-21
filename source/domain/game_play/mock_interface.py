@@ -1,4 +1,3 @@
-
 from domain.game_play.game import Game, GameFactory
 from domain.scenario_design.auxiliary import DataType, TransitionCondition
 from domain.scenario_design.injects import Transition, Inject, ConditionalTransition
@@ -9,7 +8,7 @@ class MockScenarioBuilder:
     @classmethod
     def build_scenario(cls):
         scenario = Scenario(title="Going Phishing",
-                                   description="""A scenario_design where you capture credentials by phishing.
+                            description="""A scenario where you capture credentials by phishing. \n
                                         You play a notorious cybercriminal, who seeks financial gain by 
                                         stealing the credentials off of high-ranking executives.""")
 
@@ -35,7 +34,7 @@ class MockScenarioBuilder:
     @classmethod
     def _build_chapter_1(cls, scenario):
         intro_inject = Inject(title="Introduction",
-                              text="Hello Player! In this scenario_design you will indulge in your dark side: "
+                              text="Hello Player! In this scenario you will indulge in your dark side: "
                                    "playing through the eyes of an expert social engineer. "
                                    "Your first target is Jaffa Bezous, "
                                    "the Chief Operating Officer of a global bookstore."
@@ -58,7 +57,7 @@ class MockScenarioBuilder:
     @classmethod
     def _build_chapter_2(cls, scenario):
         second_last_inject = Inject(title="Almost Done", text="Well done, you are almost there!")
-        last_inject = Inject(title="Finish", text="You have completed the scenario_design!")
+        last_inject = Inject(title="Finish", text="You have completed the test scenario!")
 
         final_transition = Transition(from_inject=second_last_inject, to_inject=last_inject,
                                       label="Walk straight ahead")
@@ -108,13 +107,12 @@ class BranchingScenarioBuilder(MockScenarioBuilder):
 
 
 class VariableScenarioBuilder(MockScenarioBuilder):
-    @staticmethod
-    def _build_chapter_1(scenario):
-        pass
+    pass
 
 
 class MockGameProvider:
     """A scenario_design that is currently being played or has been played."""
+
     @staticmethod
     def get_simple_game():
         scenario = MockScenarioBuilder.build_scenario()

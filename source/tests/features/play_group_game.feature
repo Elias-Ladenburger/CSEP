@@ -16,3 +16,4 @@ Feature: Play Group Game
     And an inject hint that is defined for this target group
     When the participant sees this inject
     Then the participant should see the hint
+

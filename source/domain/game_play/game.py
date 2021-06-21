@@ -1,5 +1,6 @@
 import copy
 from datetime import datetime
+from enum import Enum
 
 from domain.scenario_design.auxiliary import DataType
 from domain.scenario_design.injects import SimpleInject, Transition
@@ -7,14 +8,19 @@ from domain.scenario_design.scenario import Scenario, ScenarioVariable
 from infrastructure.database import CustomDatabase
 
 
+class GameState(Enum):
+    Open = 1
+    In_Progress = 2
+    Closed = 3
+
+
 class Game:
     """A scenario_design that is currently being played or has been played."""
     def __init__(self, scenario: Scenario):
         self.scenario = scenario
-        self.start_time = datetime.now()
-        self.end_time = None
-        self.is_open = True
-        self.is_in_progress = False
+        self._start_time = datetime.now()
+        self._end_time = None
+        self._game_state = GameState.Open
 
         self.current_story_index = 0
         self.variables = copy.deepcopy(scenario.variables)
@@ -26,32 +32,40 @@ class Game:
         return self.scenario.title
 
     @property
-    def first_inject(self):
+    def is_open(self):
+        return self._game_state == GameState.Open
+
+    @property
+    def is_in_progress(self):
+        return self._game_state == GameState.In_Progress
+
+    @property
+    def end_time(self):
+        return self._end_time
+
+    def start_game(self):
+        self._game_state = GameState.In_Progress
         return self.scenario.stories[0].entry_node
 
     def set_game_variable(self, var: ScenarioVariable, new_value):
         if var.is_value_legal(new_value):
-            self.variables[var] = new_value
+            self.variable_values[var.name] = new_value
         else:
             raise TypeError("The new value does not match the datatype of this variable!")
 
-    def update_game_variable(self, var: ScenarioVariable, change_value: int):
-        if var.datatype == DataType.NUMBER:
-            self.variables[var] += change_value
-        else:
-            raise TypeError("Cannot update non-numerical game variables. Please use the 'set' function instead!")
-
     def get_visible_stats(self):
-        visible_stats = []
+        visible_stats = {}
         for var in self.variables:
             if not var.private:
-                visible_stats.append(var)
+                visible_stats[var.name] = self.variable_values[var.name]
         return visible_stats
 
     def get_all_stats(self):
         return self.variables
 
     def get_inject(self, inject_candidate):
+        if isinstance(inject_candidate, str):
+            inject_candidate = int(inject_candidate)
         if isinstance(inject_candidate, int):
             return self.get_inject_by_id(inject_candidate)
         elif isinstance(inject_candidate, SimpleInject):
@@ -109,8 +123,8 @@ class Game:
             return None
 
     def end_game(self):
-        self.is_open = False
-        self.end_time = datetime.now()
+        self._game_state = GameState.Closed
+        self._end_time = datetime.now()
 
     def __str__(self):
         return_str = "Game: " + self.scenario.title

@@ -4,6 +4,8 @@ from typing import List
 from domain.scenario_design.auxiliary import ScenarioVariable
 from domain.scenario_design.graphs import GraphNode
 from domain.scenario_design.injects import SimpleInject, Transition, Inject
+from infrastructure.database import CustomDB
+from infrastructure.repository import Repository
 
 
 class Story(GraphNode):
@@ -81,7 +83,7 @@ class Story(GraphNode):
 
 class Scenario:
     """A container for multiple stories"""
-    def __init__(self, title: str, description: str):
+    def __init__(self, title: str, description: str) -> object:
         """
         :param title: How this scenario_design is called
         :param description: A brief human-understandable description of the scenario_design
@@ -129,3 +131,39 @@ class Scenario:
             if inject:
                 return inject
         return None
+
+
+class ScenarioRepository(Repository):
+    collection_name = "scenarios"
+
+    @classmethod
+    def get_scenario_by_id(cls, scenario_id: int):
+        scenario_data = cls._get_entity_by_id(collection_name=cls.collection_name, entity_id=scenario_id)
+        scenario = ScenarioFactory.build_scenario_from_dict(scenario_data)
+        return scenario
+
+    @classmethod
+    def get_scenarios_by_target_group(cls, target_group: str):
+        return NotImplementedError("This has not yet been implemented!")
+
+    @classmethod
+    def get_all_scenarios(cls):
+        return cls.my_db.get_all(cls.collection_name)
+
+    @classmethod
+    def save_scenario(cls, scenario: Scenario):
+        scenario_dict = vars(scenario)
+        return cls._save_entity(collection_name=cls.collection_name, entity=scenario_dict)
+
+
+class ScenarioFactory:
+    @staticmethod
+    def create_scenario(title="new scenario", description="This is a new scenario"):
+        return Scenario(title=title, description=description)
+
+    @staticmethod
+    def build_scenario_from_dict(scenario_dict: dict):
+        title = scenario_dict.get("title", "default")
+        description = scenario_dict.get("description", "default description")
+        scenario = Scenario(title=title, description=description)
+        return scenario

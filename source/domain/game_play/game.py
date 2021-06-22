@@ -5,7 +5,7 @@ from enum import Enum
 from domain.scenario_design.auxiliary import DataType
 from domain.scenario_design.injects import SimpleInject, Transition
 from domain.scenario_design.scenario import Scenario, ScenarioVariable
-from infrastructure.database import CustomDatabase
+from infrastructure.database import CustomDB
 
 
 class GameState(Enum):

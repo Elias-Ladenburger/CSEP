@@ -1,0 +1,32 @@
+---
+DATABASE:
+  DEV:
+    DB_NAME: csep-dev
+    DB_HOST: "mongodb://127.0.0.1:27017"
+  PROD:
+    DB_NAME: csep-prod
+    DB_HOST: "mongodb://127.0.0.1:27017"
+  TEST:
+    DB_NAME: csep-test
+    DB_HOST: "mongodb://127.0.0.1:27017"
+
+FLASK:
+  ENV: development
+  DEBUG: True
+  MAIL_SERVER: smtp.univie.ac.at
+  MAIL_PORT: 465
+  MAIL_USERNAME: ladenburge19@univie.ac.at
+  MAIL_PASSWORD: "Hahahaha, hidden."
+  MAIL_DEFAULT_SENDER: "'Cybersecurity Scenario Education Platform' <csep@univie.ac.at>"
+  MAIL_USE_SSL: true
+  MAIL_USE_TLS: false
+
+  USER_APP_NAME: "CSEP app"
+  USER_ENABLE_EMAIL: "False"
+  USER_ENABLE_USERNAME: "True"
+  USER_REQUIRE_RETYPE_PASSWORD: "False"
+
+  SECRET_KEY: "This is an INSECURE secret!! DO NOT use this in production!!"
+
+  STATIC_FOLDER: static
+  TEMPLATES_FOLDER: templates

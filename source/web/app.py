@@ -1,5 +1,3 @@
-from flask import Flask, render_template
-from flask_user import roles_required
 
 from web.app_factory import AppFactory
 

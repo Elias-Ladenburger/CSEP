@@ -20,4 +20,4 @@ class ScenarioPersistenceTest(TestCase):
 
     def test_insert(self):
         inserted_id = self.db.insert_one(collection_name="test", entity={"name": "test"})
-        self.assertIsInstance(inserted_id.inserted_id, bson.ObjectId)
+        self.assertIsInstance(inserted_id, bson.ObjectId)

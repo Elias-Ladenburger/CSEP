@@ -23,7 +23,7 @@ class ScenarioVariable:
     def __init__(self, name: str, datatype: DataType, private: bool = False):
         self.name = name
         self.datatype = datatype
-        self.private = private
+        self.is_private = private
 
     def is_value_legal(self, value):
         if self.datatype == DataType.TEXT:
@@ -40,6 +40,14 @@ class ScenarioVariable:
     def __eq__(self, other):
         if isinstance(other, ScenarioVariable):
             return self.name == other.name
+
+    def as_dict(self):
+        return_dict = {
+            "name": self.name,
+            "datatype": self.datatype,
+            "is_private": self.is_private
+        }
+        return return_dict
 
 
 class LegalOperator:

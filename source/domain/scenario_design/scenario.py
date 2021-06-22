@@ -1,10 +1,10 @@
+import itertools
 from enum import Enum
 from typing import List
 
 from domain.scenario_design.auxiliary import ScenarioVariable
 from domain.scenario_design.graphs import GraphNode
-from domain.scenario_design.injects import SimpleInject, Transition, Inject
-from infrastructure.database import CustomDB
+from domain.scenario_design.injects import SimpleInject, Transition
 from infrastructure.repository import Repository
 
 
@@ -19,9 +19,11 @@ class Story(GraphNode):
         :param injects: an unordered list of injects that are part of the story
         """
         super().__init__(label=title)
+
         self.entry_node = entry_node
         self._injects = {}
         self._transitions = {}
+
         self._initialize_injects(injects)
         self._initialize_transitions(transitions)
 
@@ -80,19 +82,28 @@ class Story(GraphNode):
         for transition in transitions:
             self.add_transition(transition)
 
+    def as_dict(self):
+        return_dict = {
+            "title": self.label,
+            "entry_point": self.entry_node.as_dict()
+        }
+        return return_dict
+
 
 class Scenario:
     """A container for multiple stories"""
-    def __init__(self, title: str, description: str) -> object:
+    def __init__(self, title: str, description: str, elem_id: str, previous_id=None):
         """
         :param title: How this scenario_design is called
         :param description: A brief human-understandable description of the scenario_design
         """
+        self._id = elem_id
         self.title = title
         self.description = description
-        self.stories = list()
+        self.stories = []
         self._variables = []
         self._variable_values = {}
+        self._previous_id = previous_id
 
     @property
     def variables(self):
@@ -101,6 +112,10 @@ class Scenario:
     @property
     def variable_values(self):
         return self._variable_values
+
+    @property
+    def previous_id(self):
+        return self._previous_id
 
     def add_story(self, story: Story):
         self.stories.append(story)
@@ -132,12 +147,39 @@ class Scenario:
                 return inject
         return None
 
+    def __repr__(self):
+        return self.title
+
+    def __str__(self):
+        return self.title
+
+    def as_dict(self):
+        return_dict = {"title": self.title,
+                       "description": self.description,
+                       "_id": self._id,
+                       "previous_id": self._previous_id,
+                       "stories": [],
+                       "variables": [],
+                       "variable_values": {}
+                       }
+
+        if self.stories:
+            for story in self.stories:
+                return_dict["stories"].append(story.as_dict())
+        if self._variables:
+            for var in self._variables:
+                return_dict["variables"].append(var.as_dict())
+        if self._variable_values:
+            for var_name, val in self._variable_values.items():
+                return_dict["variable_values"][var_name] = val
+        return return_dict
+
 
 class ScenarioRepository(Repository):
     collection_name = "scenarios"
 
     @classmethod
-    def get_scenario_by_id(cls, scenario_id: int):
+    def get_scenario_by_id(cls, scenario_id: str):
         scenario_data = cls._get_entity_by_id(collection_name=cls.collection_name, entity_id=scenario_id)
         scenario = ScenarioFactory.build_scenario_from_dict(scenario_data)
         return scenario
@@ -153,17 +195,19 @@ class ScenarioRepository(Repository):
     @classmethod
     def save_scenario(cls, scenario: Scenario):
         scenario_dict = vars(scenario)
-        return cls._save_entity(collection_name=cls.collection_name, entity=scenario_dict)
+        return cls._insert_entity(collection_name=cls.collection_name, entity=scenario_dict)
 
 
 class ScenarioFactory:
+    id_iter = itertools.count()
+
     @staticmethod
     def create_scenario(title="new scenario", description="This is a new scenario"):
-        return Scenario(title=title, description=description)
+        return Scenario(title=title, description=description, elem_id=next(itertools.count()))
 
     @staticmethod
     def build_scenario_from_dict(scenario_dict: dict):
-        title = scenario_dict.get("title", "default")
-        description = scenario_dict.get("description", "default description")
+        title = scenario_dict.get("title", "new scenario")
+        description = scenario_dict.get("description", "scenario description goes here")
         scenario = Scenario(title=title, description=description)
         return scenario

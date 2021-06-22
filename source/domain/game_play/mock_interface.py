@@ -1,16 +1,17 @@
 from domain.game_play.game import Game, GameFactory
 from domain.scenario_design.auxiliary import DataType, TransitionCondition
 from domain.scenario_design.injects import Transition, Inject, ConditionalTransition
-from domain.scenario_design.scenario import Scenario, Story, ScenarioVariable
+from domain.scenario_design.scenario import Scenario, Story, ScenarioVariable, ScenarioFactory
 
 
 class MockScenarioBuilder:
     @classmethod
     def build_scenario(cls):
-        scenario = Scenario(title="Going Phishing",
-                            description="""A scenario where you capture credentials by phishing. \n
-                                        You play a notorious cybercriminal, who seeks financial gain by 
-                                        stealing the credentials off of high-ranking executives.""")
+        scenario = ScenarioFactory.create_scenario(title="Going Phishing",
+                                                   description="""A scenario where you capture credentials by 
+                                                   phishing. \n You play a notorious cybercriminal, who seeks 
+                                                   financial gain by stealing the credentials off of high-ranking 
+                                                   executives.""")
 
         cls._add_variables(scenario)
         cls._build_chapter_1(scenario)

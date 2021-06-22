@@ -50,6 +50,19 @@ class SimpleInject(GraphNode):
         return_str += self.text
         return return_str
 
+    def as_dict(self):
+        return_dict = {
+            "title": self.title,
+            "text": self.text,
+            "inject_id": self.inject_id,
+            "type": self._type.value,
+            "transitions": []
+        }
+        if self.transitions:
+            for transition in self.transitions:
+                return_dict["transitions"].append(transition.as_dict())
+        return return_dict
+
 
 class Transition(GraphEdge):
     """A transition can be understood as a weighted, directed Edge pointing from one Inject to another."""
@@ -72,6 +85,14 @@ class Transition(GraphEdge):
     @property
     def to_inject(self):
         return self.target
+
+    def as_dict(self):
+        return_dict = {
+            "label": self.label,
+            "condition": self.condition,
+            "effects": self.state_changes
+        }
+        return return_dict
 
 
 class ConditionalTransition(Transition):

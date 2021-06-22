@@ -1,5 +1,3 @@
-from bson import ObjectId
-
 from infrastructure.database import CustomDB
 
 
@@ -7,9 +5,8 @@ class Repository:
     my_db = CustomDB
 
     @classmethod
-    def _get_entity_by_id(cls, collection_name: str, entity_id: int):
-        entity_id = Repository._build_object_id(entity_id=entity_id)
-        id_criteria = {"_id": ObjectId(entity_id)}
+    def _get_entity_by_id(cls, collection_name: str, entity_id):
+        id_criteria = {"_id": entity_id}
         entity_id, entity = cls.my_db.get_one_by_criteria(collection_name=collection_name, criteria=id_criteria)
         return entity
 
@@ -19,21 +16,15 @@ class Repository:
         return entity_cursor
 
     @classmethod
-    def _save_entity(cls, collection_name: str, entity: dict):
+    def _insert_entity(cls, collection_name: str, entity: dict):
         inserted_id = cls.my_db.insert_one(collection_name=collection_name, entity=entity)
         return inserted_id
 
     @classmethod
     def _delete_one(cls, collection_name: str, entity_id: int):
-        entity_id = Repository._build_object_id(entity_id=entity_id)
-        delete_criteria = {"_id": ObjectId(entity_id)}
+        delete_criteria = {"_id": entity_id}
         cls.my_db.delete_one(collection_name=collection_name, criteria=delete_criteria)
 
-    @staticmethod
-    def _build_object_id(entity_id):
-        if isinstance(entity_id, str):
-            entity_id = ObjectId(entity_id)
-        if isinstance(entity_id, ObjectId):
-            return entity_id
-        else:
-            return TypeError("Entity ID must be a string or of type 'bson.ObjectId'!")
+    @classmethod
+    def _update_entity(cls, collection_name: str, entity: dict, entity_id):
+        cls.my_db.save_one(collection_name=collection_name, new_values=entity, entity_id=entity_id)

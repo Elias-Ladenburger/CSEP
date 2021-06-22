@@ -33,7 +33,8 @@ class CustomDB:
     @classmethod
     def get_one_by_criteria(cls, collection_name: str, criteria: dict):
         collection = cls.get_collection_by_name(collection_name)
-        result = collection.find_one(filter=criteria)
+        entity_filter = CustomDB._build_filter(criteria=criteria)
+        result = collection.find_one(filter=entity_filter)
         if result:
             result_id = str(result.pop("_id"))
         else:
@@ -46,14 +47,30 @@ class CustomDB:
         return collection.find({})
 
     @classmethod
+    def save_one(cls, collection_name: str, new_values: dict, entity_id=None):
+        if "_id" not in new_values:
+            if not entity_id:
+                cls.insert_one(collection_name=collection_name, entity=new_values)
+        else:
+            entity_id = new_values.pop("_id")
+        cls.update_one(collection_name=collection_name, new_values=new_values, entity_id=entity_id)
+
+    @classmethod
     def insert_one(cls, collection_name: str, entity: dict):
         collection = cls.get_collection_by_name(collection_name)
-        return collection.insert_one(entity)
+        return collection.insert_one(entity).inserted_id
+
+    @classmethod
+    def update_one(cls, collection_name: str, new_values: dict, entity_id):
+        collection = cls.get_collection_by_name(collection_name)
+        query_filter = CustomDB._build_filter({"_id": entity_id})
+        update_statement = {"$set": new_values}
+        collection.update_one(filter=query_filter, update=new_values, upsert=True)
 
     @classmethod
     def delete_one(cls, collection_name: str, criteria: dict):
         collection = cls.get_collection_by_name(collection_name)
-        entity_filter = cls._build_filter(criteria)
+        entity_filter = CustomDB._build_filter(criteria)
         return collection.delete_one(filter=entity_filter)
 
     @classmethod
@@ -61,17 +78,33 @@ class CustomDB:
         """Should NOT be used in production"""
         if "prod" not in collection_name:
             if not criteria:
-                criteria = {}
+                query_filter = {}
+            else:
+                query_filter = CustomDB._build_filter(criteria=criteria)
             collection = cls.get_collection_by_name(collection_name)
-            collection.delete_many(filter=criteria)
+            collection.delete_many(filter=query_filter)
         else:
             raise NotImplementedError("Purging a production database has consciously not been implemented."
                                       "If this is truly a necessary step, please clear the database directly.")
 
     @staticmethod
-    def _build_filter(filter_id):
-        try:
-            tmp_filter = {"_id": ObjectId(filter_id)}
-        except InvalidId:
-            return {"_id": ObjectId("000000000000")}
+    def _build_filter(criteria: dict):
+        if not criteria:
+            pass
+        if "_id" in criteria:
+            entity_id = criteria["_id"]
+            criteria["_id"] = CustomDB._build_object_id(entity_id)
+        tmp_filter = criteria
         return tmp_filter
+
+    @staticmethod
+    def _build_object_id(entity_id):
+        if isinstance(entity_id, str):
+            try:
+                entity_id = ObjectId(entity_id)
+            except InvalidId:
+                return ObjectId("000000000000")
+        if isinstance(entity_id, ObjectId):
+            return entity_id
+        else:
+            return TypeError("Entity ID must be a string or of type 'bson.ObjectId'!")

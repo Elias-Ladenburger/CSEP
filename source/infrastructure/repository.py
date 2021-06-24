@@ -6,9 +6,14 @@ class Repository:
 
     @classmethod
     def _get_entity_by_id(cls, collection_name: str, entity_id):
+        """
+        :param collection_name: the name of the database collection or table from which the entity should be queried
+        :param entity_id: the database id of the entity
+        :return: a tuple of (entity_id: str, entity_data: dict)
+        """
         id_criteria = {"_id": entity_id}
         entity_id, entity = cls.my_db.get_one_by_criteria(collection_name=collection_name, criteria=id_criteria)
-        return entity
+        return entity_id, entity
 
     @classmethod
     def _get_all(cls, collection_name: str):

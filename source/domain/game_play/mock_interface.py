@@ -1,17 +1,18 @@
 from domain.game_play.game import Game, GameFactory
 from domain.scenario_design.auxiliary import DataType, TransitionCondition
-from domain.scenario_design.injects import Transition, Inject, ConditionalTransition
-from domain.scenario_design.scenario import Scenario, Story, ScenarioVariable, ScenarioFactory
+from domain.scenario_design.injects import Transition, Inject
+from domain.scenario_design.scenario import Scenario, Story, ScenarioVariable
+from domain.scenario_design.scenario_management import ScenarioFactory
 
 
 class MockScenarioBuilder:
     @classmethod
     def build_scenario(cls):
         scenario = ScenarioFactory.create_scenario(title="Going Phishing",
-                                                   description="""A scenario where you capture credentials by 
-                                                   phishing. \n You play a notorious cybercriminal, who seeks 
-                                                   financial gain by stealing the credentials off of high-ranking 
-                                                   executives.""")
+                                                   description="A scenario where you capture credentials by phishing. \n"
+                                                               "You play a notorious cybercriminal, who seeks "
+                                                               "financial gain by stealing the credentials off of "
+                                                               "high-ranking executives.")
 
         cls._add_variables(scenario)
         cls._build_chapter_1(scenario)
@@ -21,15 +22,14 @@ class MockScenarioBuilder:
 
     @classmethod
     def _add_variables(cls, scenario):
-        scenario.add_variable(ScenarioVariable(name="Budget", datatype=DataType.NUMBER, private=False),
-                              starting_value=100000)
-        scenario.add_variable(
-            ScenarioVariable(name="Financial Loss", datatype=DataType.NUMBER, private=False),
-            starting_value=0)
-        scenario.add_variable(ScenarioVariable(name="Reputation Damage", datatype=DataType.TEXT, private=False),
-                              starting_value="None")
-        scenario.add_variable(ScenarioVariable(name="Internal Variable", datatype=DataType.BOOL, private=True),
-                              starting_value=False)
+        variables = [(ScenarioVariable(name="Budget", datatype=DataType.NUMBER, private=False), 10000),
+                     (ScenarioVariable(name="Financial Loss", datatype=DataType.NUMBER, private=False), 0),
+                     (ScenarioVariable(name="Reputation Damage", datatype=DataType.TEXT, private=False), "None"),
+                     (ScenarioVariable(name="Internal Variable", datatype=DataType.BOOL, private=True), False)
+                     ]
+
+        for var, starting_value in variables:
+            scenario.add_variable(var, starting_value=starting_value)
         return scenario
 
     @classmethod
@@ -47,10 +47,8 @@ class MockScenarioBuilder:
 
         other_first_second = Transition(from_inject=intro_inject, to_inject=second_inject, label="Do nothing")
 
-        intro_inject.transitions = [other_first_second]
-
         introduction = Story(title="Introduction", entry_node=intro_inject,
-                             injects=[intro_inject, second_inject])
+                             injects=[intro_inject, second_inject], transitions=[other_first_second])
 
         scenario.add_story(introduction)
         return scenario
@@ -64,9 +62,7 @@ class MockScenarioBuilder:
                                       label="Walk straight ahead")
 
         final_chapter = Story(title="final chapter", entry_node=second_last_inject,
-                              injects=[second_last_inject, last_inject])
-
-        second_last_inject.transitions = [final_transition]
+                              injects=[second_last_inject, last_inject], transitions=[final_transition])
 
         scenario.add_story(final_chapter)
         return scenario
@@ -88,23 +84,18 @@ class BranchingScenarioBuilder(MockScenarioBuilder):
     @staticmethod
     def _insert_transition(scenario: Scenario, story: Story, transition_label: str):
         inject_0 = story.entry_node
-        inject_1 = inject_0.transitions[0].to_inject
+        inject_1 = story.transitions[inject_0.slug][0]
         new_inject = Inject("A different inject", "Turns out that branching scenarios work now...")
 
-        condition = BranchingScenarioBuilder._create_condition(scenario)
-        new_transition = ConditionalTransition(from_inject=inject_0, to_inject=inject_1, label=transition_label,
-                                               condition=condition, alternative_inject=new_inject)
+        budget_var = scenario.variables["Budget"]
+        condition = TransitionCondition(budget_var, comparison_operator="=",
+                                        variable_threshold=100000, alternative_inject=new_inject)
+        new_transition = Transition(from_inject=inject_0, to_inject=inject_1,
+                                    label=transition_label, condition=condition)
 
         story.add_inject(new_inject)
         story.add_transition(new_transition)
         return scenario
-
-    @staticmethod
-    def _create_condition(scenario: Scenario):
-        variables = scenario.variables
-        random_var = variables[0]
-        condition = TransitionCondition(random_var, comparison_operator="=", variable_threshold=100000)
-        return condition
 
 
 class VariableScenarioBuilder(MockScenarioBuilder):

@@ -59,7 +59,7 @@ def game_reflection(game_id: int):
 
 @game_gp.route("/<game_id>/injects/<inject_id>/show")
 def inject_page(game_id: int, inject_id: int):
-    inject = game.get_inject_by_id(inject_id=int(inject_id))
+    inject = game.get_inject_by_slug(inject_id=int(inject_id))
     if inject.type == InjectType.SIMPLE:
         transitions = []
     else:

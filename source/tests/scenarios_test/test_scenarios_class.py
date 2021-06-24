@@ -10,7 +10,7 @@ class ScenarioTest(TestCase):
 
     def test_scenario_add_story(self):
         inject = Inject(title="test inject", text="text")
-        story = Story(title="introduction", entry_node=inject, injects=[inject])
+        story = Story(title="introduction", entry_node=inject, injects=[inject], transitions=[])
 
         scenario = BranchingScenarioBuilder.build_scenario()
         scenario.add_story(story)
@@ -20,12 +20,6 @@ class ScenarioTest(TestCase):
     def test_scenario_vars(self):
         scenario = BranchingScenarioBuilder.build_scenario()
         print(vars(scenario))
-
-    def test_scenario_to_dict(self):
-        scenario = BranchingScenarioBuilder.build_scenario()
-        scenario_dict = scenario.as_dict()
-        print(scenario_dict)
-        print(json.dumps(scenario_dict))
 
     def test_examine_scenario_properties(self):
         scenario = BranchingScenarioBuilder.build_scenario()

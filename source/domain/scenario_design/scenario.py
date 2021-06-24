@@ -1,109 +1,101 @@
-import itertools
-from enum import Enum
-from typing import List
+from typing import Optional, Dict, List
+
+from pydantic import BaseModel, PrivateAttr
 
 from domain.scenario_design.auxiliary import ScenarioVariable
-from domain.scenario_design.graphs import GraphNode
-from domain.scenario_design.injects import SimpleInject, Transition
-from infrastructure.repository import Repository
+from domain.scenario_design.injects import Inject, Transition
 
 
-class Story(GraphNode):
+class Story(BaseModel):
     """A _Story_ is a collection of injects within a scenario_design"""
+    title: str
+    entry_node: Inject
+    _injects: Optional[Dict[str, Inject]] = PrivateAttr({})
+    _transitions: Optional[Dict[str, List[Transition]]] = PrivateAttr({})
 
-    def __init__(self, title: str, entry_node: SimpleInject,
-                 injects: List[SimpleInject] = [], transitions: List[Transition] = []):
-        """
-        :param title: A short descriptive title of the story to be able to gauge what it is about
-        :param entry_node: the first inject that is shown when this story is started
-        :param injects: an unordered list of injects that are part of the story
-        """
-        super().__init__(label=title)
-
-        self.entry_node = entry_node
-        self._injects = {}
-        self._transitions = {}
-
+    def __init__(self, title: str, entry_node: Inject, injects: List[Inject],
+                 transitions: List[Transition], **keyword_args):
+        super().__init__(title=title, entry_node=entry_node, **keyword_args)
         self._initialize_injects(injects)
         self._initialize_transitions(transitions)
+
+    def _initialize_injects(self, injects):
+        self._injects[self.entry_node.slug] = self.entry_node
+        for inject in injects:
+            self._injects[inject.slug] = inject
+            self._transitions[inject.slug] = []
+
+    def _initialize_transitions(self, transitions):
+        for transition in transitions:
+            if transition.from_inject.slug in self.injects and transition.to_inject.slug in self._injects:
+                self._transitions[transition.from_inject.slug].append(transition)
 
     @property
     def injects(self):
         return self._injects
 
-    def add_inject(self, inject: SimpleInject):
-        self._injects[inject.inject_id] = inject
-        self._transitions[inject.inject_id] = []
+    @property
+    def transitions(self):
+        return self._transitions
 
-    def remove_inject(self, inject: SimpleInject):
-        self._injects.pop(inject.inject_id)
-        self._transitions.pop(inject.inject_id)
-        for other_injects in self._transitions:
-            for dangling_transition in self._transitions[other_injects]:
-                if dangling_transition.to_inject == inject:
-                    self._transitions[other_injects].remove(dangling_transition)
+    def add_inject(self, inject: Inject):
+        self._injects[str(inject.slug)] = inject
 
-    def remove_inject_by_id(self, inject_id):
-        self._injects.pop(inject_id)
+    def remove_inject(self, inject: Inject):
+        self._injects.pop(str(inject.slug))
 
-    def get_inject_by_id(self, inject_id):
-        if inject_id in self._injects:
-            inject = self._injects[inject_id]
+    def remove_inject_by_slug(self, inject_slug: str):
+        self._injects.pop(inject_slug)
+
+    def get_inject_by_slug(self, inject_slug: str):
+        if inject_slug in self._injects:
+            inject = self._injects[inject_slug]
             return inject
         return None
 
-    def add_transition(self, transition: Transition):
-        transition.from_inject.add_transition(transition)
-
-        # If there already are transitions for this inject, append to the list of existing injects,
-        # otherwise create a new list
-        # inject_transitions = self._transitions.get(transition.from_inject.inject_id, None)
-        # if inject_transitions:
-        #     self._transitions[transition.from_inject.inject_id].append(transition)
-        # else:
-        #     self._transitions[transition.from_inject.inject_id] = [transition]
-
-    def add_transitions(self, transitions: List[Transition]):
-        for transition in transitions:
-            self.add_transition(transition)
+    def add_transition(self, new_transition: Transition):
+        source = new_transition.from_inject
+        if source.slug in self._injects:
+            self._injects[source.slug].transitions.append(new_transition)
 
     def remove_transition(self, transition: Transition):
-        pass
+        source = transition.from_inject
+        if source in self._injects:
+            self._injects[source.slug].transitions.remove(transition)
 
-        # viable_transitions = self._transitions.get(transition.from_inject.inject_id, [])
-        # viable_transitions.remove(transition)
-
-    def _initialize_injects(self, injects: List[SimpleInject]):
-        self.add_inject(self.entry_node)
-        for inject in injects:
-            self.add_inject(inject)
-
-    def _initialize_transitions(self, transitions: List[Transition]):
-        for transition in transitions:
-            self.add_transition(transition)
-
-    def as_dict(self):
-        return_dict = {
-            "title": self.label,
-            "entry_point": self.entry_node.as_dict()
-        }
-        return return_dict
-
-
-class Scenario:
-    """A container for multiple stories"""
-    def __init__(self, title: str, description: str, elem_id: str, previous_id=None):
+    def solve_inject(self, inject_slug, solution):
         """
-        :param title: How this scenario_design is called
-        :param description: A brief human-understandable description of the scenario_design
+        :param solution: The solution to this inject. Can be either a string or a Transition or a number.
+        :param inject_slug: The slug of the inject that has been solved.
+        :return: A transition that points to the next inject. Returns None if there is no next inject.
         """
-        self._id = elem_id
-        self.title = title
-        self.description = description
-        self.stories = []
-        self._variables = []
-        self._variable_values = {}
-        self._previous_id = previous_id
+        if isinstance(solution, Transition):
+            return solution
+        elif not isinstance(solution, int):
+            solution = int(solution)
+        if -1 < solution < len(self.transitions[inject_slug]):
+            return self.transitions[inject_slug][solution]
+        else:
+            raise IndexError(
+                "A transition at index {} was selected, but this inject only has {} transitions"
+                .format(solution, len(self.transitions[inject_slug])))
+
+
+class Scenario(BaseModel):
+    _id: str = PrivateAttr()
+    title: str
+    description: str
+    stories: List[Story] = []
+    _variables: Dict[str, ScenarioVariable] = PrivateAttr({})
+    _variable_values: dict = PrivateAttr({})
+
+    def __init__(self, title: str, description: str, scenario_id: str, **keyword_args):
+        super().__init__(title=title, description=description, **keyword_args)
+        self._id = scenario_id
+
+    @property
+    def scenario_id(self):
+        return self._id
 
     @property
     def variables(self):
@@ -113,10 +105,6 @@ class Scenario:
     def variable_values(self):
         return self._variable_values
 
-    @property
-    def previous_id(self):
-        return self._previous_id
-
     def add_story(self, story: Story):
         self.stories.append(story)
 
@@ -124,14 +112,13 @@ class Scenario:
         self.stories.remove(story)
     
     def add_variable(self, var: ScenarioVariable, starting_value=None):
-        if var in self._variables:
+        if var.name in self._variables:
             raise ValueError("Cannot insert two scenario_design variables of the same name!")
-        self._variables.append(var)
+        self._variables[var.name] = var
         self.set_variable_starting_value(var, starting_value)
     
     def remove_variable(self, var: ScenarioVariable):
-        var_index = self._variables.index(var)
-        self._variables.pop(var_index)
+        self._variables.pop(var.name)
         self._variable_values.pop(var.name)
 
     def set_variable_starting_value(self, var: ScenarioVariable, starting_value=None):
@@ -140,12 +127,17 @@ class Scenario:
         else:
             raise ValueError("Trying to assign an illegal value to this scenario_design variable!")
 
-    def get_inject_by_id(self, inject_id):
+    def get_inject_by_slug(self, inject_slug: str):
         for story in self.stories:
-            inject = story.get_inject_by_id(inject_id)
+            inject = story.get_inject_by_slug(inject_slug=inject_slug)
             if inject:
                 return inject
         return None
+
+    def _set_id(self, scenario_id: str):
+        if self._id:
+            raise ValueError("Cannot reassign id of a scenario object!")
+        self._scenario_id = scenario_id
 
     def __repr__(self):
         return self.title
@@ -153,61 +145,15 @@ class Scenario:
     def __str__(self):
         return self.title
 
-    def as_dict(self):
-        return_dict = {"title": self.title,
-                       "description": self.description,
-                       "_id": self._id,
-                       "previous_id": self._previous_id,
-                       "stories": [],
-                       "variables": [],
-                       "variable_values": {}
-                       }
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return other.scenario_id == self.scenario_id
 
-        if self.stories:
-            for story in self.stories:
-                return_dict["stories"].append(story.as_dict())
-        if self._variables:
-            for var in self._variables:
-                return_dict["variables"].append(var.as_dict())
-        if self._variable_values:
-            for var_name, val in self._variable_values.items():
-                return_dict["variable_values"][var_name] = val
-        return return_dict
+    class Config:
+        underscore_attrs_are_private = True
 
 
-class ScenarioRepository(Repository):
-    collection_name = "scenarios"
-
-    @classmethod
-    def get_scenario_by_id(cls, scenario_id: str):
-        scenario_data = cls._get_entity_by_id(collection_name=cls.collection_name, entity_id=scenario_id)
-        scenario = ScenarioFactory.build_scenario_from_dict(scenario_data)
-        return scenario
-
-    @classmethod
-    def get_scenarios_by_target_group(cls, target_group: str):
-        return NotImplementedError("This has not yet been implemented!")
-
-    @classmethod
-    def get_all_scenarios(cls):
-        return cls.my_db.get_all(cls.collection_name)
-
-    @classmethod
-    def save_scenario(cls, scenario: Scenario):
-        scenario_dict = vars(scenario)
-        return cls._insert_entity(collection_name=cls.collection_name, entity=scenario_dict)
-
-
-class ScenarioFactory:
-    id_iter = itertools.count()
-
-    @staticmethod
-    def create_scenario(title="new scenario", description="This is a new scenario"):
-        return Scenario(title=title, description=description, elem_id=next(itertools.count()))
-
-    @staticmethod
-    def build_scenario_from_dict(scenario_dict: dict):
-        title = scenario_dict.get("title", "new scenario")
-        description = scenario_dict.get("description", "scenario description goes here")
-        scenario = Scenario(title=title, description=description)
-        return scenario
+class EvaluatableScenario(Scenario):
+    """A scenario can also be used for evaluation purposes.
+    To this end it could sometimes be interesting to refer to previous versions of the scenario."""
+    previous_scenario: Scenario

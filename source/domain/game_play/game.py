@@ -3,7 +3,7 @@ from datetime import datetime
 from enum import Enum
 
 from domain.scenario_design.auxiliary import DataType
-from domain.scenario_design.injects import SimpleInject, Transition
+from domain.scenario_design.injects import Inject, Transition
 from domain.scenario_design.scenario import Scenario, ScenarioVariable
 from infrastructure.database import CustomDB
 
@@ -43,6 +43,10 @@ class Game:
     def end_time(self):
         return self._end_time
 
+    @property
+    def current_story(self):
+        return self.scenario.stories[self.current_story_index]
+
     def start_game(self):
         self._game_state = GameState.In_Progress
         return self.scenario.stories[0].entry_node
@@ -65,17 +69,17 @@ class Game:
 
     def get_inject(self, inject_candidate):
         if isinstance(inject_candidate, str):
-            inject_candidate = int(inject_candidate)
-        if isinstance(inject_candidate, int):
-            return self.get_inject_by_id(inject_candidate)
-        elif isinstance(inject_candidate, SimpleInject):
+            return self.get_inject_by_slug(inject_candidate)
+        elif isinstance(inject_candidate, Inject):
             return inject_candidate
         else:
-            raise TypeError("the parameter must be of type 'int' or 'Inject'!")
+            raise TypeError("the parameter must be of type 'str' or 'Inject'!")
 
-    def get_inject_by_id(self, inject_id):
-        return_value = self.scenario.get_inject_by_id(inject_id)
-        return return_value
+    def get_inject_by_slug(self, inject_slug):
+        inject = self.current_story.get_inject_by_slug(inject_slug)
+        if not inject:
+            inject = self.scenario.get_inject_by_slug(inject_slug)
+        return inject
 
     def solve_inject(self, inject, solution):
         """
@@ -89,15 +93,34 @@ class Game:
         """
         inject = self.get_inject(inject)
         self._add_inject_history(inject, solution)
-        transition = inject.solve(solution)
+        transition = self.current_story._solve_inject(inject, solution)
         if transition:
             return self._evaluate_transition(transition)
         else:
             return self._begin_next_story()
 
     def _add_inject_history(self, inject, solution):
-        history = {"inject_id": inject.id, "end_time": datetime.now(), "solution": solution}
+        history = {"inject_slug": inject.slug, "end_time": datetime.now(), "solution": solution}
         self._history.append(history)
+
+    def _solve_inject(self, solution):
+        """
+        :param solution: The solution to this inject. Can be either a string or a Transition or a number.
+        :return: A transition that points to the next inject. Returns None if there is no next inject.
+        """
+        solution = self._parse_solution(solution)
+        if not self.transitions:
+            return None
+        elif len(self.transitions) == 1:
+            return self.transitions[0]
+        elif isinstance(solution, int):
+            return self._solve_transition_index(solution)
+        elif isinstance(solution, str):
+            return self._solve_transition_str(solution)
+        elif isinstance(solution, Transition):
+            return self._solve_transitions_object(solution)
+        else:
+            raise ValueError("The provided solution has an invalid format. Must be of type 'int' or 'Transition'!")
 
     def _evaluate_transition(self, transition: Transition):
         """Evaluate the conditions and variable changes of a given transition.
@@ -105,10 +128,10 @@ class Game:
         :param transition: the Transition to evaluate.
         :return: The Inject which this transition points to.
         """
-        if transition.state_changes:
-            for change in transition.state_changes:
-                old_value = self.variables[change.var]
-                self.variables[change.var] = change.get_new_value(old_value)
+        if transition.effects:
+            for effect in transition.effects:
+                old_value = self.variables[effect.var]
+                self.variables[effect.var] = effect.get_new_value(old_value)
         if transition.condition:
             if transition.condition.evaluate_condition(self.variables, self.variable_values):
                 return transition.alternative_inject

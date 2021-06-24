@@ -10,19 +10,19 @@ class MockPlayer:
         self._show_introduction()
         next_inject = self._game.start_game()
         while next_inject:
-            inject_id = next_inject.id
-            self._show_next_inject(inject_id)
+            inject_slug = next_inject.slug
+            self._show_next_inject(inject_slug)
             print("Please input the number that corresponds to your choice.")
             print("Write 'stats' to see your current stats.")
             print("Write 'q' to quit the game.")
-            next_inject = self._handle_input(inject_id=inject_id)
+            next_inject = self._handle_input(inject_slug=inject_slug)
         self._handle_end()
 
     def _show_introduction(self,):
         print("Now playing " + self._game.name)
 
-    def _show_next_inject(self, inject_id):
-        inject = self._game.get_inject_by_id(inject_id)
+    def _show_next_inject(self, inject_slug):
+        inject = self._game.get_inject_by_slug(inject_slug)
 
         if not inject:
             exit()
@@ -36,15 +36,15 @@ class MockPlayer:
         else:
             print("0: Continue")
 
-    def _handle_input(self, inject_id):
+    def _handle_input(self, inject_slug):
         answer = input()
         if answer == "stats":
             self._handle_stats()
-            return inject_id
+            return inject_slug
         elif answer == "q":
             exit()
         elif answer.isnumeric():
-            return self._game.solve_inject(inject=inject_id, solution=int(answer))
+            return self._game.solve_inject(inject=inject_slug, solution=int(answer))
         else:
             exit()
         print()

@@ -58,14 +58,14 @@ class CustomDB:
     @classmethod
     def insert_one(cls, collection_name: str, entity: dict):
         collection = cls.get_collection_by_name(collection_name)
-        return collection.insert_one(entity).inserted_id
+        return str(collection.insert_one(entity).inserted_id)
 
     @classmethod
     def update_one(cls, collection_name: str, new_values: dict, entity_id):
         collection = cls.get_collection_by_name(collection_name)
         query_filter = CustomDB._build_filter({"_id": entity_id})
         update_statement = {"$set": new_values}
-        collection.update_one(filter=query_filter, update=new_values, upsert=True)
+        collection.update_one(filter=query_filter, update=update_statement, upsert=True)
 
     @classmethod
     def delete_one(cls, collection_name: str, criteria: dict):

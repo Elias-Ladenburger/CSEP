@@ -1,7 +1,9 @@
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
-from domain.scenario_design.auxiliary import Image, TransitionCondition, StateChange
+from pydantic import PrivateAttr
+
+from domain.scenario_design.auxiliary import TransitionCondition, StateChange
 from domain.scenario_design.graphs import GraphNode, GraphEdge
 
 
@@ -11,186 +13,72 @@ class InjectType(Enum):
     BRANCHING = 2
 
 
-class SimpleInject(GraphNode):
+class Inject(GraphNode):
+    text: str
+    slug: str
+    transitions = []
+    _type = PrivateAttr(InjectType.SIMPLE)
+
     """An inject in a story."""
-    def __init__(self, title: str, text: str, image: Image = None, inject_id=None):
-        super().__init__(label=title, node_id=inject_id)
-        self.text = text
-        self.image = image or Image()
-        self.inject_id = self.id  # alias
-        self._type = InjectType.SIMPLE
+    def __init__(self, title: str, text: str, **keyword_args):
+        super().__init__(label=title, text=text, slug=title.replace(" ", "-"), **keyword_args)
 
     @property
     def type(self):
         return self._type
 
     @property
-    def transitions(self):
-        return None
-
-    @property
     def title(self):
         return self.label
 
     @title.setter
-    def set_title(self, new_title: str):
+    def title(self, new_title: str):
         self.label = new_title
-
-    def solve(self, solution):
-        """Solving an inject means to provide a solution ot the inject and
-        receiving a transition that points to the next inject in return.
-
-        :param solution: The solution to this inject. Can be either a string or a Transition or a number.
-        :return: A transition that points to the next inject. Returns None if there is no next inject."""
-        return None
 
     def __str__(self):
         return_str = str(self.type) + "\n"
-        return_str += str(self.id) + "\n" + str(self.label) + "\n"
+        return_str += str(self.slug) + "\n" + str(self.label) + "\n"
         return_str += self.text
         return return_str
-
-    def as_dict(self):
-        return_dict = {
-            "title": self.title,
-            "text": self.text,
-            "inject_id": self.inject_id,
-            "type": self._type.value,
-            "transitions": []
-        }
-        if self.transitions:
-            for transition in self.transitions:
-                return_dict["transitions"].append(transition.as_dict())
-        return return_dict
 
 
 class Transition(GraphEdge):
     """A transition can be understood as a weighted, directed Edge pointing from one Inject to another."""
+    _condition: TransitionCondition = PrivateAttr(None)
+    effects: StateChange = None
 
-    def __init__(self, from_inject: SimpleInject, to_inject: SimpleInject, label: str = ""):
-        """
-        :param from_inject: The inject which this transition is attached to.
-        :param to_inject: The inject which this transition will lead to.
-        :param label: A brief description that will be shown to a scenario_design player.
-        Behavior for empty values is undefined at the moment.
-        """
-        super().__init__(label=label, source_node=from_inject, target_node=to_inject)
-        self.condition = None
-        self.state_changes = None
+    def __init__(self, from_inject: Inject, to_inject: Inject, label: str = "", **keyword_args):
+        super().__init__(source_node=from_inject, target_node=to_inject, label=label, **keyword_args)
 
     @property
     def from_inject(self):
-        return self.source
+        return self.source_node
 
     @property
     def to_inject(self):
-        return self.target
-
-    def as_dict(self):
-        return_dict = {
-            "label": self.label,
-            "condition": self.condition,
-            "effects": self.state_changes
-        }
-        return return_dict
-
-
-class ConditionalTransition(Transition):
-    def __init__(self, from_inject: SimpleInject, to_inject: SimpleInject, label: str,
-                 condition: TransitionCondition, alternative_inject: SimpleInject):
-        super().__init__(from_inject=from_inject, to_inject=to_inject, label=label)
-        self.condition = condition
-        self.alternative_inject = alternative_inject
-
-
-class ChangingTransition(Transition):
-    def __init__(self, from_inject: SimpleInject, to_inject: SimpleInject,
-                 label: str, state_changes: List[StateChange]):
-        super().__init__(from_inject=from_inject, to_inject=to_inject, label=label)
-        self.changes = state_changes
-
-
-class Inject(SimpleInject):
-    """An inject that refers to more than one other inject and
-        therefore requires the player to make a choice."""
-
-    def __init__(self, title: str, text: str, image: Image = None, inject_id=None,
-                 transitions: List[Transition] = None):
-        super().__init__(title=title, text=text, image=image, inject_id=inject_id)
-        self._type = InjectType.BRANCHING
-        self._transitions = transitions
+        return self.target_node
 
     @property
-    def transitions(self):
-        return self._transitions
+    def condition(self):
+        if self._condition:
+            return self._condition
 
-    @transitions.setter
-    def transitions(self, new_transitions: List[Transition]):
-        self._transitions = new_transitions
+    @property
+    def alternative_inject(self):
+        if self._condition:
+            return self._condition.alternative_inject
 
-    @transitions.deleter
-    def transitions(self):
-        self._transitions = []
-
-    def add_transition(self, transition: Transition):
-        self._transitions.append(transition)
-
-    def solve(self, solution):
-        """
-        :param solution: The solution to this inject. Can be either a string or a Transition or a number.
-        :return: A transition that points to the next inject. Returns None if there is no next inject.
-        """
-        solution = self._parse_solution(solution)
-        if not self.transitions:
-            return None
-        elif len(self.transitions) == 1:
-            return self._solve_single_transition()
-        elif isinstance(solution, int):
-            return self._solve_transition_index(solution)
-        elif isinstance(solution, Transition):
-            return self._solve_transitions_object(solution)
-        else:
-            raise ValueError("The provided solution has an invalid format. Must be of type 'int' or 'Transition'!")
-
-    @staticmethod
-    def _parse_solution(solution):
-        if isinstance(solution, int):
-            return solution
-        elif isinstance(solution, str):
-            if solution.isnumeric():
-                return int(solution)
-        else:
-            raise TypeError("Solution for choice injects must be of type int!")
-
-    def _solve_single_transition(self):
-        return self.transitions[0]
-
-    def _solve_transition_index(self, choice):
-        if -1 < choice < len(self.transitions):
-            return self.transitions[choice]
-        else:
-            raise IndexError("Inject " + self.label + " does not have a transition at index " + str(choice) + "!")
-
-    def _solve_transitions_object(self, choice):
-        if choice in self.transitions:
-            return choice
-        else:
-            raise ReferenceError("The inject " + self.label + " does not have a transition " + repr(choice) + "!")
-
-    def __str__(self):
-        return_str = super().__str__()
-        for transition in self.transitions:
-            return_str += "\nOption " + transition.label + " points to " + transition.to_inject.label
-        return return_str
+    @condition.setter
+    def condition(self, condition: TransitionCondition):
+        self._condition = condition
 
 
 class InjectFactory:
 
     @staticmethod
-    def create_inject(self):
+    def create_inject():
         return Inject(title="", text="")
 
     @staticmethod
-    def create_transition(self):
-        return Transition
-
+    def create_transition(from_inject: Inject, to_inject: Inject):
+        return Transition(from_inject=from_inject, to_inject=to_inject)

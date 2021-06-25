@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from pydantic import PrivateAttr
 
-from domain.scenario_design.auxiliary import TransitionCondition, StateChange
+from domain.scenario_design.auxiliary import TransitionCondition, TransitionEffect
 from domain.scenario_design.graphs import GraphNode, GraphEdge
 
 
@@ -45,7 +45,7 @@ class Inject(GraphNode):
 class Transition(GraphEdge):
     """A transition can be understood as a weighted, directed Edge pointing from one Inject to another."""
     _condition: TransitionCondition = PrivateAttr(None)
-    effects: StateChange = None
+    effects: TransitionEffect = None
 
     def __init__(self, from_inject: Inject, to_inject: Inject, label: str = "", **keyword_args):
         super().__init__(source_node=from_inject, target_node=to_inject, label=label, **keyword_args)

@@ -41,7 +41,7 @@ def game_start(game_id):
 def stats_page(game_id, inject_id):
     template_name = "stats_page.html"
     return render_template(template_name, scenario_name=game.name, game_id=game_id,
-                           inject_id=inject_id, game_variables=game.get_visible_stats())
+                           inject_id=inject_id, game_variables=game.get_visible_vars())
 
 
 @game_gp.route("/<game_id>/end")

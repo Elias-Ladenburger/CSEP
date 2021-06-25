@@ -68,7 +68,7 @@ class LegalOperator:
                              "Expected one of " + ",".join(legal_operators.keys()) + "!")
 
 
-class StateChange(BaseModel):
+class TransitionEffect(BaseModel):
     var: ScenarioVariable
     new_value: Any
     operator: str

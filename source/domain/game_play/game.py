@@ -57,14 +57,14 @@ class Game:
         else:
             raise TypeError("The new value does not match the datatype of this variable!")
 
-    def get_visible_stats(self):
+    def get_visible_vars(self):
         visible_stats = {}
         for var in self.variables:
             if not var.private:
                 visible_stats[var.name] = self.variable_values[var.name]
         return visible_stats
 
-    def get_all_stats(self):
+    def get_all_vars(self):
         return self.variables
 
     def get_inject(self, inject_candidate):

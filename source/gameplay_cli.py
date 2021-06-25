@@ -51,7 +51,7 @@ class MockPlayer:
         return answer
 
     def _handle_stats(self):
-        visible_stats = self._game.get_visible_stats()
+        visible_stats = self._game.get_visible_vars()
         print("## Visible stats ##")
         for var_name in visible_stats:
             print(str(var_name.name) + ": " + str(self._game._variables[var_name]))

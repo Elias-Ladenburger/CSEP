@@ -28,8 +28,8 @@ class Repository:
     @classmethod
     def _delete_one(cls, collection_name: str, entity_id: int):
         delete_criteria = {"_id": entity_id}
-        cls.my_db.delete_one(collection_name=collection_name, criteria=delete_criteria)
+        return cls.my_db.delete_one(collection_name=collection_name, criteria=delete_criteria)
 
     @classmethod
     def _update_entity(cls, collection_name: str, entity: dict, entity_id):
-        cls.my_db.save_one(collection_name=collection_name, new_values=entity, entity_id=entity_id)
+        return cls.my_db.save_one(collection_name=collection_name, new_values=entity, entity_id=entity_id)

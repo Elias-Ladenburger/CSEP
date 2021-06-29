@@ -1,4 +1,4 @@
-
+from domain.scenario_design.auxiliary import ScenarioVariable
 from domain.scenario_design.scenario import Scenario
 from infrastructure.repository import Repository
 
@@ -56,6 +56,6 @@ class ScenarioFactory:
         scenario = Scenario(title=title, description=description, scenario_id=scenario_id)
         for story in stories:
             scenario.add_story(story)
-        for var_name, var in vars:
-            scenario.add_variable(var, var_values[var_name])
+        for var_name in vars:
+            scenario.add_variable(ScenarioVariable(**vars[var_name]), var_values[var_name])
         return scenario

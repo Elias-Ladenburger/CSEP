@@ -1,3 +1,4 @@
+import json
 from unittest import TestCase
 
 from domain.game_play.mock_interface import MockScenarioBuilder
@@ -40,9 +41,25 @@ class ScenarioPersistenceTest(TestCase):
             print(all_scenarios[0])
         self.assertIsNotNone(all_scenarios)
 
-    def test_update_scenario_add_story(self):
+    def test_update_scenario_change_title(self):
         inserted_id = self.test_scenario.scenario_id
         self.test_scenario.title = "Changed title!"
         self.repo.save_scenario(self.test_scenario)
         new_scenario = self.repo.get_scenario_by_id(inserted_id)
         self.assertEqual(new_scenario.title, "Changed title!")
+
+    def test_insert_scenario_with_stories(self):
+        inserted_id = self.insert_scenario_with_stories()
+        self.assertIsInstance(inserted_id, str)
+
+    def test_load_scenario(self):
+        inserted_id = self.insert_scenario_with_stories()
+        scenario = self.repo.get_scenario_by_id(inserted_id)
+        print(scenario.dict())
+        self.assertIsInstance(scenario, Scenario)
+
+    def insert_scenario_with_stories(self):
+        scenario = MockScenarioBuilder.build_scenario()
+        print(json.dumps(scenario.dict(), indent=2))
+        inserted_id = self.repo.save_scenario(scenario)
+        return inserted_id

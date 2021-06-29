@@ -44,8 +44,8 @@ class Inject(GraphNode):
 
 class Transition(GraphEdge):
     """A transition can be understood as a weighted, directed Edge pointing from one Inject to another."""
-    _condition: TransitionCondition = PrivateAttr(None)
-    effects: TransitionEffect = None
+    condition: Optional[TransitionCondition] = None
+    effects: Optional[TransitionEffect] = None
 
     def __init__(self, from_inject: Inject, to_inject: Inject, label: str = "", **keyword_args):
         super().__init__(source_node=from_inject, target_node=to_inject, label=label, **keyword_args)
@@ -58,19 +58,14 @@ class Transition(GraphEdge):
     def to_inject(self):
         return self.target_node
 
-    @property
-    def condition(self):
-        if self._condition:
-            return self._condition
-
-    @property
-    def alternative_inject(self):
-        if self._condition:
-            return self._condition.alternative_inject
-
-    @condition.setter
-    def condition(self, condition: TransitionCondition):
-        self._condition = condition
+    def dict(self, **kwargs):
+        update_args = kwargs.get("exclude") or {}
+        update_args.update({"exclude": {"source_node": ..., "target_node": ...}})
+        kwargs.update(update_args)
+        return_dict = super().dict(**kwargs)
+        return_dict["from_inject"] = self.from_inject.slug
+        return_dict["to_inject"] = self.to_inject.slug
+        return return_dict
 
 
 class InjectFactory:

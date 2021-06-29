@@ -47,8 +47,9 @@ class MockScenarioBuilder:
 
         other_first_second = Transition(from_inject=intro_inject, to_inject=second_inject, label="Do nothing")
 
-        introduction = Story(title="Introduction", entry_node=intro_inject,
-                             injects=[intro_inject, second_inject], transitions=[other_first_second])
+        introduction = Story(title="Introduction", entry_node=intro_inject)
+        introduction.add_injects([intro_inject, second_inject])
+        introduction.add_transition(other_first_second)
 
         scenario.add_story(introduction)
         return scenario
@@ -61,8 +62,10 @@ class MockScenarioBuilder:
         final_transition = Transition(from_inject=second_last_inject, to_inject=last_inject,
                                       label="Walk straight ahead")
 
-        final_chapter = Story(title="final chapter", entry_node=second_last_inject,
-                              injects=[second_last_inject, last_inject], transitions=[final_transition])
+        final_chapter = Story(title="final chapter", entry_node=second_last_inject)
+
+        final_chapter.add_injects(injects=[second_last_inject, last_inject])
+        final_chapter.add_transition(final_transition)
 
         scenario.add_story(final_chapter)
         return scenario
@@ -84,7 +87,7 @@ class BranchingScenarioBuilder(MockScenarioBuilder):
     @staticmethod
     def _insert_transition(scenario: Scenario, story: Story, transition_label: str):
         inject_0 = story.entry_node
-        inject_1 = story.transitions[inject_0.slug][0]
+        inject_1 = story.transitions[inject_0.slug][0].to_inject
         new_inject = Inject("A different inject", "Turns out that branching scenarios work now...")
 
         budget_var = scenario.variables["Budget"]

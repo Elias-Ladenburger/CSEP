@@ -7,61 +7,50 @@ from domain.scenario_design.injects import Inject, Transition
 
 
 class Story(BaseModel):
-    """A _Story_ is a collection of injects within a scenario_design"""
+    """A Story is a collection of injects within a scenario design"""
     title: str
     entry_node: Inject
-    _injects: Optional[Dict[str, Inject]] = PrivateAttr({})
-    _transitions: Optional[Dict[str, List[Transition]]] = PrivateAttr({})
+    injects: Optional[Dict[str, Inject]] = {}
+    transitions: Optional[Dict[str, List[Transition]]] = {}
 
-    def __init__(self, title: str, entry_node: Inject, injects: List[Inject],
-                 transitions: List[Transition], **keyword_args):
+    def __init__(self, title: str, entry_node: Inject, **keyword_args):
         super().__init__(title=title, entry_node=entry_node, **keyword_args)
-        self._initialize_injects(injects)
-        self._initialize_transitions(transitions)
 
-    def _initialize_injects(self, injects):
-        self._injects[self.entry_node.slug] = self.entry_node
+    def add_injects(self, injects):
+        self.injects[self.entry_node.slug] = self.entry_node
         for inject in injects:
-            self._injects[inject.slug] = inject
-            self._transitions[inject.slug] = []
+            self.injects[inject.slug] = inject
+            self.transitions[inject.slug] = []
 
-    def _initialize_transitions(self, transitions):
+    def initialize_transitions(self, transitions):
         for transition in transitions:
-            if transition.from_inject.slug in self.injects and transition.to_inject.slug in self._injects:
-                self._transitions[transition.from_inject.slug].append(transition)
-
-    @property
-    def injects(self):
-        return self._injects
-
-    @property
-    def transitions(self):
-        return self._transitions
+            if transition.from_inject.slug in self.injects and transition.to_inject.slug in self.injects:
+                self.transitions[transition.from_inject.slug].append(transition)
 
     def add_inject(self, inject: Inject):
-        self._injects[str(inject.slug)] = inject
+        self.injects[str(inject.slug)] = inject
 
     def remove_inject(self, inject: Inject):
-        self._injects.pop(str(inject.slug))
+        self.injects.pop(str(inject.slug))
 
     def remove_inject_by_slug(self, inject_slug: str):
-        self._injects.pop(inject_slug)
+        self.injects.pop(inject_slug)
 
     def get_inject_by_slug(self, inject_slug: str):
-        if inject_slug in self._injects:
-            inject = self._injects[inject_slug]
+        if inject_slug in self.injects:
+            inject = self.injects[inject_slug]
             return inject
         return None
 
     def add_transition(self, new_transition: Transition):
         source = new_transition.from_inject
-        if source.slug in self._injects:
-            self._injects[source.slug].transitions.append(new_transition)
+        if source.slug in self.injects:
+            self.transitions[source.slug].append(new_transition)
 
     def remove_transition(self, transition: Transition):
         source = transition.from_inject
-        if source in self._injects:
-            self._injects[source.slug].transitions.remove(transition)
+        if source in self.injects:
+            self.injects[source.slug].transitions.remove(transition)
 
     def solve_inject(self, inject_slug, solution):
         """
@@ -79,6 +68,10 @@ class Story(BaseModel):
             raise IndexError(
                 "A transition at index {} was selected, but this inject only has {} transitions"
                 .format(solution, len(self.transitions[inject_slug])))
+
+    def dict(self, **kwargs):
+        story_dict = super().dict(**kwargs)
+        return story_dict
 
 
 class Scenario(BaseModel):
@@ -104,6 +97,13 @@ class Scenario(BaseModel):
     @property
     def variable_values(self):
         return self._variable_values
+
+    @property
+    def variable_dict(self):
+        var_dict = {}
+        for var in self._variables:
+            var_dict[var] = self._variables[var].dict()
+        return var_dict
 
     def add_story(self, story: Story):
         self.stories.append(story)
@@ -149,8 +149,10 @@ class Scenario(BaseModel):
         if isinstance(other, self.__class__):
             return other.scenario_id == self.scenario_id
 
-    class Config:
-        underscore_attrs_are_private = True
+    def dict(self, **kwargs):
+        scenario_dict = super().dict(**kwargs)
+        scenario_dict.update({"variables": self.variable_dict, "variable_values": self._variable_values})
+        return scenario_dict
 
 
 class EvaluatableScenario(Scenario):

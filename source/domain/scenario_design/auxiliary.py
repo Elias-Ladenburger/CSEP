@@ -5,10 +5,10 @@ from typing import Any
 from pydantic import BaseModel
 
 
-class DataType(Enum):
-    TEXT = 1
-    NUMBER = 2
-    BOOL = 3
+class DataType(str, Enum):
+    TEXT = "textual"
+    NUMBER = "numeric"
+    BOOL = "boolean"
 
 
 class ScenarioVariable(BaseModel):
@@ -33,6 +33,11 @@ class ScenarioVariable(BaseModel):
     def __eq__(self, other):
         if isinstance(other, ScenarioVariable):
             return self.name == other.name
+
+    def dict(self, **kwargs):
+        var_dict = super().dict(**kwargs)
+        var_dict["datatype"] = self.datatype.value
+        return var_dict
 
 
 class LegalOperator:

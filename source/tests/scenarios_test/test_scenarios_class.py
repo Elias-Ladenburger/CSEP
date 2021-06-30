@@ -19,12 +19,20 @@ class ScenarioTest(TestCase):
 
     def test_scenario_vars(self):
         scenario = BranchingScenarioBuilder.build_scenario()
-        print(vars(scenario))
+        scenario_vars = scenario.variables
+        self.assertIsInstance(scenario_vars, dict)
 
-    def test_examine_scenario_properties(self):
-        scenario = BranchingScenarioBuilder.build_scenario()
-        print(scenario.dict())
-        print(scenario.stories[0].dict())
-        print(scenario.stories[0].entry_node.dict())
-        print(scenario.stories[0].transitions["Introduction"][0].dict())
+    def test_set_description(self):
+        self.fail()
+
+    def test_set_title(self):
+        self.fail()
+
+    def test_set_target_group(self):
+        self.fail()
+
+    def test_set_story(self):
+        self.fail()
+
+
 

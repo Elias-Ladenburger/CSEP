@@ -4,20 +4,20 @@ from unittest import TestCase
 from domain.game_play.mock_interface import MockScenarioBuilder
 from domain.scenario_design.scenario import Scenario
 from domain.scenario_design.scenario_management import ScenarioRepository, ScenarioFactory
-from globalconfig import config
 from infrastructure.database import CustomDB
 
 
 class ScenarioPersistenceTest(TestCase):
 
     def setUp(self):
-        config.set_env("TEST")
+        from globalconfig import config
+        config.set_env("DEV")
         self.repo = ScenarioRepository
         self.test_scenario = MockScenarioBuilder.build_scenario()
         self.db = CustomDB
 
     def tearDown(self):
-        # self.db._purge_database(collection_name="scenarios")
+        self.db._purge_database(collection_name="scenarios")
         pass
 
     def test_insert_scenario_title_description(self):

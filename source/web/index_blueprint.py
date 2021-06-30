@@ -1,9 +1,4 @@
 from flask import Blueprint, render_template
-from flask_user import roles_required
-
-from domain.game_play.mock_interface import MockGameProvider
-
-game_provider = MockGameProvider()
 
 index_gp = Blueprint('index', __name__,
                      template_folder='templates', url_prefix="/")
@@ -30,6 +25,5 @@ def concept_page():
 
 
 @index_gp.route("/scenarios")
-@roles_required('Admin')
 def scenarios_page():
     return render_template("index.html")

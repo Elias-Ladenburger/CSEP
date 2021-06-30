@@ -88,7 +88,7 @@ class Scenario(BaseModel):
 
     @property
     def scenario_id(self):
-        return self._id
+        return str(self._id)
 
     @property
     def variables(self):

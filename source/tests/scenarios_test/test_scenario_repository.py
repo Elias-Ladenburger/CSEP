@@ -14,6 +14,7 @@ class ScenarioPersistenceTest(TestCase):
         config.set_env("DEV")
         self.repo = ScenarioRepository
         self.test_scenario = MockScenarioBuilder.build_scenario()
+        self.repo.save_scenario(self.test_scenario)
         self.db = CustomDB
 
     def tearDown(self):
@@ -29,7 +30,7 @@ class ScenarioPersistenceTest(TestCase):
 
     def test_get_scenario(self):
         scenario = ScenarioFactory.create_scenario(title="test", description="test")
-        scenario_id = scenario.scenario_id
+        scenario_id = self.repo.save_scenario(scenario)
         scenario = self.repo.get_scenario_by_id(scenario_id=scenario_id)
         if scenario:
             print(scenario.dict())
@@ -44,7 +45,7 @@ class ScenarioPersistenceTest(TestCase):
     def test_update_scenario_change_title(self):
         inserted_id = self.test_scenario.scenario_id
         self.test_scenario.title = "Changed title!"
-        self.repo.save_scenario(self.test_scenario)
+        inserted_id = self.repo.save_scenario(self.test_scenario)
         new_scenario = self.repo.get_scenario_by_id(inserted_id)
         self.assertEqual(new_scenario.title, "Changed title!")
 

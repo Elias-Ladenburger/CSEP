@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container-fluid bg-white text-center text-blue">
+<form action="{{url_for('scenarios.save_scenario')}}" class="form-inline">
+        <div class="form-group">
+             <label for="scenario_id">ID</label><br>
+            <input class="form-control" type="text" id="scenario_id" name="scenario_id" readonly="readonly" placeholder="00000000" value={{ scenario.scenario_id }}><br>
+        </div>
+        <div class="form-group">
+             <label for="title">title</label><br>
+            <input class="form-control" type="text" id="title" name="title" placeholder="new scenario" ><br>
+        </div>
+        <div class="form-group">
+             <label for="description">description</label><br>
+            <input class="form-control" type="text" id="description" name="description" placeholder="this is a new scenario" ><br>
+        </div>
+        <div class="form-group">
+             <label for="description">keywords</label><br>
+            <input class="form-control" type="text" id="keywords" name="keywords" placeholder="this is a new scenario" ><br>
+        </div>
+        <div class="form-group">
+             <label for="learning-objectives">learning objectives</label><br>
+            <input class="form-control" type="text" id="learning-objectives" name="learning-objectives" placeholder="this is a new scenario" ><br>
+        </div>
+        <div class="form-group">
+             <label for="target-group">target group</label><br>
+            <input class="form-control" type="text" id="target-group" name="target-group" placeholder="this is a new scenario" ><br>
+        </div>
+        <button type="submit" class="btn">Save Scenario</button>
+    </form>
+</div>
+{% endblock %}

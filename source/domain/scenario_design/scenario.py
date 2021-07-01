@@ -82,7 +82,7 @@ class Scenario(BaseModel):
     _variables: Dict[str, ScenarioVariable] = PrivateAttr({})
     _variable_values: dict = PrivateAttr({})
 
-    def __init__(self, title: str, description: str, scenario_id: str, **keyword_args):
+    def __init__(self, title: str, description: str, scenario_id: str = "", **keyword_args):
         super().__init__(title=title, description=description, **keyword_args)
         self._id = scenario_id
 

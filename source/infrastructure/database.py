@@ -1,3 +1,4 @@
+import bson
 import pymongo
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -143,7 +144,7 @@ class CustomDB:
         if isinstance(entity_id, str):
             try:
                 entity_id = ObjectId(entity_id)
-            except InvalidId:
+            except bson.errors.InvalidId:
                 return ObjectId("000000000000")
         if isinstance(entity_id, ObjectId):
             return entity_id

@@ -10,12 +10,14 @@ from infrastructure.database import CustomDB
 class ScenarioPersistenceTest(TestCase):
 
     def setUp(self):
+        test_env = "DEV"
         from globalconfig import config
-        config.set_env("DEV")
+        config.set_env(test_env)
         self.repo = ScenarioRepository
         self.test_scenario = MockScenarioBuilder.build_scenario()
         self.repo.save_scenario(self.test_scenario)
         self.db = CustomDB
+        print("Test Config: {}".format(test_env))
 
     def tearDown(self):
         self.db._purge_database(collection_name="scenarios")
@@ -30,7 +32,7 @@ class ScenarioPersistenceTest(TestCase):
 
     def test_get_scenario(self):
         scenario = ScenarioFactory.create_scenario(title="test", description="test")
-        scenario_id = self.repo.save_scenario(scenario)
+        scenario_id = self.repo.save_scenario(scenario).scenario_id
         scenario = self.repo.get_scenario_by_id(scenario_id=scenario_id)
         if scenario:
             print(scenario.dict())
@@ -43,11 +45,20 @@ class ScenarioPersistenceTest(TestCase):
         self.assertIsNotNone(all_scenarios)
 
     def test_update_scenario_change_title(self):
-        inserted_id = self.test_scenario.scenario_id
         self.test_scenario.title = "Changed title!"
-        inserted_id = self.repo.save_scenario(self.test_scenario)
+        inserted_id = self.repo.save_scenario(self.test_scenario).scenario_id
         new_scenario = self.repo.get_scenario_by_id(inserted_id)
         self.assertEqual(new_scenario.title, "Changed title!")
+
+    def test_get_all_scenarios(self):
+        scenarios = ScenarioRepository.get_all_scenarios()
+        has_scenarios = False
+        for scenario in scenarios:
+            has_scenarios = True
+            print(scenario)
+            if not isinstance(scenario, Scenario):
+                self.fail()
+        self.assertTrue(has_scenarios)
 
     def test_insert_scenario_with_stories(self):
         inserted_id = self.insert_scenario_with_stories()
@@ -62,5 +73,5 @@ class ScenarioPersistenceTest(TestCase):
     def insert_scenario_with_stories(self):
         scenario = MockScenarioBuilder.build_scenario()
         print(json.dumps(scenario.dict(), indent=2))
-        inserted_id = self.repo.save_scenario(scenario)
+        inserted_id = self.repo.save_scenario(scenario).scenario_id
         return inserted_id

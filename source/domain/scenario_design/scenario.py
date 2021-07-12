@@ -54,15 +54,21 @@ class Story(BaseModel):
 
     def solve_inject(self, inject_slug, solution):
         """
+        Solves an inject with the given solution.
+        Returns the next inject, if one exists.
+
         :param solution: The solution to this inject. Can be either a string or a Transition or a number.
         :param inject_slug: The slug of the inject that has been solved.
         :return: A transition that points to the next inject. Returns None if there is no next inject.
         """
         if isinstance(solution, Transition):
-            return solution
+            return solution.to_inject
         elif not isinstance(solution, int):
             solution = int(solution)
-        if -1 < solution < len(self.transitions[inject_slug]):
+
+        if len(self.transitions[inject_slug]) == 0:
+            return None
+        elif -1 < solution < len(self.transitions[inject_slug]):
             return self.transitions[inject_slug][solution]
         else:
             raise IndexError(

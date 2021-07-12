@@ -22,7 +22,13 @@ class ScenarioRepository(Repository):
 
     @classmethod
     def get_all_scenarios(cls):
-        return cls.my_db.get_all(cls.collection_name)
+        """
+        Yield an iterator over all scenarios in the database.
+        """
+        scenario_entities = cls.my_db.get_all(cls.collection_name)
+        for entity in scenario_entities:
+            scenario = ScenarioFactory.build_scenario_from_dict(**entity)
+            yield scenario
 
     @classmethod
     def save_scenario(cls, scenario: Scenario):
@@ -36,7 +42,7 @@ class ScenarioRepository(Repository):
         if not scenario.scenario_id or scenario.scenario_id == "":
             scenario_id = cls._insert_entity(collection_name=cls.collection_name, entity=scenario_dict)
             scenario_dict.update({"scenario_id": scenario_id})
-            return ScenarioFactory.build_scenario_from_dict(scenario_dict)
+            return ScenarioFactory.build_scenario_from_dict(**scenario_dict)
         cls._update_entity(collection_name=cls.collection_name, entity=scenario_dict,
                            entity_id=scenario_id)
         return scenario

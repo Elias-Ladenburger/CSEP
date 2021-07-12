@@ -1,5 +1,3 @@
-import yaml
-
 from flask import Flask
 
 from globalconfig import config

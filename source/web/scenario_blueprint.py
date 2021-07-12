@@ -1,3 +1,4 @@
+import flask
 from flask import Blueprint, render_template, redirect, url_for
 
 from domain.scenario_design.scenario_management import ScenarioRepository, ScenarioFactory
@@ -25,14 +26,14 @@ def show_stats(scenario_id):
 
 
 @scenario_bp.route("/new")
-def add_scenario():
+def new_scenario():
     scenario = ScenarioFactory.create_scenario()
     return render_template("scenario_edit.html", scenario=scenario)
 
 
 @scenario_bp.route("/save")
 def save_scenario(**kwargs):
+    kwargs.update(flask.request.args)
     scenario = ScenarioFactory.build_scenario_from_dict(**kwargs)
     ScenarioRepository.save_scenario(scenario)
     return redirect(url_for('scenarios.show_scenarios'))
-

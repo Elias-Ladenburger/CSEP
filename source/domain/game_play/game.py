@@ -93,9 +93,9 @@ class Game:
         """
         inject = self.get_inject(inject)
         self._add_inject_history(inject, solution)
-        transition = self.current_story._solve_inject(inject, solution)
-        if transition:
-            return self._evaluate_transition(transition)
+        next_inject = self.current_story.solve_inject(inject.slug, solution)
+        if next_inject:
+            return next_inject.to_inject
         else:
             return self._begin_next_story()
 

@@ -1,12 +1,31 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="container-fluid bg-2 text-center text-white-50">
-    <div class="row align-items-center justify-content-center">
-        <h5>Scenario: {{scenario_name}}</h5>
-    </div>
-        {% block inject %}
-        {% endblock %}
-</div>
+    <div class="container-fluid text-black-50 bg-blue">
+        <div class="row justify-content-center">
+            <h2>{{ scenario.title }}</h2>
+        </div>
+        <br>
+        <ul class="nav nav-tabs justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link"
+                   href="{{ url_for('scenarios.edit_scenario', scenario_id=scenario.scenario_id) }}">Scenario
+                    Essentials</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('scenarios.view_stories', scenario_id=scenario.scenario_id) }}">Stories</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('scenarios.edit_variables', scenario_id=scenario.scenario_id) }}">Scenario
+                    Variables</a>
+            </li>
+        </ul>
+        <br>
 
+        <form action="{{ url_for('scenarios.save_scenario') }}" class="form">
+            {% block body %}
+            {% endblock %}
+            <button type="submit" class="btn">Save Scenario</button>
+        </form>
+    </div>
 {% endblock %}

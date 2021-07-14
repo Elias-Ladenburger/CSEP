@@ -29,12 +29,15 @@ class Story(BaseModel):
 
     def add_inject(self, inject: Inject):
         self.injects[str(inject.slug)] = inject
+        self.transitions[str(inject.slug)] = []
 
     def remove_inject(self, inject: Inject):
         self.injects.pop(str(inject.slug))
+        self.transitions.pop(inject.slug)
 
     def remove_inject_by_slug(self, inject_slug: str):
         self.injects.pop(inject_slug)
+        self.transitions.pop(inject_slug)
 
     def get_inject_by_slug(self, inject_slug: str):
         if inject_slug in self.injects:

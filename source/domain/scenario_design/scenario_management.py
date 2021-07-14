@@ -1,5 +1,9 @@
+import json
+from typing import List
+
 from domain.scenario_design.auxiliary import ScenarioVariable
-from domain.scenario_design.scenario import Scenario
+from domain.scenario_design.injects import Inject, Transition
+from domain.scenario_design.scenario import Scenario, Story
 from infrastructure.repository import Repository
 
 
@@ -33,7 +37,8 @@ class ScenarioRepository(Repository):
     @classmethod
     def save_scenario(cls, scenario: Scenario):
         """
-        Takes a scenario and saves it to the database.
+        Updates the database entry of an existing scenario with the same ID.
+        If the ID is not found or the scenario does not yet have an ID, the object will be inserted into the database.
         :param scenario: the scenario to be saved.
         :return: the saved scenario.
         """
@@ -48,30 +53,107 @@ class ScenarioRepository(Repository):
         return scenario
 
     @classmethod
-    def insert_placeholder(cls, scenario_dict: dict):
+    def _insert_placeholder(cls, scenario_dict: dict):
+        """Utility function. Inserts a placeholder into the database to generate a new ID."""
         return cls._insert_entity(collection_name=cls.collection_name, entity=scenario_dict)
 
 
 class ScenarioFactory:
 
     @staticmethod
-    def create_scenario(title="new scenario", description="This is a new scenario"):
-        new_scenario = Scenario(title=title, description=description)
+    def create_scenario(title="new scenario", description="This is a new scenario", **kwargs):
+        """
+        Creates a new scenario object.
+        """
+        new_scenario = Scenario(title=title, description=description, **kwargs)
         return new_scenario
 
     @staticmethod
     def build_scenario_from_dict(**scenario_data):
+        """
+        Takes any number of keywords as argument and tries to build a valid scenario object from the key-value pairs.
+        """
         scenario_id = scenario_data.pop("scenario_id", None) or scenario_data.pop("_id", None)
         title = scenario_data.pop("title", "new scenario")
         description = scenario_data.pop("description", "new scenario description")
 
-        stories = scenario_data.pop("stories", [])
+        scenario = Scenario(title=title, description=description, scenario_id=scenario_id)
+        ScenarioFactory._build_stories_from_dict(
+            stories_data=scenario_data.pop("stories", []), scenario=scenario)
+
+        return scenario
+
+    @staticmethod
+    def _build_stories_from_dict(stories_data, scenario):
+        for story_data in stories_data:
+            scenario = ScenarioFactory._build_story_from_dict(story_data, scenario)
+        return scenario
+
+    @staticmethod
+    def _build_story_from_dict(story_data, scenario):
+        injects_data = story_data.pop("injects", {})
+        transitions_data = story_data.pop("transitions", {})
+        entry_data = story_data.pop("entry_node", {})
+        entry_node = ScenarioFactory._build_inject_from_dict(entry_data)
+
+        story = Story(**story_data, entry_node=entry_node)
+        for inject_dao in injects_data:
+            inject = ScenarioFactory._build_inject_from_dict(inject_data=injects_data[inject_dao])
+            story.add_inject(inject)
+
+        for raw_transition in transitions_data:
+            transition_data = transitions_data[raw_transition]
+            for transition_dao in transition_data:
+                transition = ScenarioFactory._build_transition_from_dict(transition_data=transition_dao, story=story)
+                story.add_transition(transition)
+        scenario.add_story(story)
+        return scenario
+
+    @staticmethod
+    def _build_inject_from_dict(inject_data):
+        inject_data.pop("slug")
+        inject = Inject(**inject_data)
+        return inject
+
+    @staticmethod
+    def _build_transition_from_dict(transition_data, story):
+        transition_data["from_inject"] = story.get_inject_by_slug(transition_data["from_inject"])
+        transition_data["to_inject"] = story.get_inject_by_slug(transition_data["to_inject"])
+        transition = Transition(**transition_data)
+        return transition
+
+    @staticmethod
+    def _build_vars_from_dict(scenario_data, scenario):
         scenario_vars = scenario_data.pop("variables", {})
         var_values = scenario_data.pop("variable_values", {})
-
-        scenario = Scenario(title=title, description=description, scenario_id=scenario_id)
-        for story in stories:
-            scenario.add_story(story)
         for var_name in scenario_vars:
             scenario.add_variable(ScenarioVariable(**scenario_vars[var_name]), var_values[var_name])
         return scenario
+
+
+class ScenarioTransformer:
+    @staticmethod
+    def scenario_as_json(scenario: Scenario):
+        scenario_dict = scenario.dict()
+        return json.dumps(scenario_dict)
+
+    @staticmethod
+    def scenario_as_dict(scenario: Scenario):
+        return scenario.dict()
+
+    @staticmethod
+    def scenarios_as_json(scenarios: List[Scenario]):
+        scenario_list = []
+        for scenario in scenarios:
+            scenario_list.append(ScenarioTransformer.scenario_as_dict(scenario))
+        scenario_dict = {"scenarios": scenario_list}
+        return json.dumps(scenario_dict)
+
+    @staticmethod
+    def scenarios_as_dict(scenarios: List[Scenario]):
+        scenario_list = []
+        for scenario in scenarios:
+            scenario_list.append(ScenarioTransformer.scenario_as_dict(scenario))
+        scenarios_dict = {"scenarios": scenario_list}
+        return scenarios_dict
+

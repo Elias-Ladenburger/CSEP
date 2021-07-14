@@ -34,14 +34,14 @@ class MockScenarioBuilder:
 
     @classmethod
     def _build_chapter_1(cls, scenario):
-        intro_inject = Inject(title="Introduction",
+        intro_inject = Inject(label="Introduction",
                               text="Hello Player! In this scenario you will indulge in your dark side: "
                                    "playing through the eyes of an expert social engineer. "
                                    "Your first target is Jaffa Bezous, "
                                    "the Chief Operating Officer of a global bookstore."
                                    "What will your preparation look like?")
 
-        second_inject = Inject(title="Second Inject",
+        second_inject = Inject(label="Second Inject",
                                text="Interesting choice... "
                                     "let's see, if your preparation pays off. How will you proceed?")
 
@@ -56,8 +56,8 @@ class MockScenarioBuilder:
 
     @classmethod
     def _build_chapter_2(cls, scenario):
-        second_last_inject = Inject(title="Almost Done", text="Well done, you are almost there!")
-        last_inject = Inject(title="Finish", text="You have completed the test scenario!")
+        second_last_inject = Inject(label="Almost Done", text="Well done, you are almost there!")
+        last_inject = Inject(label="Finish", text="You have completed the test scenario!")
 
         final_transition = Transition(from_inject=second_last_inject, to_inject=last_inject,
                                       label="Walk straight ahead")
@@ -88,7 +88,7 @@ class BranchingScenarioBuilder(MockScenarioBuilder):
     def _insert_transition(scenario: Scenario, story: Story, transition_label: str):
         inject_0 = story.entry_node
         inject_1 = story.transitions[inject_0.slug][0].to_inject
-        new_inject = Inject("A different inject", "Turns out that branching scenarios work now...")
+        new_inject = Inject(label="A different inject", text="Turns out that branching scenarios work now...")
 
         budget_var = scenario.variables["Budget"]
         condition = TransitionCondition(budget_var, comparison_operator="=",

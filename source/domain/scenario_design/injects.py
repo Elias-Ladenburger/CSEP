@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import PrivateAttr
 
@@ -14,14 +14,14 @@ class InjectType(Enum):
 
 
 class Inject(GraphNode):
+    """An inject in a story."""
     text: str
     slug: str
     transitions = []
     _type = PrivateAttr(InjectType.SIMPLE)
 
-    """An inject in a story."""
-    def __init__(self, title: str, text: str, **keyword_args):
-        super().__init__(label=title, text=text, slug=title.replace(" ", "-"), **keyword_args)
+    def __init__(self, label: str, **keyword_args):
+        super().__init__(label=label, slug=label.replace(" ", "-").lower(), **keyword_args)
 
     @property
     def type(self):
@@ -67,13 +67,3 @@ class Transition(GraphEdge):
         return_dict["to_inject"] = self.to_inject.slug
         return return_dict
 
-
-class InjectFactory:
-
-    @staticmethod
-    def create_inject():
-        return Inject(title="", text="")
-
-    @staticmethod
-    def create_transition(from_inject: Inject, to_inject: Inject):
-        return Transition(from_inject=from_inject, to_inject=to_inject)

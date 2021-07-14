@@ -2,7 +2,8 @@ import json
 from unittest import TestCase
 
 from domain.game_play.mock_interface import MockScenarioBuilder
-from domain.scenario_design.scenario import Scenario
+from domain.scenario_design.injects import Inject
+from domain.scenario_design.scenario import Scenario, Story
 from domain.scenario_design.scenario_management import ScenarioRepository, ScenarioFactory
 from infrastructure.database import CustomDB
 
@@ -10,7 +11,7 @@ from infrastructure.database import CustomDB
 class ScenarioPersistenceTest(TestCase):
 
     def setUp(self):
-        test_env = "DEV"
+        test_env = "TEST"
         from globalconfig import config
         config.set_env(test_env)
         self.repo = ScenarioRepository
@@ -67,8 +68,19 @@ class ScenarioPersistenceTest(TestCase):
     def test_load_scenario(self):
         inserted_id = self.insert_scenario_with_stories()
         scenario = self.repo.get_scenario_by_id(inserted_id)
-        print(scenario.dict())
         self.assertIsInstance(scenario, Scenario)
+
+    def test_load_story(self):
+        inserted_id = self.insert_scenario_with_stories()
+        scenario = self.repo.get_scenario_by_id(inserted_id)
+        story = scenario.stories[0]
+        self.assertIsInstance(story, Story)
+
+    def test_load_inject(self):
+        inserted_id = self.insert_scenario_with_stories()
+        scenario = self.repo.get_scenario_by_id(inserted_id)
+        inject = scenario.get_inject_by_slug("introduction")
+        self.assertIsInstance(inject, Inject)
 
     def insert_scenario_with_stories(self):
         scenario = MockScenarioBuilder.build_scenario()

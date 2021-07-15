@@ -26,7 +26,7 @@ class Repository:
         return inserted_id
 
     @classmethod
-    def _delete_one(cls, collection_name: str, entity_id: int):
+    def _delete_one(cls, collection_name: str, entity_id: str):
         delete_criteria = {"_id": entity_id}
         return cls.my_db.delete_one(collection_name=collection_name, criteria=delete_criteria)
 

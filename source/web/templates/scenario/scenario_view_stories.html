@@ -2,6 +2,7 @@
 {% block body %}
 
     Here you can see all of the <b>stories</b> that currently belong to this scenario.
+    <a href="{{ url_for('scenarios.add_story', scenario_id=scenario.scenario_id) }}"/>
     <div class="row">
         <div class="col-3">
             <ul class="nav nav-tabs flex-column">

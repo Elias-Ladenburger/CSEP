@@ -160,7 +160,11 @@ class Scenario(BaseModel):
 
     def dict(self, **kwargs):
         scenario_dict = super().dict(**kwargs)
-        scenario_dict.update({"variables": self.variable_dict, "variable_values": self._variable_values})
+        scenario_dict.update({
+            "scenario_id": self.scenario_id,
+            "variables": self.variable_dict,
+            "variable_values": self._variable_values
+        })
         return scenario_dict
 
 

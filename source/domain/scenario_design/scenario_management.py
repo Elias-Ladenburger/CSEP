@@ -57,6 +57,10 @@ class ScenarioRepository(Repository):
         """Utility function. Inserts a placeholder into the database to generate a new ID."""
         return cls._insert_entity(collection_name=cls.collection_name, entity=scenario_dict)
 
+    @classmethod
+    def delete_by_id(cls, scenario_id):
+        cls._delete_one(cls.collection_name, scenario_id)
+
 
 class ScenarioFactory:
 

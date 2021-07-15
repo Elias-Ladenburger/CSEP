@@ -2,6 +2,7 @@
 {% block content %}
 
     <div class="container-fluid text-black-50 bg-blue">
+    <a class="btn-block" href="{{ url_for('scenarios.show_scenarios') }}">&ltView Scenarios</a>
         <div class="row justify-content-center">
             <h2>{{ scenario.title }}</h2>
         </div>
@@ -22,7 +23,8 @@
         </ul>
         <br>
 
-        <form action="{{ url_for('scenarios.save_scenario') }}" class="form">
+        <form action="{{ url_for('scenarios.save_scenario') }}" method="POST" class="form">
+        <input type="hidden" id="scenario_id" name="scenario_id" value="{{ scenario.scenario_id }}"/>
             {% block body %}
             {% endblock %}
             <button type="submit" class="btn">Save Scenario</button>

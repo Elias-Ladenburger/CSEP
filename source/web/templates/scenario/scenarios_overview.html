@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block content %}
+{% block main_content %}
 
     <div class="container-fluid">
         <div class="row justify-content-center">
@@ -29,7 +29,9 @@
                 <thead class="bg-blue-2">
                 <tr>
                     <th scope="col" id="scenario_name" data-sortable="true" data-field="name">Name</th>
-                    <th scope="col" id="scenario_keywords" data-field="keywords">Keywords</th>
+                    <th data-visible="false" scope="col" id="learning_objectives" data-field="learning_objectives">Learning Objectives</th>
+                    <th data-visible="false" scope="col" id="target_group" data-field="target_group">Target Group</th>
+                    <th data-visible="false" scope="col" id="required_knowledge" data-field="required_knowledge">Required Knowledge</th>
                     <th data-visible="false" data-field="description">Description</th>
                     <th scope="col" id="scenario_actions" title="actions">Actions</th>
                 </tr>
@@ -38,7 +40,9 @@
                 {% for scenario in scenarios %}
                     <tr>
                         <td>{{ scenario.title }}</td>
-                        <td>{{ scenario.keywords }}</td>
+                        <td>{{ scenario.learning_objectives }}</td>
+                        <td>{{ scenario.target_group }}</td>
+                        <td>{{ scenario.required_knowledge }}</td>
                         <td>{{ scenario.description }}</td>
                         <td>
                             <a href="{{ url_for('scenarios.edit_scenario', scenario_id=scenario.scenario_id) }}"
@@ -86,7 +90,7 @@
         function detailFormatter(index, row, element) {
             var html = []
             $.each(row, function (key, value) {
-                if (key === 'description' || key === 'keywords') {
+                if (!key.startsWith('_') && !key.startsWith('5')) {
                     html.push('<p><b>' + key + ':</b> ' + value + '</p>')
                 }
             })

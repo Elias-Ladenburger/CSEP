@@ -23,4 +23,5 @@ class AppFactory:
 
         new_app.url_map.strict_slashes = False
 
+
         return new_app

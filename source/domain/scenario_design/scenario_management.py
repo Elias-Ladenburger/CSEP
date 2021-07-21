@@ -81,9 +81,16 @@ class ScenarioFactory:
         title = scenario_data.pop("title", "new scenario")
         description = scenario_data.pop("description", "new scenario description")
 
-        scenario = Scenario(title=title, description=description, scenario_id=scenario_id)
+        stories = scenario_data.pop("stories", [])
+        scenario_vars = scenario_data.pop("variables", {})
+        var_values = scenario_data.pop("variable_values", {})
+
+        scenario = Scenario(title=title, description=description, scenario_id=scenario_id, **scenario_data)
+
         ScenarioFactory._build_stories_from_dict(
-            stories_data=scenario_data.pop("stories", []), scenario=scenario)
+            stories_data=stories, scenario=scenario)
+
+        ScenarioFactory._build_vars_from_dict(scenario_vars=scenario_vars, var_values=var_values, scenario=scenario)
 
         return scenario
 
@@ -101,8 +108,9 @@ class ScenarioFactory:
         entry_node = ScenarioFactory._build_inject_from_dict(entry_data)
 
         story = Story(**story_data, entry_node=entry_node)
-        for inject_dao in injects_data:
-            inject = ScenarioFactory._build_inject_from_dict(inject_data=injects_data[inject_dao])
+
+        for inject_data in injects_data:
+            inject = ScenarioFactory._build_inject_from_dict(inject_data=injects_data[inject_data])
             story.add_inject(inject)
 
         for raw_transition in transitions_data:
@@ -127,9 +135,7 @@ class ScenarioFactory:
         return transition
 
     @staticmethod
-    def _build_vars_from_dict(scenario_data, scenario):
-        scenario_vars = scenario_data.pop("variables", {})
-        var_values = scenario_data.pop("variable_values", {})
+    def _build_vars_from_dict(scenario_vars, var_values, scenario):
         for var_name in scenario_vars:
             scenario.add_variable(ScenarioVariable(**scenario_vars[var_name]), var_values[var_name])
         return scenario

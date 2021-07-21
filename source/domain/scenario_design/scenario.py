@@ -83,17 +83,29 @@ class Story(BaseModel):
         return story_dict
 
 
-class Scenario(BaseModel):
+class ScenarioData(BaseModel):
+    """A container for all the data of a scenario."""
+
     _id: str = PrivateAttr()
     title: str
     description: str
     stories: List[Story] = []
+
     _variables: Dict[str, ScenarioVariable] = PrivateAttr({})
     _variable_values: dict = PrivateAttr({})
 
     def __init__(self, title: str, description: str, scenario_id: str = "", **keyword_args):
         super().__init__(title=title, description=description, **keyword_args)
         self._id = scenario_id
+
+
+class Scenario(ScenarioData):
+    """
+    A scenario is a number of realistic situations that are exposed to a participant.
+    """
+    learning_objectives: Optional[str] = ""
+    required_knowledge: Optional[str] = ""
+    target_group: Optional[str]
 
     @property
     def scenario_id(self):
@@ -111,7 +123,7 @@ class Scenario(BaseModel):
     def variable_dict(self):
         var_dict = {}
         for var in self._variables:
-            var_dict[var] = self._variables[var].dict()
+            var_dict[var.name] = self._variables[var].dict()
         return var_dict
 
     def add_story(self, story: Story):

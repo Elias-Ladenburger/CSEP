@@ -1,23 +1,5 @@
 {% extends 'base_scenario.html' %}
-{% block body %}
+{% block details_title %}
 
-    Here you can see all of the <b>stories</b> that currently belong to this scenario.
-    <a href="{{ url_for('scenarios.add_story', scenario_id=scenario.scenario_id) }}"/>
-    <div class="row">
-        <div class="col-3">
-            <ul class="nav nav-tabs flex-column">
-                {% for story in scenario.stories %}
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           href="{{ url_for('scenarios.edit_story', scenario_id=scenario.scenario_id, story_id=loop.index - 1) }}">
-                            {{ story.title }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="col-7">
-            {% block injects %}
-            {% endblock %}
-        </div>
-    </div>
+
 {% endblock %}

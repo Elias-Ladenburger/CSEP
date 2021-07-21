@@ -149,6 +149,11 @@ label {
   display:block;
 }
 
-disclaimer {
+.disclaimer {
   font-size: 12px;
+}
+
+.badge-tag {
+  background-color: var(--blue-space-cadet);
+  color: var(--light-gray)
 }

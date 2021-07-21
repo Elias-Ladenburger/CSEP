@@ -2,7 +2,7 @@ import json
 from typing import List
 
 from domain.scenario_design.auxiliary import ScenarioVariable
-from domain.scenario_design.injects import Inject, Transition
+from domain.scenario_design.injects import Inject, Choice
 from domain.scenario_design.scenario import Scenario, Story
 from infrastructure.repository import Repository
 
@@ -123,7 +123,7 @@ class ScenarioFactory:
     def _build_transition_from_dict(transition_data, story):
         transition_data["from_inject"] = story.get_inject_by_slug(transition_data["from_inject"])
         transition_data["to_inject"] = story.get_inject_by_slug(transition_data["to_inject"])
-        transition = Transition(**transition_data)
+        transition = Choice(**transition_data)
         return transition
 
     @staticmethod

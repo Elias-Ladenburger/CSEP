@@ -64,7 +64,7 @@
                     text: 'Create scenario',
                     icon: 'fas fa-plus-square',
                     event: function () {
-                        window.location = "{{ url_for('scenarios.new_scenario', scenario_id=scenario.scenario_id) }}";
+                        window.location = "{{ url_for('scenarios.new_scenario') }}";
                     },
                     attributes: {
                         title: 'Add a new scenario'

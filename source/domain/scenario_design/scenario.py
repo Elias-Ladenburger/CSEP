@@ -3,7 +3,7 @@ from typing import Optional, Dict, List
 from pydantic import BaseModel, PrivateAttr
 
 from domain.scenario_design.auxiliary import ScenarioVariable
-from domain.scenario_design.injects import Inject, Transition
+from domain.scenario_design.injects import Inject, Choice
 
 
 class Story(BaseModel):
@@ -11,7 +11,7 @@ class Story(BaseModel):
     title: str
     entry_node: Inject
     injects: Optional[Dict[str, Inject]] = {}
-    transitions: Optional[Dict[str, List[Transition]]] = {}
+    transitions: Optional[Dict[str, List[Choice]]] = {}
 
     def __init__(self, title: str, entry_node: Inject, **keyword_args):
         super().__init__(title=title, entry_node=entry_node, **keyword_args)
@@ -45,12 +45,12 @@ class Story(BaseModel):
             return inject
         return None
 
-    def add_transition(self, new_transition: Transition):
+    def add_transition(self, new_transition: Choice):
         source = new_transition.from_inject
         if source.slug in self.injects:
             self.transitions[source.slug].append(new_transition)
 
-    def remove_transition(self, transition: Transition):
+    def remove_transition(self, transition: Choice):
         source = transition.from_inject
         if source in self.injects:
             self.injects[source.slug].transitions.remove(transition)
@@ -64,7 +64,7 @@ class Story(BaseModel):
         :param inject_slug: The slug of the inject that has been solved.
         :return: A transition that points to the next inject. Returns None if there is no next inject.
         """
-        if isinstance(solution, Transition):
+        if isinstance(solution, Choice):
             return solution.to_inject
         elif not isinstance(solution, int):
             solution = int(solution)

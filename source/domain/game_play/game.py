@@ -3,7 +3,7 @@ from datetime import datetime
 from enum import Enum
 
 from domain.scenario_design.auxiliary import DataType
-from domain.scenario_design.injects import Inject, Transition
+from domain.scenario_design.injects import Inject, Choice
 from domain.scenario_design.scenario import Scenario, ScenarioVariable
 from infrastructure.database import CustomDB
 
@@ -117,12 +117,12 @@ class Game:
             return self._solve_transition_index(solution)
         elif isinstance(solution, str):
             return self._solve_transition_str(solution)
-        elif isinstance(solution, Transition):
+        elif isinstance(solution, Choice):
             return self._solve_transitions_object(solution)
         else:
             raise ValueError("The provided solution has an invalid format. Must be of type 'int' or 'Transition'!")
 
-    def _evaluate_transition(self, transition: Transition):
+    def _evaluate_transition(self, transition: Choice):
         """Evaluate the conditions and variable changes of a given transition.
 
         :param transition: the Transition to evaluate.

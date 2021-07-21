@@ -42,8 +42,9 @@ class Inject(GraphNode):
         return return_str
 
 
-class Transition(GraphEdge):
-    """A transition can be understood as a weighted, directed Edge pointing from one Inject to another."""
+class Choice(GraphEdge):
+    """A choice is a decision made in a scenario,
+    that may change the course of the story or change the variables of the scenario."""
     condition: Optional[TransitionCondition] = None
     effects: Optional[TransitionEffect] = None
 

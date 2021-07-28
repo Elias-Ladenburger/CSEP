@@ -101,9 +101,3 @@ def show_stats(scenario_id):
     scenario = ScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
     return render_template("scenario_stats.html", scenarios=[scenario])
 
-
-@scenario_bp.route("/<scenario_id>/stories/add")
-def add_story(scenario_id):
-    scenario = ScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
-    story_form = StoryForm()
-    return render_template("form_test.html", scenario=scenario, form=story_form)

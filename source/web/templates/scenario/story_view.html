@@ -8,9 +8,8 @@
 {% block details_content %}
     Here you can see all of the <b>stories</b> that currently belong to this scenario.
     <hr/>
-    <a data-toggle="modal" data-target="#exampleModal" class="btn">
-        <i class="fas fa-plus-square"></i> Add Story
-    </a>
+    <a data-toggle="modal" data-target="#storyModal" class="btn">
+        <i class="fas fa-plus-square"></i> Add Story</a>
     <div class="row">
         <div class="col-3">
             <ul class="nav nav-tabs flex-column">
@@ -29,25 +28,24 @@
         </div>
     </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="storyModal" tabindex="-1" role="dialog" aria-labelledby="storyModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">New Story</h5>
+                    <h5 class="modal-title" id="storyModalLabel">New Story</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-wrapper">
-                        <form method="POST" action="{{ url_for('scenarios.add_story', scenario_id=scenario_id) }}">
+                        <form method="POST" action="{{ url_for('scenarios.insert_story', scenario_id=scenario_id) }}">
                             <fieldset class="form-field">
                                 {{ render_field(scenario_form.story_form.story_title) }}
                             </fieldset>
                             <button type="submit" class="btn" name="submit-add-story">
-                                <i class="fas fa-save"></i>Add Story
-                            </button>
+                                <i class="fas fa-save"></i>Add Story</button>
                         </form>
                     </div>
                 </div>

@@ -9,6 +9,7 @@ from infrastructure.repository import Repository
 
 class ScenarioRepository(Repository):
     collection_name = "scenarios"
+    story_collection_name = "stories"
 
     @classmethod
     def get_scenario_by_id(cls, scenario_id: str):
@@ -19,6 +20,11 @@ class ScenarioRepository(Repository):
         except AttributeError as attre:
             print(attre)
             return None
+
+    @classmethod
+    def get_scenario_stories(cls, scenario_id: str):
+        # TODO: implement getting scenario stories
+        stories = cls.get_all(collection_name=cls.story_collection_name, )
 
     @classmethod
     def get_scenarios_by_target_group(cls, target_group: str):
@@ -44,13 +50,24 @@ class ScenarioRepository(Repository):
         """
         scenario_dict = scenario.dict()
         scenario_id = scenario_dict.pop("scenario_id", None)
+        story_dict = scenario_dict.pop("stories")
         if not scenario.scenario_id or scenario.scenario_id == "":
             scenario_id = cls._insert_entity(collection_name=cls.collection_name, entity=scenario_dict)
             scenario_dict.update({"scenario_id": scenario_id})
             return ScenarioFactory.build_scenario_from_dict(**scenario_dict)
         cls._update_entity(collection_name=cls.collection_name, entity=scenario_dict,
                            entity_id=scenario_id)
+        cls._update_stories(stories_as_dict=story_dict, scenario_id=scenario_id)
         return scenario
+
+    @classmethod
+    def _update_stories(cls, stories_as_dict: dict, scenario_id):
+        for story_dict in stories_as_dict:
+            story_id = story_dict.pop("_id")
+            story_dict["scenario_id"] = scenario_id
+            cls._update_entity(collection_name="stories", entity=story_dict,
+                               entity_id=story_id)
+        return
 
     @classmethod
     def _insert_placeholder(cls, scenario_dict: dict):
@@ -69,7 +86,7 @@ class ScenarioFactory:
         """
         Creates a new scenario object.
         """
-        new_scenario = Scenario(title=title, description=description, **kwargs)
+        new_scenario = Scenario(title=title, scenario_description=description, **kwargs)
         return new_scenario
 
     @staticmethod
@@ -79,13 +96,13 @@ class ScenarioFactory:
         """
         scenario_id = scenario_data.pop("scenario_id", None) or scenario_data.pop("_id", None)
         title = scenario_data.pop("title", "new scenario")
-        description = scenario_data.pop("description", "new scenario description")
+        description = scenario_data.pop("scenario_description", None) or scenario_data.pop("description")
 
         stories = scenario_data.pop("stories", [])
         scenario_vars = scenario_data.pop("variables", {})
         var_values = scenario_data.pop("variable_values", {})
 
-        scenario = Scenario(title=title, description=description, scenario_id=scenario_id, **scenario_data)
+        scenario = Scenario(title=title, scenario_description=description, scenario_id=scenario_id, **scenario_data)
 
         ScenarioFactory._build_stories_from_dict(
             stories_data=stories, scenario=scenario)

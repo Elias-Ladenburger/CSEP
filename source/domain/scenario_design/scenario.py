@@ -12,11 +12,12 @@ class Story(BaseModel):
     entry_node: Inject
     injects: Optional[Dict[str, Inject]] = {}
     transitions: Optional[Dict[str, List[Choice]]] = {}
+    story_id: Optional[str]
 
     def __init__(self, title: str, entry_node: Inject, **keyword_args):
         super().__init__(title=title, entry_node=entry_node, **keyword_args)
 
-    def add_injects(self, injects):
+    def add_injects(self, injects: List[Inject]):
         self.injects[self.entry_node.slug] = self.entry_node
         for inject in injects:
             self.injects[inject.slug] = inject
@@ -88,15 +89,19 @@ class ScenarioData(BaseModel):
 
     _id: str = PrivateAttr()
     title: str
-    description: str
+    scenario_description: str
     stories: List[Story] = []
 
     _variables: Dict[str, ScenarioVariable] = PrivateAttr({})
     _variable_values: dict = PrivateAttr({})
 
-    def __init__(self, title: str, description: str, scenario_id: str = "", **keyword_args):
-        super().__init__(title=title, description=description, **keyword_args)
+    def __init__(self, title: str, scenario_description: str, scenario_id: str = "", **keyword_args):
+        super().__init__(title=title, scenario_description=scenario_description, **keyword_args)
         self._id = scenario_id
+
+    @property
+    def scenario_id(self):
+        return self._id
 
 
 class Scenario(ScenarioData):
@@ -107,9 +112,9 @@ class Scenario(ScenarioData):
     required_knowledge: Optional[str] = ""
     target_group: Optional[str]
 
-    @property
-    def scenario_id(self):
-        return str(self._id)
+    def __init__(self, title: str, scenario_description: str, scenario_id: str = "", **keyword_args):
+        super().__init__(title=title, scenario_description=scenario_description,
+                         scenario_id=scenario_id, **keyword_args)
 
     @property
     def variables(self):
@@ -123,7 +128,7 @@ class Scenario(ScenarioData):
     def variable_dict(self):
         var_dict = {}
         for var in self._variables:
-            var_dict[var.name] = self._variables[var].dict()
+            var_dict[var] = self._variables[var].dict()
         return var_dict
 
     def add_story(self, story: Story):

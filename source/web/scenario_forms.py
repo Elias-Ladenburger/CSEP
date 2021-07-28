@@ -1,10 +1,14 @@
+from typing import List
+
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField
 from markupsafe import Markup
-from wtforms import StringField, SubmitField, FormField, TextAreaField
+from wtforms import StringField, SubmitField, FormField, TextAreaField, FieldList
 from wtforms.validators import DataRequired, Optional
 from wtforms.widgets import HiddenInput
 
-from domain.scenario_design.scenario import Scenario
+from domain.scenario_design.auxiliary import ScenarioVariable
+from domain.scenario_design.scenario import Scenario, Story
 
 
 class CustomForm(FlaskForm):
@@ -23,29 +27,29 @@ class ScenarioEssentialsForm(CustomForm):
                         render_kw={"data-toggle": "tooltip",
                                    "title": "A descriptive name of the scenario!"})
     scenario_description = TextAreaField(Markup('Description <i class="fas fa-info-circle" '
-                                         'data-toggle="tooltip" '
-                                         'title="A short description of your scenario '
-                                         'so that participants know what to expect!"></i>'),
+                                                'data-toggle="tooltip" '
+                                                'title="A short description of your scenario '
+                                                'so that participants know what to expect!"></i>'),
                                          validators=[DataRequired("Please provide a description for your scenario")],
                                          render_kw={"id": "description",
                                                     "type": "text"})
 
     learning_objectives = TextAreaField(Markup('Learning Objectives <i class="fas fa-info-circle" '
-                                         'data-toggle="tooltip" '
-                                         'title="What do you want participants to learn from this scenario?"></i>'),
+                                               'data-toggle="tooltip" '
+                                               'title="What do you want participants to learn from this scenario?"></i>'),
                                         render_kw={"data-role": "tags-input",
                                                    "type": "text"})
 
     target_group = TextAreaField(Markup('Target Group '
                                         '<i class="fas fa-info-circle" '
-                                         'data-toggle="tooltip" '
-                                         'title="Who is this scenario suitable for?"></i>'),
+                                        'data-toggle="tooltip" '
+                                        'title="Who is this scenario suitable for?"></i>'),
                                  render_kw={"data-role": "tags-input"})
 
     required_knowledge = TextAreaField(Markup('Required Knowledge '
-                                        '<i class="fas fa-info-circle" '
-                                         'data-toggle="tooltip" '
-                                         'title="What skills do participants need to have '
+                                              '<i class="fas fa-info-circle" '
+                                              'data-toggle="tooltip" '
+                                              'title="What skills do participants need to have '
                                               'before starting this scenario?"></i>'),
                                        render_kw={"data-role": "tags-input"})
 
@@ -65,12 +69,16 @@ class ScenarioEssentialsForm(CustomForm):
 
 
 class InjectForm(CustomForm):
-    pass
+    label = StringField("Title", validators=[DataRequired()])
+    text = TextAreaField(Markup("Inject Text <i class='fas fa-info-circle' "
+                                "data-toggle='tooltip' title='What exactly does this inject say?'></i>"),
+                         validators=[DataRequired()])
+    image = FileField("Image", validators=[Optional()])
 
 
 class StoryForm(CustomForm):
     story_title = StringField("Title", validators=[DataRequired()], render_kw={})
-    inject_form = FormField(InjectForm)
+    inject_form = FieldList(FormField(InjectForm), min_entries=1)
     save_button = SubmitField("Save")
 
 
@@ -80,13 +88,17 @@ class ScenarioVariableForm(CustomForm):
 
 class ScenarioForm(CustomForm):
     essentials_form = FormField(ScenarioEssentialsForm)
-    story_form = FormField(StoryForm)
-    variables_form = FormField(ScenarioVariableForm)
+    stories_form = FieldList(FormField(StoryForm))
+    variables_form = FieldList(FormField(ScenarioVariableForm))
 
-    def __init__(self, scenario=None, **kwargs):
+    def __init__(self, scenario=None, stories: List[Story] = None, variables: List[ScenarioVariable] = None, **kwargs):
         super().__init__(**kwargs)
         if isinstance(scenario, Scenario):
             self.essentials_form.form.populate_from_dict(scenario.dict())
+        if stories:
+            if isinstance(stories[0], Story):
+                for story in stories:
+                    self.stories_form.populate_from_dict(stories)
 
 
 class Form2ScenarioConverter:

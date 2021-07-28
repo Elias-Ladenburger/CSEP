@@ -2,10 +2,9 @@ import copy
 from datetime import datetime
 from enum import Enum
 
-from domain.scenario_design.auxiliary import DataType
-from domain.scenario_design.injects import Inject, Choice
+from domain.scenario_design.auxiliary import VariableChange
+from domain.scenario_design.injects import Inject
 from domain.scenario_design.scenario import Scenario, ScenarioVariable
-from infrastructure.database import CustomDB
 
 
 class GameState(Enum):
@@ -24,7 +23,6 @@ class Game:
 
         self.current_story_index = 0
         self.variables = copy.deepcopy(scenario.variables)
-        self.variable_values = copy.deepcopy(scenario.variable_values)
         self._history = []
 
     @property
@@ -53,7 +51,7 @@ class Game:
 
     def set_game_variable(self, var: ScenarioVariable, new_value):
         if var.is_value_legal(new_value):
-            self.variable_values[var.name] = new_value
+            self.variables[var.name].update_value(new_value)
         else:
             raise TypeError("The new value does not match the datatype of this variable!")
 
@@ -93,49 +91,28 @@ class Game:
         """
         inject = self.get_inject(inject)
         self._add_inject_history(inject, solution)
-        next_inject = self.current_story.solve_inject(inject.slug, solution)
-        if next_inject:
-            return next_inject.to_inject
-        else:
-            return self._begin_next_story()
+        inject_result = self.current_story.solve_inject(inject.slug, solution)
+        for var_change in inject_result.variable_changes:
+            self._evaluate_change(var_change)
+        return self._evaluate_next_inject(inject_result.next_inject)
 
     def _add_inject_history(self, inject, solution):
         history = {"inject_slug": inject.slug, "end_time": datetime.now(), "solution": solution}
         self._history.append(history)
 
-    def _solve_inject(self, solution):
-        """
-        :param solution: The solution to this inject. Can be either a string or a Transition or a number.
-        :return: A transition that points to the next inject. Returns None if there is no next inject.
-        """
-        solution = self._parse_solution(solution)
-        if not self.transitions:
-            return None
-        elif len(self.transitions) == 1:
-            return self.transitions[0]
-        elif isinstance(solution, int):
-            return self._solve_transition_index(solution)
-        elif isinstance(solution, str):
-            return self._solve_transition_str(solution)
-        elif isinstance(solution, Choice):
-            return self._solve_transitions_object(solution)
-        else:
-            raise ValueError("The provided solution has an invalid format. Must be of type 'int' or 'Transition'!")
-
-    def _evaluate_transition(self, transition: Choice):
+    def _evaluate_change(self, change: VariableChange):
         """Evaluate the conditions and variable changes of a given transition.
 
-        :param transition: the Transition to evaluate.
+        :param change: the Transition to evaluate.
         :return: The Inject which this transition points to.
         """
-        if transition.effects:
-            for effect in transition.effects:
-                old_value = self.variables[effect.var]
-                self.variables[effect.var] = effect.get_new_value(old_value)
-        if transition.condition:
-            if transition.condition.evaluate_condition(self.variables, self.variable_values):
-                return transition.alternative_inject
-        return transition.to_inject
+        var_name = change.var.name
+        self.variables[var_name].update_value(change)
+
+    def _evaluate_next_inject(self, inject: Inject):
+        if not inject:
+            return self._begin_next_story()
+        inject.condition.evaluate_condition(self.variables)
 
     def _begin_next_story(self):
         self.current_story_index += 1

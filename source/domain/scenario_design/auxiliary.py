@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import operator
 from enum import Enum
 from typing import Any
@@ -16,6 +18,19 @@ class ScenarioVariable(BaseModel):
     name: str
     datatype: DataType
     is_private: bool = False
+    _value: str
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, new_value):
+        if self.is_value_legal(new_value):
+            self._value = new_value
+
+    def update_value(self, change: VariableChange):
+        self._value = change.get_new_value(self._value)
 
     def is_value_legal(self, value):
         if self.datatype == DataType.TEXT:
@@ -32,7 +47,7 @@ class ScenarioVariable(BaseModel):
 
     def __eq__(self, other):
         if isinstance(other, ScenarioVariable):
-            return self.name == other.name
+            return self.name == other.name and self.datatype == other.datatype
 
     def dict(self, **kwargs):
         var_dict = super().dict(**kwargs)
@@ -73,12 +88,11 @@ class LegalOperator:
                              "Expected one of " + ",".join(legal_operators.keys()) + "!")
 
 
-class TransitionEffect(BaseModel):
-    var: ScenarioVariable
-    new_value: Any
-    operator: str
-
+class VariableChange(BaseModel):
     """Represents a change of the value of a game's variables."""
+    var: ScenarioVariable
+    _new_value: Any
+    operator: str
 
     def __init__(self, var: ScenarioVariable, new_value, value_operator: str, **keyword_args):
         """
@@ -87,7 +101,7 @@ class TransitionEffect(BaseModel):
         :param value_operator: the operation to change the value. Can be one of '+', '-', '/', '*' and 'set'.
         """
         super().__init__(var=var, new_value=new_value, value_operator=value_operator, **keyword_args)
-        self.new_var = self._parse_new_value(var, new_value)
+        self._new_value = self._parse_new_value(var, new_value)
 
     def get_new_value(self, old_value):
         """
@@ -95,10 +109,10 @@ class TransitionEffect(BaseModel):
         :return: The new value of the variable.
         """
         if self.operator == "set":
-            return self.new_var
+            return self._new_value
         else:
             operator_method = LegalOperator.get_manipulation_operator(self.operator)
-            return operator_method(old_value, self.new_var)
+            return operator_method(old_value, self._new_value)
 
     @staticmethod
     def _parse_new_value(var, new_value):
@@ -106,78 +120,3 @@ class TransitionEffect(BaseModel):
             return new_value
         else:
             raise ValueError("This variable cannot have a value of this type!")
-
-
-class TransitionCondition(BaseModel):
-    """
-    A transition may have a condition which, if met, leads to another inject or a different outcome.
-    """
-    variable: ScenarioVariable
-    comparison_operator: str
-    variable_threshold: str
-    alternative_inject: Any
-
-    def __init__(self, variable: ScenarioVariable, comparison_operator, variable_threshold,
-                 alternative_inject: Any, **keyword_args):
-        super().__init__(variable=variable, comparison_operator=comparison_operator,
-                         variable_threshold=variable_threshold, alternative_inject=alternative_inject, **keyword_args)
-        if variable.is_value_legal(variable_threshold):
-            self.variable_threshold = variable_threshold
-        else:
-            raise ValueError("The threshold is not a valid value for the data type of this variable!")
-
-    def evaluate_condition(self, game_variables, variable_values):
-        if self.variable not in game_variables:
-            raise ValueError("This variable is not in the game's variables. Cannot evaluate condition!")
-        else:
-            current_value = variable_values[self.variable.name]
-            operator_method = LegalOperator.get_comparison_operator(self.comparison_operator)
-            return operator_method(current_value, self.variable_threshold)
-
-
-class SolutionHandler:
-    @staticmethod
-    def solve_inject(solution, transitions):
-        solution = SolutionHandler._parse_solution(solution)
-        if not transitions:
-            return None
-        elif len(transitions) == 1:
-            return transitions[0]
-        elif isinstance(solution, int):
-            return SolutionHandler._solve_transition_index(solution, transitions)
-        elif isinstance(solution, str):
-            return SolutionHandler._solve_transition_str(solution, transitions)
-        else:
-            raise ValueError("The provided solution has an invalid format. Must be of type 'int' or 'Transition'!")
-
-    @staticmethod
-    def _parse_solution(solution):
-        """
-        Takes the solution that a user has provided for an inject.
-        :param solution: the solution provided by the user.
-
-        :return: an index for a transition
-        """
-        if isinstance(solution, int):
-            return solution
-        elif isinstance(solution, str):
-            if solution.isnumeric():
-                return int(solution)
-        else:
-            raise TypeError("Solution for choice injects must be of type int!")
-
-    @staticmethod
-    def _solve_transition_index(solution):
-        """
-        Takes the solution that a user has provided for an inject.
-        :param solution: the solution provided by the user.
-
-        :return: an index for a transition
-        """
-        if isinstance(solution, int):
-            return solution
-        elif isinstance(solution, str):
-            if solution.isnumeric():
-                return int(solution)
-        else:
-            raise TypeError("Solution for choice injects must be of type int!")

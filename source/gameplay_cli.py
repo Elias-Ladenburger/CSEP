@@ -30,9 +30,9 @@ class MockPlayer:
         print(inject.label)
         print(inject.text)
 
-        if inject.transitions:
-            for i in range(0, len(inject.transitions)):
-                print(str(i) + ": " + inject.transitions[i].label)
+        if inject.has_choices:
+            for i in range(0, len(inject.choices)):
+                print(str(i) + ": " + inject.choices[i].label)
         else:
             print("0: Continue")
 

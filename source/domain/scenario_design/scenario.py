@@ -3,7 +3,7 @@ from typing import Optional, Dict, List
 from pydantic import BaseModel, PrivateAttr
 
 from domain.scenario_design.auxiliary import ScenarioVariable
-from domain.scenario_design.injects import Inject, Choice
+from domain.scenario_design.injects import Inject, InjectChoice
 
 
 class Story(BaseModel):
@@ -11,7 +11,7 @@ class Story(BaseModel):
     title: str
     entry_node: Inject
     injects: Optional[Dict[str, Inject]] = {}
-    transitions: Optional[Dict[str, List[Choice]]] = {}
+    transitions: Optional[Dict[str, List[InjectChoice]]] = {}
     story_id: Optional[str]
 
     def __init__(self, title: str, entry_node: Inject, **keyword_args):
@@ -46,17 +46,7 @@ class Story(BaseModel):
             return inject
         return None
 
-    def add_transition(self, new_transition: Choice):
-        source = new_transition.from_inject
-        if source.slug in self.injects:
-            self.transitions[source.slug].append(new_transition)
-
-    def remove_transition(self, transition: Choice):
-        source = transition.from_inject
-        if source in self.injects:
-            self.injects[source.slug].transitions.remove(transition)
-
-    def solve_inject(self, inject_slug, solution):
+    def solve_inject(self, inject_slug: str, solution):
         """
         Solves an inject with the given solution.
         Returns the next inject, if one exists.
@@ -65,19 +55,8 @@ class Story(BaseModel):
         :param inject_slug: The slug of the inject that has been solved.
         :return: A transition that points to the next inject. Returns None if there is no next inject.
         """
-        if isinstance(solution, Choice):
-            return solution.to_inject
-        elif not isinstance(solution, int):
-            solution = int(solution)
-
-        if len(self.transitions[inject_slug]) == 0:
-            return None
-        elif -1 < solution < len(self.transitions[inject_slug]):
-            return self.transitions[inject_slug][solution]
-        else:
-            raise IndexError(
-                "A transition at index {} was selected, but this inject only has {} transitions"
-                .format(solution, len(self.transitions[inject_slug])))
+        inject = self.get_inject_by_slug(inject_slug=inject_slug)
+        return inject.solve(solution)
 
     def dict(self, **kwargs):
         story_dict = super().dict(**kwargs)

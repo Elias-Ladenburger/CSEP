@@ -2,8 +2,9 @@ SECRET_KEY: "This is an INSECURE secret!! DO NOT use this in production!!"
 FLASK_ENV: development
 TESTING: True
 
-STATIC_FOLDER: static
-TEMPLATES_FOLDER: templates
+STATIC_FOLDER: "static"
+TEMPLATES_FOLDER: "templates"
+UPLOAD_FOLDER: "static/assets/uploads"
 
 USER_APP_NAME: "CSEP app"
 USER_ENABLE_EMAIL: "False"

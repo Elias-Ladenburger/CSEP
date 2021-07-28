@@ -1,6 +1,6 @@
 from behave import given, when, then, step, use_step_matcher
 
-from domain.scenario_design.injects import Inject, Choice
+from domain.scenario_design.injects import Inject, InjectChoice
 
 use_step_matcher('parse')
 
@@ -13,7 +13,7 @@ def source_inject(context, source_title):
 @given(u'a choice to go to one {target_title}')
 def target_inject(context, target_title):
     context.target_inject = Inject(title=target_title, text="This is the target inject")
-    target_transition = Choice(from_inject=context.source_inject, to_inject=context.target_inject)
+    target_transition = InjectChoice(from_inject=context.source_inject, to_inject=context.target_inject)
     context.source_inject.add_transition(target_transition)
     return target_inject
 

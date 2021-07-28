@@ -1,0 +1,72 @@
+{% extends "scenario_details.html" %}
+{% from 'helpers/_form_helpers.html' import render_field %}
+
+{% block details_summary %}
+    Stories
+{% endblock %}
+
+{% block details_content %}
+    Here you can see all of the <b>stories</b> that currently belong to this scenario.
+    <hr/>
+
+    <ol id="accordion" class="sortable-list">
+        <li class="card" draggable="true">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <href class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false"
+                          aria-controls="collapseOne">
+                        First Chapter
+                    </href>
+                </h5>
+            </div>
+
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body">
+                    {{ render_field(scenario_form.stories_form[0].inject_form[0].title) }}
+                    {{ render_field(scenario_form.stories_form[0].inject_form[0].text) }}
+                    {{ render_field(scenario_form.stories_form[0].inject_form[0].image) }}
+                </div>
+            </div>
+        </li>
+
+        <div class="card" draggable="true">
+            <div class="card-header" id="headingTwo">
+                <h5 class="mb-0">
+                    <href class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false"
+                          aria-controls="collapseTwo">
+                        Second Chapter
+                    </href>
+                </h5>
+            </div>
+
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                <div class="card-body">
+                    This is where my story goes
+                </div>
+            </div>
+        </div>
+
+
+        {% for story in scenario.stories %}
+            <li class="card sortable" draggable="true">
+                <div class="card-header" id="heading-{{ story.story_id }}">
+                    <h5 class="mb-0">
+                        <href class="btn btn-link" data-toggle="collapse" data-target="#collapse-{{ story.story_id }}"
+                              aria-expanded="false"
+                              aria-controls="collapseOne">
+                            First Chapter
+                        </href>
+                    </h5>
+                </div>
+
+                <div id="collapse-{{ story.story_id }}" class="collapse" aria-labelledby="heading-{{ story.story_id }}"
+                     data-parent="#accordion">
+                    <div class="card-body">
+                        This is where my story goes
+                    </div>
+                </div>
+            </li>
+            </ol>
+        {% endfor %}
+    <br>
+{% endblock %}

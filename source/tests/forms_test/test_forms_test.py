@@ -26,8 +26,18 @@ class ScenarioPersistenceTest(TestCase):
             print(my_form)
 
     def test_hidden(self):
-        my_form = ScenarioForm()
-        my_form.essentials_form.scenario_id
+        with self.app.test_request_context():
+            my_form = ScenarioForm()
+            hidden_field = my_form.essentials_form.scenario_id
+            print(hidden_field)
+            self.assertTrue('type="hidden"' in str(hidden_field))
+
+    def test_subforms(self):
+        with self.app.test_request_context():
+            my_form = ScenarioForm()
+            my_form.stories_form.append_entry({})
+            for story in my_form.stories_form:
+                print(story.inject_form())
 
     def _prepare_scenario(self):
         demo_scenario = MockScenarioBuilder.build_scenario()

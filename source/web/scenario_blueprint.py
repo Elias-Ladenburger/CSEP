@@ -43,11 +43,12 @@ def save_scenario(**kwargs):
 
         scenario = ScenarioFactory.build_scenario_from_dict(**scenario_dict)
         scenario = ScenarioRepository.save_scenario(scenario)
-        flash("Scenario saved successfully!")
+        flash("Scenario saved successfully!", category="success")
         return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario.scenario_id))
     else:
-        print(scenario_form.errors)
-    return show_scenarios()
+        flash("Something went wrong!", category="failure")
+        redirect(flask.request.referrer)
+    return redirect(flask.request.referrer)
 
 
 @scenario_bp.route("/delete", methods=["DELETE"])

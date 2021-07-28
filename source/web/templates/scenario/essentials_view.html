@@ -1,4 +1,5 @@
 {% extends "scenario_details.html" %}
+{% from 'helpers/_form_helpers.html' import render_field %}
 
 {% block attributes %}open{% endblock %}
 
@@ -7,33 +8,19 @@
 {% block details_content %}
     <div class="row">
         <div class="col">
-            <div class="form-group">
-                <label for="title">title</label>
-                <input class="form-control" type="text" id="title" name="title"
-                       placeholder="new scenario" value="{{ scenario.title }}">
-            </div>
-            <div class="form-group">
-                <label for="description">description</label>
-                <textarea class="form-control" type="text" id="description" name="description"
-                          placeholder="this is a new scenario">{{ scenario.description }}</textarea>
-            </div>
+            {{ scenario_form.essentials_form.csrf_token() }}
+            {{ scenario_form.essentials_form.scenario_id }}
+
+            {{ render_field(scenario_form.essentials_form.title, class="form-control") }}
+
+            {{ render_field(scenario_form.essentials_form.scenario_description, class="form-control") }}
+
+            {{ render_field(scenario_form.essentials_form.learning_objectives, class="form-control") }}
         </div>
         <div class="col">
-            <div class="form-group">
-                <label for="learning-objectives">learning objectives</label>
-                <input  data-role="tags-input" class="form-control" type="text" id="learning-objectives" name="learning_objectives"
-                       placeholder="These are scenario learning objectives" value="{{ scenario.learning_objectives if scenario.learning_objectives is not none }}"/>
-            </div>
-            <div class="form-group">
-                <label for="target-group">target group</label>
-                <input data-role="tags-input" class="form-control" type="text" id="target-group" name="target_group"
-                          placeholder="Describe the target group of the scenario" value="{{ scenario.target_group if scenario.target_group is not none }}"/>
-            </div>
-            <div class="form-group">
-                <label for="required-knowledge">Required Knowledge</label>
-                <input data-role="tags-input" class="form-control" type="text" id="required-knowledge" name="required_knowledge"
-                          placeholder="The required knowledge for the scenario" value="{{ scenario.required_knowledge if scenario.required_knowledge is not none }}"/>
-            </div>
+            {{ render_field(scenario_form.essentials_form.target_group, class="form-control") }}
+
+            {{ render_field(scenario_form.essentials_form.required_knowledge, class="form-control") }}
         </div>
     </div>
 

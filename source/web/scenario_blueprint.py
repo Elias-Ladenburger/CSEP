@@ -1,8 +1,10 @@
 import flask
 from flask import Blueprint, render_template, redirect, url_for, flash
 
-from domain.scenario_design.scenario import Story
+from domain.scenario_design.scenario import Story, Scenario
 from domain.scenario_design.scenario_management import ScenarioRepository, ScenarioFactory
+from web.scenario_forms import *
+from web.scenario_forms import ScenarioForm
 
 scenario_bp = Blueprint('scenarios', __name__,
                         template_folder='templates/scenario', url_prefix="/scenarios")
@@ -15,32 +17,45 @@ def show_scenarios():
     return render_template("scenarios_overview.html", scenarios=scenarios)
 
 
-@scenario_bp.route("/<scenario_id>/edit")
+@scenario_bp.route("/<scenario_id>/edit", methods=["GET", "POST"])
 def edit_scenario(scenario_id):
     scenario = ScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
-    return render_template("scenario_edit.html", scenario=scenario)
+    return edit_scenario_view(scenario=scenario)
 
 
 @scenario_bp.route("/new")
 def new_scenario():
     scenario = ScenarioFactory.create_scenario()
-    return render_template("scenario_edit.html", scenario=scenario)
+    return edit_scenario_view(scenario=scenario)
+
+
+def edit_scenario_view(scenario: Scenario, **kwargs):
+    scenario_form = ScenarioForm(scenario)
+    return render_template("scenario_edit.html", scenario=scenario, scenario_form=scenario_form, **kwargs)
 
 
 @scenario_bp.route("/save", methods=["POST"])
 def save_scenario(**kwargs):
-    kwargs.update(flask.request.values)
-    scenario = ScenarioFactory.build_scenario_from_dict(**kwargs)
-    ScenarioRepository.save_scenario(scenario)
-    return redirect(url_for('scenarios.show_scenarios'))
+    raw_form = flask.request.form
+    scenario_form = ScenarioForm(raw_form)
+    if scenario_form.essentials_form.validate(raw_form):
+        scenario_dict = scenario_form.essentials_form.data
+
+        scenario = ScenarioFactory.build_scenario_from_dict(**scenario_dict)
+        scenario = ScenarioRepository.save_scenario(scenario)
+        flash("Scenario saved successfully!")
+        return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario.scenario_id))
+    else:
+        print(scenario_form.errors)
+    return show_scenarios()
 
 
 @scenario_bp.route("/delete", methods=["DELETE"])
 def delete_scenario():
-    scenario_id = flask.request.args.get("scenario_id", None)
+    scenario_id = flask.request.form.get("scenario_id", None)
     if scenario_id:
         ScenarioRepository.delete_by_id(scenario_id)
-    return redirect(url_for('scenarios.show_scenarios'))
+    return show_scenarios()
 
 
 @scenario_bp.route("/<scenario_id>/stories")
@@ -58,14 +73,14 @@ def edit_story(scenario_id, story_id):
     return render_template("scenario_edit_story.html", scenario=scenario, story=story)
 
 
-@scenario_bp.route("/<scenario_id>/stories/add")
-def add_story(scenario_id):
+@scenario_bp.route("/<scenario_id>/stories", methods=["POST"])
+def insert_story(scenario_id):
     scenario = ScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
     story_params = flask.request.form
     story = Story(**story_params)
     story = scenario.add_story(story)
     flash("Successfully added story!")
-    return render_template("scenario_edit.html", scenario=scenario)
+    return edit_story(scenario_id=scenario_id, story_id=story.story_id)
 
 
 @scenario_bp.route("/<scenario_id>/variables")
@@ -86,3 +101,9 @@ def show_stats(scenario_id):
     scenario = ScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
     return render_template("scenario_stats.html", scenarios=[scenario])
 
+
+@scenario_bp.route("/<scenario_id>/stories/add")
+def add_story(scenario_id):
+    scenario = ScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
+    story_form = StoryForm()
+    return render_template("form_test.html", scenario=scenario, form=story_form)

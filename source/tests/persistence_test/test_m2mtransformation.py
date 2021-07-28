@@ -18,10 +18,6 @@ class DictConversionTest(TestCase):
         test_entity = self.test_scenario.stories[0].entry_node
         self.assert_entity_converts_to_dict(test_entity)
 
-    def test_transition_as_dict(self):
-        test_entity = self.test_scenario.stories[0].transitions["Introduction"][0]
-        self.assert_entity_converts_to_dict(test_entity)
-
     def test_story_as_dict(self):
         test_entity = self.test_scenario.stories[0]
         self.assert_entity_converts_to_dict(test_entity)

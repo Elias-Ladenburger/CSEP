@@ -9,7 +9,7 @@ from domain.scenario_design.scenario import Story
 class ScenarioTest(TestCase):
 
     def test_scenario_add_story(self):
-        inject = Inject(title="test inject", text="text")
+        inject = Inject(label="test inject", text="text")
         story = Story(title="introduction", entry_node=inject)
 
         scenario = BranchingScenarioBuilder.build_scenario()

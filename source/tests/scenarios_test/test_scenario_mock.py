@@ -19,14 +19,15 @@ class ScenarioMock(TestCase):
         test_scenario = MockScenarioBuilder.build_scenario()
         self.assertIsInstance(test_scenario, Scenario)
 
-    def test_create_two_scenarios(self):
-        scenario1 = ScenarioFactory.create_scenario(title="test", description="a description")
-        scenario2 = ScenarioFactory.create_scenario(title="test", description="a description")
+    def test_create_two_scenarios_with_id(self):
+        scenario1 = ScenarioFactory.create_scenario(title="test", description="a description", scenario_id="31231asa")
+        scenario2 = ScenarioFactory.create_scenario(title="test", description="a description", scenario_id="anotherid")
         self.assertNotEqual(scenario1, scenario2)
 
-    def test_create_two_mock_scenarios(self):
+    def test_create_two_mock_scenarios_without_id(self):
         scenario1 = MockScenarioBuilder.build_scenario()
         scenario2 = MockScenarioBuilder.build_scenario()
         print(scenario1)
         print(scenario2)
-        self.assertNotEqual(scenario1, scenario2)
+        self.assertEqual(scenario1, scenario2)
+

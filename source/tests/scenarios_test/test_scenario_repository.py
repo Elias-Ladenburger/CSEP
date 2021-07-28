@@ -11,7 +11,7 @@ from infrastructure.database import CustomDB
 class ScenarioPersistenceTest(TestCase):
 
     def setUp(self):
-        test_env = "TEST"
+        test_env = "DEV"
         from globalconfig import config
         config.set_env(test_env)
         self.repo = ScenarioRepository
@@ -21,7 +21,7 @@ class ScenarioPersistenceTest(TestCase):
         print("Test Config: {}".format(test_env))
 
     def tearDown(self):
-        self.db._purge_database(collection_name="scenarios")
+        # self.db._purge_database(collection_name="scenarios")
         pass
 
     def test_insert_scenario_title_description(self):
@@ -87,3 +87,19 @@ class ScenarioPersistenceTest(TestCase):
         print(json.dumps(scenario.dict(), indent=2))
         inserted_id = self.repo.save_scenario(scenario).scenario_id
         return inserted_id
+
+    def test_modify_scenario(self):
+        original_scenario = ScenarioRepository.get_scenario_by_id(scenario_id="60f83bf0e2e4ed761977d6f6")
+
+        scenario = Scenario(title="Going Phishing",
+                            description="A scenario where you capture credentials by phishing. \
+                            You play a notorious cybercriminal, who seeks financial gain by stealing "
+                                        "the credentials off of high-ranking executives.",
+                            scenario_id="60ed3df0694b7dbe7ef16cce")
+        inject = Inject(label="First inject", text="Inject Text")
+        story = Story("Test Story", entry_node=inject)
+        scenario.add_story(story)
+        ScenarioRepository.save_scenario(scenario)
+        changed_scenario = ScenarioRepository.get_scenario_by_id("60ed3df0694b7dbe7ef16cce")
+        print(changed_scenario.target_group)
+        self.assertTrue(changed_scenario.target_group == original_scenario.target_group)

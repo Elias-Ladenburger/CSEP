@@ -7,7 +7,7 @@
 <h3></h3>
 <div class="container-fluid bg-white text-black-50">
     <p>{{ scenario.description }}</p>
-    <a href="{{url_for('games.inject_page', game_id=game_id, inject_id=inject_id)}}" class="btn btn-primary">Continue</a>
+    <a href="{{url_for('games.inject_page', game_id=game_id, inject_slug=inject_slug)}}" class="btn btn-primary">Continue</a>
 </div>
 
 {% endblock %}

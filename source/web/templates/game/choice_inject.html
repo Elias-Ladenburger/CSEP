@@ -3,8 +3,8 @@
 
  <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-{% for transition in transitions %}
-    <a href="{{url_for('games.inject_feedback', game_id=game_id, inject_id=transition.to_inject.inject_id)}}" class="btn btn-primary">{{transition.label}}</a>
+{% for choice in inject.choices %}
+    <a href="{{url_for('games.inject_feedback', game_id=game_id, inject_slug=inject.slug)}}" class="btn btn-primary">{{choice.label}}</a>
 {% endfor %}
 
 {% endblock %}

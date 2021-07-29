@@ -12,7 +12,7 @@
 </div>
     <div class="row justify-content-end">
         <div class="col-10"></div>
-        <a href="{{url_for('games.stats_page', game_id=game_id, inject_id=inject.id)}}" class="btn btn-primary">Stats</a>
+        <a href="{{url_for('games.stats_page', game_id=game_id, inject_slug=inject.slug)}}" class="btn btn-primary">Stats</a>
     </div>
 
 {% endblock %}

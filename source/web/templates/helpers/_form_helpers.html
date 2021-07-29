@@ -13,3 +13,26 @@
 </div>
 
 {% endmacro %}
+
+
+{% macro render_subform(subform, index) %}
+{# Render lap form.
+This macro is intended to render both regular subforms (received from the
+server) and the template form used to dynamically add more forms.
+
+Arguments:
+    - subform: Form object to render
+    - index: Index of the form. For proper subforms rendered in the form loop,
+             this should match `loop.index0`, and for the template it should be
+             '_'
+#}
+    <div id="{{ subform.id }}-{{ index }}-form" class="{% if index != '_' %}subform{% else %}is-hidden{% endif %}" data-index="{{ index }}">
+        {% if subform.csrf_token %}
+            {{ subform.csrf_token() }}
+        {% endif %}
+        {% for field in subform %}
+           {{ render_field(field, class="form_control") }}
+        {% endfor %}
+        <a class="remove" href="#">Remove</a>
+    </div>
+{% endmacro %}

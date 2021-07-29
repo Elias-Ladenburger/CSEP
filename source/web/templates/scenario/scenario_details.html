@@ -1,12 +1,12 @@
-    <form action="{{ url_for('scenarios.save_scenario') }}" method="POST" class="form">
+<form action="{{ url_for('scenarios.save_scenario') }}" method="POST" class="form">
     {{ scenario_form.hidden_tag() }}
-        <input type="hidden" id="scenario_id" name="scenario_id" value="{{ scenario.scenario_id }}"/>
-        {% block details_content %}
-        {% endblock %}
-        <button type="submit" class="btn">
-            <i class="fas fa-save"></i>Save Changes
-        </button>
-    </form>
+    <input type="hidden" id="scenario_id" name="scenario_id" value="{{ scenario.scenario_id }}"/>
+    {% block details_content %}
+    {% endblock %}
+    <button type="submit" class="btn">
+        <i class="fas fa-save"></i>Save Changes
+    </button>
+</form>
 <hr/>
 
 {% block headings %}

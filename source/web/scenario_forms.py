@@ -3,15 +3,18 @@ from typing import List
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
 from markupsafe import Markup
-from wtforms import StringField, SubmitField, FormField, TextAreaField, FieldList
+from wtforms import StringField, SubmitField, FormField, TextAreaField, FieldList, SelectField, Form
 from wtforms.validators import DataRequired, Optional
 from wtforms.widgets import HiddenInput
 
-from domain.scenario_design.auxiliary import ScenarioVariable
+from domain.scenario_design.auxiliary import ScenarioVariable, DataType
 from domain.scenario_design.scenario import Scenario, Story
 
 
-class CustomForm(FlaskForm):
+class CustomForm(Form):
+    class Meta:
+        csrf = False
+
     def populate_from_dict(self, entity_dict: dict):
         """Child methods will override this method to """
         for field in self.form:
@@ -53,8 +56,6 @@ class ScenarioEssentialsForm(CustomForm):
                                               'before starting this scenario?"></i>'),
                                        render_kw={"data-role": "tags-input"})
 
-    save_button = SubmitField("Save")
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -79,14 +80,16 @@ class InjectForm(CustomForm):
 class StoryForm(CustomForm):
     story_title = StringField("Title", validators=[DataRequired()], render_kw={})
     inject_form = FieldList(FormField(InjectForm), min_entries=1)
-    save_button = SubmitField("Save")
 
 
 class ScenarioVariableForm(CustomForm):
-    pass
+    name = StringField("Variable Name")
+    datatype_choices = [(elem.name, elem.value) for elem in DataType]
+    datatype = SelectField("Datatype", choices=datatype_choices)
+    value = StringField("Default Value")
 
 
-class ScenarioForm(CustomForm):
+class ScenarioForm(FlaskForm):
     essentials_form = FormField(ScenarioEssentialsForm)
     stories_form = FieldList(FormField(StoryForm))
     variables_form = FieldList(FormField(ScenarioVariableForm))
@@ -98,7 +101,7 @@ class ScenarioForm(CustomForm):
         if stories:
             if isinstance(stories[0], Story):
                 for story in stories:
-                    self.stories_form.populate_from_dict(stories)
+                    self.stories_form.append_entry(stories)
 
 
 class Form2ScenarioConverter:

@@ -31,7 +31,15 @@ def new_scenario():
 
 def edit_scenario_view(scenario: Scenario, **kwargs):
     scenario_form = ScenarioForm(scenario)
-    return render_template("scenario_edit.html", scenario=scenario, scenario_form=scenario_form, **kwargs)
+    story_template = StoryForm(prefix="story-_-")
+    variables_template = ScenarioVariableForm(prefix="variables-_-")
+    inject_template = InjectForm(prefix="inject-_-")
+    return render_template("scenario_edit.html", scenario=scenario,
+                           scenario_form=scenario_form,
+                           _templates={"story": story_template,
+                                       "variable": variables_template,
+                                       "inject": inject_template},
+                           **kwargs)
 
 
 @scenario_bp.route("/save", methods=["POST"])
@@ -71,7 +79,7 @@ def edit_story(scenario_id, story_id):
     if story_id.isnumeric():
         story_id = int(story_id)
     story = scenario.stories[story_id]
-    return render_template("scenario_edit_story.html", scenario=scenario, story=story)
+    return render_template("scenario_show_injects.html", scenario=scenario, story=story)
 
 
 @scenario_bp.route("/<scenario_id>/stories", methods=["POST"])

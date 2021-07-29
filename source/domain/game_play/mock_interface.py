@@ -1,6 +1,6 @@
 from domain.game_play.game import Game, GameFactory
 from domain.scenario_design.auxiliary import DataType
-from domain.scenario_design.injects import InjectChoice, Inject
+from domain.scenario_design.injects import InjectChoice, Inject, InjectCondition, InjectResult
 from domain.scenario_design.scenario import Scenario, Story, ScenarioVariable
 from domain.scenario_design.scenario_management import ScenarioFactory
 
@@ -44,28 +44,31 @@ class MockScenarioBuilder:
         second_inject = Inject(label="Second Inject",
                                text="Interesting choice... "
                                     "let's see, if your preparation pays off. How will you proceed?")
+        intro_inject.next_inject = second_inject
 
         other_first_second = InjectChoice(from_inject=intro_inject, to_inject=second_inject, label="Do nothing")
 
+        intro_inject.choices.append(other_first_second)
+
         introduction = Story(title="Introduction", entry_node=intro_inject)
         introduction.add_injects([intro_inject, second_inject])
-        introduction.add_transition(other_first_second)
 
         scenario.add_story(introduction)
         return scenario
 
     @classmethod
     def _build_chapter_2(cls, scenario):
-        second_last_inject = Inject(label="Almost Done", text="Well done, you are almost there!")
         last_inject = Inject(label="Finish", text="You have completed the test scenario!")
+        second_last_inject = Inject(label="Almost Done", text="Well done, you are almost there!",
+                                    next_inject=last_inject)
 
-        final_transition = InjectChoice(from_inject=second_last_inject, to_inject=last_inject,
-                                        label="Walk straight ahead")
+        final_transition = InjectChoice(label="Walk straight ahead")
+        alternative_transition = InjectChoice(label="Turn Right")
+        second_last_inject.add_choices([final_transition, alternative_transition])
 
         final_chapter = Story(title="final chapter", entry_node=second_last_inject)
 
         final_chapter.add_injects(injects=[second_last_inject, last_inject])
-        final_chapter.add_transition(final_transition)
 
         scenario.add_story(final_chapter)
         return scenario
@@ -87,17 +90,17 @@ class BranchingScenarioBuilder(MockScenarioBuilder):
     @staticmethod
     def _insert_transition(scenario: Scenario, story: Story, transition_label: str):
         inject_0 = story.entry_node
-        inject_1 = story.transitions[inject_0.slug][0].to_inject
+        inject_1 = story.injects[inject_0.slug].next_inject
         new_inject = Inject(label="A different inject", text="Turns out that branching scenarios work now...")
 
         budget_var = scenario.variables["Budget"]
         condition = InjectCondition(budget_var, comparison_operator="=",
                                     variable_threshold=100000, alternative_inject=new_inject)
-        new_transition = InjectChoice(from_inject=inject_0, to_inject=inject_1,
-                                      label=transition_label, condition=condition)
+        choice_1 = InjectChoice(label=transition_label,
+                                outcome=InjectResult(next_inject=new_inject, variable_changes=[]))
 
+        inject_0.choices.append(choice_1)
         story.add_inject(new_inject)
-        story.add_transition(new_transition)
         return scenario
 
 

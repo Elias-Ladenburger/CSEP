@@ -30,6 +30,7 @@ class GraphElement(BaseModel):
 class GraphNode(GraphElement):
     """The node of a graph"""
     def __init__(self, label: str, **keyword_args):
+        self.update_forward_refs()
         super().__init__(label=label, **keyword_args)
 
 

@@ -7,7 +7,7 @@ from typing import Any
 from pydantic import BaseModel
 
 
-class DataType(str, Enum):
+class DataType(Enum):
     TEXT = "textual"
     NUMBER = "numeric"
     BOOL = "boolean"
@@ -120,3 +120,11 @@ class VariableChange(BaseModel):
             return new_value
         else:
             raise ValueError("This variable cannot have a value of this type!")
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            is_equal_by_value = other.var.name == self.var.name \
+                                and other.operator == self.operator \
+                                and other._new_value == self._new_value
+            return is_equal_by_value
+        return False

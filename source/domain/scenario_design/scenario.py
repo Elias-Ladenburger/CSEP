@@ -11,40 +11,60 @@ class Story(BaseModel):
     title: str
     entry_node: Inject
     injects: Optional[Dict[str, Inject]] = {}
-    transitions: Optional[Dict[str, List[InjectChoice]]] = {}
     story_id: Optional[str]
 
     def __init__(self, title: str, entry_node: Inject, **keyword_args):
         super().__init__(title=title, entry_node=entry_node, **keyword_args)
 
     def add_injects(self, injects: List[Inject]):
+        """
+        Adds a list of injects to the story.
+        This will overwrite existing injects within the story, if they have the same slug as one of the new injects.
+        """
         self.injects[self.entry_node.slug] = self.entry_node
         for inject in injects:
             self.injects[inject.slug] = inject
-            self.transitions[inject.slug] = []
-
-    def initialize_transitions(self, transitions):
-        for transition in transitions:
-            if transition.from_inject.slug in self.injects and transition.to_inject.slug in self.injects:
-                self.transitions[transition.from_inject.slug].append(transition)
 
     def add_inject(self, inject: Inject):
+        """Adds a single inject to the story.
+           If the story already contains an inject with this slug, the new inject will overwrite the existing inject.
+
+           :param inject: the inject to be added.
+           """
         self.injects[str(inject.slug)] = inject
-        self.transitions[str(inject.slug)] = []
 
-    def remove_inject(self, inject: Inject):
-        self.injects.pop(str(inject.slug))
-        self.transitions.pop(inject.slug)
+    def remove_inject(self, inject):
+        """Removes an inject from the story.
 
-    def remove_inject_by_slug(self, inject_slug: str):
-        self.injects.pop(inject_slug)
-        self.transitions.pop(inject_slug)
+        :param inject: the inject to be removed. Can be the inject slug of the inject object.
+        :returns: the inject that has been removed."""
+        if isinstance(inject, str):
+            return self._remove_inject_by_slug(inject)
+        elif isinstance(inject, Inject):
+            return self.injects.pop(str(inject.slug))
+        else:
+            raise TypeError("Argument for removing inject must be of type 'str' or 'Inject'!")
+
+    def _remove_inject_by_slug(self, inject_slug: str):
+        return self.injects.pop(inject_slug)
+
+    def has_inject_with_slug(self, inject_slug: str):
+        """
+        Checks whether this story has an inject with the given slug.
+
+        :param inject_slug: A string with the slug to look for.
+        :returns: True if an inject with this slug exists, False otherwise.
+        """
+        return inject_slug in self.injects
 
     def get_inject_by_slug(self, inject_slug: str):
-        if inject_slug in self.injects:
-            inject = self.injects[inject_slug]
-            return inject
-        return None
+        """Provides an inject with the given slug in this story.
+
+        :param inject_slug: A string with the inject-slug.
+        :returns: an inject with this slug, if one exists in this story. False if no inject is found.
+        """
+        inject = self.injects[inject_slug]
+        return inject
 
     def solve_inject(self, inject_slug: str, solution):
         """

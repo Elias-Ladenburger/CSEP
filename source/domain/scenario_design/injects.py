@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from pydantic import BaseModel
 
@@ -68,13 +68,17 @@ class Inject(SimpleInject):
     def has_choices(self):
         return len(self.choices) > 0
 
-    def solve(self, solution=None):
+    def add_choices(self, new_choices: List[InjectChoice]):
+        for choice in new_choices:
+            self.choices.append(choice)
+
+    def solve(self, solution: str):
         """
         Resolves user input (or lack thereof).
 
         :returns: an InjectResult object that contains a reference to the next inject and a list of effects.
         """
-        if solution and self.has_choices:
+        if solution.isnumeric() and self.has_choices:
             solution = self._parse_solution(solution)
             outcome = self.choices[solution].outcome
             if not outcome.next_inject:
@@ -104,10 +108,22 @@ class InjectChoice(BaseModel):
     """A choice is a decision made in a scenario,
     that may change the course of the story or change the variables of the scenario."""
     label: str
-    outcome: InjectResult
+    outcome: Optional[InjectResult] = None
 
-    def __init__(self, label: str, outcome: InjectResult, **keyword_args):
+    def __init__(self, label: str, outcome: InjectResult = None, **keyword_args):
+        self.update_forward_refs()
         super().__init__(label=label, outcome=outcome, **keyword_args)
+        if not outcome:
+            self.outcome = InjectResult(next_inject=None, variable_changes=[])
+
+    def set_target_inject(self, inject: Inject):
+        self.outcome.next_inject = inject
+
+    def add_effect(self, var_change: VariableChange):
+        self.outcome.variable_changes.append(var_change)
+
+    def remove_effect(self, var_change: VariableChange):
+        self.outcome.variable_changes.remove(var_change)
 
     def dict(self, **kwargs):
         update_args = kwargs.get("exclude") or {}

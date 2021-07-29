@@ -19,7 +19,7 @@ class MockPlayer:
         self._handle_end()
 
     def _show_introduction(self,):
-        print("Now playing " + self._game.name)
+        print("Now playing '" + self._game.name + "'")
 
     def _show_next_inject(self, inject_slug):
         inject = self._game.get_inject_by_slug(inject_slug)
@@ -44,7 +44,7 @@ class MockPlayer:
         elif answer == "q":
             exit()
         elif answer.isnumeric():
-            return self._game.solve_inject(inject=inject_slug, solution=int(answer))
+            return self._game.solve_inject(inject=inject_slug, solution=answer)
         else:
             exit()
         print()

@@ -58,14 +58,15 @@ class Game:
     def get_visible_vars(self):
         visible_stats = {}
         for var in self.variables:
-            if not var.private:
-                visible_stats[var.name] = self.variable_values[var.name]
+            if self.variables[var].is_private:
+                visible_stats[var.name] = self.variables[var.name]
         return visible_stats
 
     def get_all_vars(self):
         return self.variables
 
     def get_inject(self, inject_candidate):
+        """Get an inject object that comes closest to the inject candidate."""
         if isinstance(inject_candidate, str):
             return self.get_inject_by_slug(inject_candidate)
         elif isinstance(inject_candidate, Inject):
@@ -73,23 +74,22 @@ class Game:
         else:
             raise TypeError("the parameter must be of type 'str' or 'Inject'!")
 
-    def get_inject_by_slug(self, inject_slug):
+    def get_inject_by_slug(self, inject_slug: str):
+        """Provide an inject that has the given slug."""
         inject = self.current_story.get_inject_by_slug(inject_slug)
         if not inject:
             inject = self.scenario.get_inject_by_slug(inject_slug)
         return inject
 
-    def solve_inject(self, inject, solution):
-        """
-        This method evaluates a solution to a given inject and provides the next inject in response.
+    def solve_inject(self, inject_candidate, solution):
+        """Evaluates a solution to a given inject and provides the next inject in response.
         Side effects include appending the solution to the game history and ending the game, if no more injects exist.
 
-        :param inject: The inject to be solved. Can be either the id of the inject or an instance of Inject itself.
+        :param inject: The inject to be solved. Can be either the slug (as str)
+        of the inject or an instance of Inject itself.
         :param solution: The solution to be passed. Implementation will vary, depending on inject type.
-        :return: The next inject if one exists. Otherwise returns 'None' and ends the game.
-
-        """
-        inject = self.get_inject(inject)
+        :return: The next inject if one exists. Otherwise returns 'None' and ends the game."""
+        inject = self.get_inject(inject_candidate)
         self._add_inject_history(inject, solution)
         inject_result = self.current_story.solve_inject(inject.slug, solution)
         for var_change in inject_result.variable_changes:
@@ -112,7 +112,10 @@ class Game:
     def _evaluate_next_inject(self, inject: Inject):
         if not inject:
             return self._begin_next_story()
-        inject.condition.evaluate_condition(self.variables)
+        if inject.condition:
+            return inject.condition.evaluate_condition(self.variables)
+        else:
+            return inject
 
     def _begin_next_story(self):
         self.current_story_index += 1

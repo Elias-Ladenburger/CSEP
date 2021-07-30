@@ -1,10 +1,9 @@
-from domain.common.auxiliary import DataType
+from domain.common.auxiliary import DataType, BaseScenarioVariable
 from domain.common.injects import InjectResult
 from domain.game_play.game import Game, GameFactory
 from domain.scenario_design.injects import Inject, InjectChoice, InjectCondition
-from domain.scenario_design.scenario import Scenario, Story, BaseScenarioVariable
+from domain.scenario_design.scenario import Scenario, Story
 from domain.scenario_design.scenario_management import ScenarioFactory
-
 
 
 class MockScenarioBuilder:

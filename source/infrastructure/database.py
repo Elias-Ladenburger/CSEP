@@ -145,7 +145,7 @@ class CustomDB:
             try:
                 entity_id = ObjectId(entity_id)
             except bson.errors.InvalidId:
-                return ObjectId("000000000000")
+                return ObjectId()
         if isinstance(entity_id, ObjectId):
             return entity_id
         else:

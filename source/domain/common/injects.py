@@ -13,7 +13,8 @@ class BaseInject(GraphNode):
     media_path: str = ""
 
     def __init__(self, label: str, **keyword_args):
-        super().__init__(label=label, slug=label.replace(" ", "-").lower(), **keyword_args)
+        slug = keyword_args.pop("slug", label.replace(" ", "-").lower())
+        super().__init__(label=label, slug=slug, **keyword_args)
 
     @property
     def title(self):

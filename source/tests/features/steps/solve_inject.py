@@ -7,14 +7,14 @@ use_step_matcher('parse')
 
 @given(u'one {source_title} to start from')
 def source_inject(context, source_title):
-    context.source_inject = BaseChoiceInject(title=source_title, text="This is the source inject")
+    context.source_inject = BaseChoiceInject(label=source_title, text="This is the source inject")
 
 
 @given(u'a choice to go to one {target_title}')
 def target_inject(context, target_title):
-    context.target_inject = BaseChoiceInject(title=target_title, text="This is the target inject")
-    target_transition = BaseInjectChoice(from_inject=context.source_inject, to_inject=context.target_inject)
-    context.source_inject.add_transition(target_transition)
+    context.target_inject = BaseChoiceInject(label=target_title, text="This is the target inject")
+    inject_choice = BaseInjectChoice(label="A choice")
+    context.source_inject.add_choice(choice)
     return target_inject
 
 

@@ -3,7 +3,7 @@ from typing import List
 
 from domain.common.auxiliary import BaseScenarioVariable
 from domain.common.injects import BaseChoiceInject, BaseInjectChoice
-from domain.scenario_design.scenario import Scenario, Story
+from domain.scenario_design.scenario import Scenario, BaseStory
 from infrastructure.repository import Repository
 
 
@@ -15,7 +15,8 @@ class ScenarioRepository(Repository):
     def get_scenario_by_id(cls, scenario_id: str):
         scenario_id, scenario_data = cls._get_entity_by_id(collection_name=cls.collection_name, entity_id=scenario_id)
         try:
-            scenario = ScenarioFactory.build_scenario_from_dict(scenario_id=scenario_id, **scenario_data)
+            # scenario = ScenarioFactory.build_scenario_from_dict(scenario_id=scenario_id, **scenario_data)
+            scenario = Scenario(scenario_id=scenario_id, **scenario_data)
             return scenario
         except AttributeError as attre:
             print(attre)
@@ -50,14 +51,14 @@ class ScenarioRepository(Repository):
         """
         scenario_dict = scenario.dict()
         scenario_id = scenario_dict.pop("scenario_id", None)
-        story_dict = scenario_dict.pop("stories")
         if not scenario.scenario_id or scenario.scenario_id == "":
             scenario_id = cls._insert_entity(collection_name=cls.collection_name, entity=scenario_dict)
             scenario_dict.update({"scenario_id": scenario_id})
-            return ScenarioFactory.build_scenario_from_dict(**scenario_dict)
+            # scenario = ScenarioFactory.build_scenario_from_dict(**scenario_dict)
+            scenario = Scenario(**scenario_dict)
+            return scenario
         cls._update_entity(collection_name=cls.collection_name, entity=scenario_dict,
                            entity_id=scenario_id)
-        cls._update_stories(stories_as_dict=story_dict, scenario_id=scenario_id)
         return scenario
 
     @classmethod
@@ -124,7 +125,7 @@ class ScenarioFactory:
         entry_data = story_data.pop("entry_node", {})
         entry_node = ScenarioFactory._build_inject_from_dict(entry_data)
 
-        story = Story(**story_data, entry_node=entry_node)
+        story = BaseStory(**story_data, entry_node=entry_node)
 
         for inject_data in injects_data:
             inject = ScenarioFactory._build_inject_from_dict(inject_data=injects_data[inject_data])

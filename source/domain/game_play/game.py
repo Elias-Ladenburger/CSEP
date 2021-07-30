@@ -1,9 +1,12 @@
 import copy
 from datetime import datetime
 from enum import Enum
+from typing import Optional, List, Dict
 
 from domain.common.auxiliary import BaseVariableChange
 from domain.common.injects import BaseChoiceInject
+from domain.common.scenarios import BaseScenario
+from domain.game_play.injects import Inject
 from domain.scenario_design.scenario import Scenario, BaseScenarioVariable
 
 
@@ -13,21 +16,21 @@ class GameState(Enum):
     Closed = 3
 
 
-class Game:
+class Game(BaseScenario):
     """A scenario_design that is currently being played or has been played."""
-    def __init__(self, scenario: Scenario):
-        self.scenario = scenario
-        self._start_time = datetime.now()
-        self._end_time = None
-        self._game_state = GameState.Open
+    _start_time: datetime.now()
+    _end_time: Optional[datetime] = None
+    _game_state: GameState = GameState.Open
+    current_story_index: int = 0
+    _history = []
 
-        self.current_story_index = 0
-        self.variables = copy.deepcopy(scenario.variables)
-        self._history = []
+    def __init__(self, scenario: Scenario):
+        kwargs = scenario.dict()
+        super().__init__(**kwargs)
 
     @property
     def name(self):
-        return self.scenario.title
+        return self.title
 
     @property
     def is_open(self):
@@ -43,17 +46,14 @@ class Game:
 
     @property
     def current_story(self):
-        return self.scenario.stories[self.current_story_index]
+        return self.stories[self.current_story_index]
 
     def start_game(self):
         self._game_state = GameState.In_Progress
-        return self.scenario.stories[0].entry_node
+        return self.stories[0].entry_node
 
     def set_game_variable(self, var: BaseScenarioVariable, new_value):
-        if var.is_value_legal(new_value):
-            self.variables[var.name].update_value(new_value)
-        else:
-            raise TypeError("The new value does not match the datatype of this variable!")
+        self.variables[var.name].update_value(new_value)
 
     def get_visible_vars(self):
         visible_stats = {}
@@ -78,14 +78,14 @@ class Game:
         """Provide an inject that has the given slug."""
         inject = self.current_story.get_inject_by_slug(inject_slug)
         if not inject:
-            inject = self.scenario.get_inject_by_slug(inject_slug)
+            inject = super().get_inject_by_slug(inject_slug)
         return inject
 
     def solve_inject(self, inject_candidate, solution):
         """Evaluates a solution to a given inject and provides the next inject in response.
         Side effects include appending the solution to the game history and ending the game, if no more injects exist.
 
-        :param inject: The inject to be solved. Can be either the slug (as str)
+        :param inject_candidate: The inject to be solved. Can be either the slug (as str)
         of the inject or an instance of Inject itself.
         :param solution: The solution to be passed. Implementation will vary, depending on inject type.
         :return: The next inject if one exists. Otherwise returns 'None' and ends the game."""
@@ -109,7 +109,7 @@ class Game:
         var_name = change.var.name
         self.variables[var_name].update_value(change)
 
-    def _evaluate_next_inject(self, inject: BaseChoiceInject):
+    def _evaluate_next_inject(self, inject: Inject):
         if not inject:
             return self._begin_next_story()
         if inject.condition:
@@ -119,8 +119,8 @@ class Game:
 
     def _begin_next_story(self):
         self.current_story_index += 1
-        if -1 < self.current_story_index < len(self.scenario.stories):
-            return self.scenario.stories[self.current_story_index].entry_node
+        if -1 < self.current_story_index < len(self.stories):
+            return self.stories[self.current_story_index].entry_node
         else:
             self.end_game()
             return None
@@ -130,8 +130,8 @@ class Game:
         self._end_time = datetime.now()
 
     def __str__(self):
-        return_str = "Game: " + self.scenario.title
-        for story in self.scenario.stories:
+        return_str = "Game: " + self.title
+        for story in self.stories:
             return_str += "\n" + str(story)
         return return_str
 

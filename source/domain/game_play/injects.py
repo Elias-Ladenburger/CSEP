@@ -7,6 +7,8 @@ from domain.common.injects import BaseChoiceInject, InjectResult, BaseInjectCond
 
 
 class Inject(BaseChoiceInject):
+    condition: InjectCondition = None
+
     def solve(self, solution: str):
         """
         Resolves user input (or lack thereof).
@@ -51,7 +53,10 @@ class InjectCondition(BaseInjectCondition):
 
 class GameVariable(BaseScenarioVariable):
     def update_value(self, change: VariableChange):
-        self._value = change.get_new_value(self._value)
+        if self.is_value_legal(change.value):
+            self._value = change.get_new_value(self._value)
+        else:
+            raise TypeError("The new value is not legal for this variable!")
 
 
 class VariableChange(BaseVariableChange):

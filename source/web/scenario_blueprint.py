@@ -1,7 +1,7 @@
 import flask
 from flask import Blueprint, render_template, redirect, url_for, flash
 
-from domain.scenario_design.scenario import Story, Scenario
+from domain.scenario_design.scenario import BaseStory, Scenario
 from domain.scenario_design.scenario_management import ScenarioRepository, ScenarioFactory
 from web.scenario_forms import *
 from web.scenario_forms import ScenarioForm
@@ -86,7 +86,7 @@ def edit_story(scenario_id, story_id):
 def insert_story(scenario_id):
     scenario = ScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
     story_params = flask.request.form
-    story = Story(**story_params)
+    story = BaseStory(**story_params)
     story = scenario.add_story(story)
     flash("Successfully added story!")
     return edit_story(scenario_id=scenario_id, story_id=story.story_id)

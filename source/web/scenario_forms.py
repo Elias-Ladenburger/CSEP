@@ -8,7 +8,7 @@ from wtforms.validators import DataRequired, Optional
 from wtforms.widgets import HiddenInput
 
 from domain.common.auxiliary import BaseScenarioVariable, DataType
-from domain.scenario_design.scenario import Scenario, Story
+from domain.scenario_design.scenario import Scenario, BaseStory
 
 
 class CustomForm(Form):
@@ -94,12 +94,12 @@ class ScenarioForm(FlaskForm):
     stories_form = FieldList(FormField(StoryForm))
     variables_form = FieldList(FormField(ScenarioVariableForm))
 
-    def __init__(self, scenario=None, stories: List[Story] = None, variables: List[BaseScenarioVariable] = None, **kwargs):
+    def __init__(self, scenario=None, stories: List[BaseStory] = None, variables: List[BaseScenarioVariable] = None, **kwargs):
         super().__init__(**kwargs)
         if isinstance(scenario, Scenario):
             self.essentials_form.form.populate_from_dict(scenario.dict())
         if stories:
-            if isinstance(stories[0], Story):
+            if isinstance(stories[0], BaseStory):
                 for story in stories:
                     self.stories_form.append_entry(stories)
 

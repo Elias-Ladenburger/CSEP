@@ -1,7 +1,7 @@
 from behave import *
 
 from domain.game_play.game import GameFactory
-from domain.scenario_design.injects import Inject
+from domain.common.injects import BaseChoiceInject
 from domain.scenario_design.scenario import Scenario, Story
 
 use_step_matcher("parse")
@@ -11,7 +11,7 @@ use_step_matcher("parse")
 def step_impl(context):
     learning_scenario = Scenario(title="test scenario", description="test description")
 
-    some_inject = Inject(title="Some inject", text="Some text")
+    some_inject = BaseChoiceInject(title="Some inject", text="Some text")
     some_story = Story(title="Some Story", entry_node=some_inject)
     learning_scenario.add_story(some_story)
 

@@ -2,7 +2,7 @@ import json
 from unittest import TestCase
 
 from domain.game_play.mock_interface import MockScenarioBuilder
-from domain.scenario_design.injects import Inject
+from domain.common.injects import BaseChoiceInject
 from domain.scenario_design.scenario import Scenario, Story
 from domain.scenario_design.scenario_management import ScenarioRepository, ScenarioFactory
 from infrastructure.database import CustomDB
@@ -80,7 +80,7 @@ class ScenarioPersistenceTest(TestCase):
         inserted_id = self.insert_scenario_with_stories()
         scenario = self.repo.get_scenario_by_id(inserted_id)
         inject = scenario.get_inject_by_slug("introduction")
-        self.assertIsInstance(inject, Inject)
+        self.assertIsInstance(inject, BaseChoiceInject)
 
     def insert_scenario_with_stories(self):
         scenario = MockScenarioBuilder.build_scenario()
@@ -96,7 +96,7 @@ class ScenarioPersistenceTest(TestCase):
                             You play a notorious cybercriminal, who seeks financial gain by stealing "
                                         "the credentials off of high-ranking executives.",
                             scenario_id="60ed3df0694b7dbe7ef16cce")
-        inject = Inject(label="First inject", text="Inject Text")
+        inject = BaseChoiceInject(label="First inject", text="Inject Text")
         story = Story("Test Story", entry_node=inject)
         scenario.add_story(story)
         ScenarioRepository.save_scenario(scenario)

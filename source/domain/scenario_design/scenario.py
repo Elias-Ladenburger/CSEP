@@ -2,21 +2,21 @@ from typing import Optional, Dict, List
 
 from pydantic import BaseModel, PrivateAttr
 
-from domain.scenario_design.auxiliary import ScenarioVariable
-from domain.scenario_design.injects import Inject, InjectChoice
+from domain.common.auxiliary import BaseScenarioVariable
+from domain.common.injects import BaseChoiceInject
 
 
 class Story(BaseModel):
     """A Story is a collection of injects within a scenario design"""
     title: str
-    entry_node: Inject
-    injects: Optional[Dict[str, Inject]] = {}
+    entry_node: BaseChoiceInject
+    injects: Optional[Dict[str, BaseChoiceInject]] = {}
     story_id: Optional[str]
 
-    def __init__(self, title: str, entry_node: Inject, **keyword_args):
+    def __init__(self, title: str, entry_node: BaseChoiceInject, **keyword_args):
         super().__init__(title=title, entry_node=entry_node, **keyword_args)
 
-    def add_injects(self, injects: List[Inject]):
+    def add_injects(self, injects: List[BaseChoiceInject]):
         """
         Adds a list of injects to the story.
         This will overwrite existing injects within the story, if they have the same slug as one of the new injects.
@@ -25,7 +25,7 @@ class Story(BaseModel):
         for inject in injects:
             self.injects[inject.slug] = inject
 
-    def add_inject(self, inject: Inject):
+    def add_inject(self, inject: BaseChoiceInject):
         """Adds a single inject to the story.
            If the story already contains an inject with this slug, the new inject will overwrite the existing inject.
 
@@ -40,7 +40,7 @@ class Story(BaseModel):
         :returns: the inject that has been removed."""
         if isinstance(inject, str):
             return self._remove_inject_by_slug(inject)
-        elif isinstance(inject, Inject):
+        elif isinstance(inject, BaseChoiceInject):
             return self.injects.pop(str(inject.slug))
         else:
             raise TypeError("Argument for removing inject must be of type 'str' or 'Inject'!")
@@ -91,7 +91,7 @@ class ScenarioData(BaseModel):
     scenario_description: str
     stories: List[Story] = []
 
-    _variables: Dict[str, ScenarioVariable] = PrivateAttr({})
+    _variables: Dict[str, BaseScenarioVariable] = PrivateAttr({})
     _variable_values: dict = PrivateAttr({})
 
     def __init__(self, title: str, scenario_description: str, scenario_id: str = "", **keyword_args):
@@ -136,17 +136,17 @@ class Scenario(ScenarioData):
     def remove_story(self, story: Story):
         self.stories.remove(story)
     
-    def add_variable(self, var: ScenarioVariable, starting_value=None):
+    def add_variable(self, var: BaseScenarioVariable, starting_value=None):
         if var.name in self._variables:
             raise ValueError("Cannot insert two scenario_design variables of the same name!")
         self._variables[var.name] = var
         self.set_variable_starting_value(var, starting_value)
     
-    def remove_variable(self, var: ScenarioVariable):
+    def remove_variable(self, var: BaseScenarioVariable):
         self._variables.pop(var.name)
         self._variable_values.pop(var.name)
 
-    def set_variable_starting_value(self, var: ScenarioVariable, starting_value=None):
+    def set_variable_starting_value(self, var: BaseScenarioVariable, starting_value=None):
         if var.is_value_legal(starting_value):
             self._variable_values[var.name] = starting_value
         else:

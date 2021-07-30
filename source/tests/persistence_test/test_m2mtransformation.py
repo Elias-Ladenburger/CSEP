@@ -1,7 +1,6 @@
 from unittest import TestCase
 
 from domain.game_play.mock_interface import MockScenarioBuilder
-from domain.scenario_design.injects import Inject
 from infrastructure.database import CustomDB
 
 

@@ -2,9 +2,9 @@ import copy
 from datetime import datetime
 from enum import Enum
 
-from domain.scenario_design.auxiliary import VariableChange
-from domain.scenario_design.injects import Inject
-from domain.scenario_design.scenario import Scenario, ScenarioVariable
+from domain.common.auxiliary import BaseVariableChange
+from domain.common.injects import BaseChoiceInject
+from domain.scenario_design.scenario import Scenario, BaseScenarioVariable
 
 
 class GameState(Enum):
@@ -49,7 +49,7 @@ class Game:
         self._game_state = GameState.In_Progress
         return self.scenario.stories[0].entry_node
 
-    def set_game_variable(self, var: ScenarioVariable, new_value):
+    def set_game_variable(self, var: BaseScenarioVariable, new_value):
         if var.is_value_legal(new_value):
             self.variables[var.name].update_value(new_value)
         else:
@@ -69,7 +69,7 @@ class Game:
         """Get an inject object that comes closest to the inject candidate."""
         if isinstance(inject_candidate, str):
             return self.get_inject_by_slug(inject_candidate)
-        elif isinstance(inject_candidate, Inject):
+        elif isinstance(inject_candidate, BaseChoiceInject):
             return inject_candidate
         else:
             raise TypeError("the parameter must be of type 'str' or 'Inject'!")
@@ -100,7 +100,7 @@ class Game:
         history = {"inject_slug": inject.slug, "end_time": datetime.now(), "solution": solution}
         self._history.append(history)
 
-    def _evaluate_change(self, change: VariableChange):
+    def _evaluate_change(self, change: BaseVariableChange):
         """Evaluate the conditions and variable changes of a given transition.
 
         :param change: the Transition to evaluate.
@@ -109,7 +109,7 @@ class Game:
         var_name = change.var.name
         self.variables[var_name].update_value(change)
 
-    def _evaluate_next_inject(self, inject: Inject):
+    def _evaluate_next_inject(self, inject: BaseChoiceInject):
         if not inject:
             return self._begin_next_story()
         if inject.condition:

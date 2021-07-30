@@ -3,11 +3,11 @@ from typing import List
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
 from markupsafe import Markup
-from wtforms import StringField, SubmitField, FormField, TextAreaField, FieldList, SelectField, Form
+from wtforms import StringField, FormField, TextAreaField, FieldList, SelectField, Form
 from wtforms.validators import DataRequired, Optional
 from wtforms.widgets import HiddenInput
 
-from domain.scenario_design.auxiliary import ScenarioVariable, DataType
+from domain.common.auxiliary import BaseScenarioVariable, DataType
 from domain.scenario_design.scenario import Scenario, Story
 
 
@@ -94,7 +94,7 @@ class ScenarioForm(FlaskForm):
     stories_form = FieldList(FormField(StoryForm))
     variables_form = FieldList(FormField(ScenarioVariableForm))
 
-    def __init__(self, scenario=None, stories: List[Story] = None, variables: List[ScenarioVariable] = None, **kwargs):
+    def __init__(self, scenario=None, stories: List[Story] = None, variables: List[BaseScenarioVariable] = None, **kwargs):
         super().__init__(**kwargs)
         if isinstance(scenario, Scenario):
             self.essentials_form.form.populate_from_dict(scenario.dict())

@@ -1,8 +1,8 @@
 import json
 from typing import List
 
-from domain.scenario_design.auxiliary import ScenarioVariable
-from domain.scenario_design.injects import Inject, InjectChoice
+from domain.common.auxiliary import BaseScenarioVariable
+from domain.common.injects import BaseChoiceInject, BaseInjectChoice
 from domain.scenario_design.scenario import Scenario, Story
 from infrastructure.repository import Repository
 
@@ -141,20 +141,20 @@ class ScenarioFactory:
     @staticmethod
     def _build_inject_from_dict(inject_data):
         inject_data.pop("slug")
-        inject = Inject(**inject_data)
+        inject = BaseChoiceInject(**inject_data)
         return inject
 
     @staticmethod
     def _build_transition_from_dict(transition_data, story):
         transition_data["from_inject"] = story.get_inject_by_slug(transition_data["from_inject"])
         transition_data["to_inject"] = story.get_inject_by_slug(transition_data["to_inject"])
-        transition = InjectChoice(**transition_data)
+        transition = BaseInjectChoice(**transition_data)
         return transition
 
     @staticmethod
     def _build_vars_from_dict(scenario_vars, var_values, scenario):
         for var_name in scenario_vars:
-            scenario.add_variable(ScenarioVariable(**scenario_vars[var_name]), var_values[var_name])
+            scenario.add_variable(BaseScenarioVariable(**scenario_vars[var_name]), var_values[var_name])
         return scenario
 
 

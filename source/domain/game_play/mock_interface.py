@@ -1,8 +1,10 @@
+from domain.common.auxiliary import DataType
+from domain.common.injects import InjectResult
 from domain.game_play.game import Game, GameFactory
-from domain.scenario_design.auxiliary import DataType
-from domain.scenario_design.injects import InjectChoice, Inject, InjectCondition, InjectResult
-from domain.scenario_design.scenario import Scenario, Story, ScenarioVariable
+from domain.scenario_design.injects import Inject, InjectChoice, InjectCondition
+from domain.scenario_design.scenario import Scenario, Story, BaseScenarioVariable
 from domain.scenario_design.scenario_management import ScenarioFactory
+
 
 
 class MockScenarioBuilder:
@@ -22,10 +24,10 @@ class MockScenarioBuilder:
 
     @classmethod
     def _add_variables(cls, scenario):
-        variables = [(ScenarioVariable(name="Budget", datatype=DataType.NUMBER, private=False), 10000),
-                     (ScenarioVariable(name="Financial Loss", datatype=DataType.NUMBER, private=False), 0),
-                     (ScenarioVariable(name="Reputation Damage", datatype=DataType.TEXT, private=False), "None"),
-                     (ScenarioVariable(name="Internal Variable", datatype=DataType.BOOL, private=True), False)
+        variables = [(BaseScenarioVariable(name="Budget", datatype=DataType.NUMBER, private=False), 10000),
+                     (BaseScenarioVariable(name="Financial Loss", datatype=DataType.NUMBER, private=False), 0),
+                     (BaseScenarioVariable(name="Reputation Damage", datatype=DataType.TEXT, private=False), "None"),
+                     (BaseScenarioVariable(name="Internal Variable", datatype=DataType.BOOL, private=True), False)
                      ]
 
         for var, starting_value in variables:
@@ -35,18 +37,18 @@ class MockScenarioBuilder:
     @classmethod
     def _build_chapter_1(cls, scenario):
         intro_inject = Inject(label="Introduction",
-                              text="Hello Player! In this scenario you will indulge in your dark side: "
+                                        text="Hello Player! In this scenario you will indulge in your dark side: "
                                    "playing through the eyes of an expert social engineer. "
                                    "Your first target is Jaffa Bezous, "
                                    "the Chief Operating Officer of a global bookstore."
                                    "What will your preparation look like?")
 
         second_inject = Inject(label="Second Inject",
-                               text="Interesting choice... "
+                                         text="Interesting choice... "
                                     "let's see, if your preparation pays off. How will you proceed?")
         intro_inject.next_inject = second_inject
 
-        other_first_second = InjectChoice(from_inject=intro_inject, to_inject=second_inject, label="Do nothing")
+        other_first_second = InjectChoice(label="Do nothing")
 
         intro_inject.choices.append(other_first_second)
 
@@ -60,7 +62,7 @@ class MockScenarioBuilder:
     def _build_chapter_2(cls, scenario):
         last_inject = Inject(label="Finish", text="You have completed the test scenario!")
         second_last_inject = Inject(label="Almost Done", text="Well done, you are almost there!",
-                                    next_inject=last_inject)
+                                              next_inject=last_inject)
 
         final_transition = InjectChoice(label="Walk straight ahead")
         alternative_transition = InjectChoice(label="Turn Right")
@@ -95,9 +97,9 @@ class BranchingScenarioBuilder(MockScenarioBuilder):
 
         budget_var = scenario.variables["Budget"]
         condition = InjectCondition(budget_var, comparison_operator="=",
-                                    variable_threshold=100000, alternative_inject=new_inject)
+                                        variable_threshold=100000, alternative_inject=new_inject)
         choice_1 = InjectChoice(label=transition_label,
-                                outcome=InjectResult(next_inject=new_inject, variable_changes=[]))
+                                    outcome=InjectResult(next_inject=new_inject, variable_changes=[]))
 
         inject_0.choices.append(choice_1)
         story.add_inject(new_inject)

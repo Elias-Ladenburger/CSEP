@@ -29,4 +29,4 @@ class DictConversionTest(TestCase):
     def test_model(self):
         print(self.model.dict())
         print(self.model._test2)
-        self.assertEqual(True, True)
+        self.assertTrue("_test2" in self.model.dict())

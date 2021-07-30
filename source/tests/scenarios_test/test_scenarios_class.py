@@ -1,15 +1,17 @@
 from unittest import TestCase
 
-from domain.game_play.mock_interface import BranchingScenarioBuilder
+from domain.game_play.mock_interface import BranchingScenarioBuilder, MockScenarioBuilder
 from domain.common.injects import BaseChoiceInject
-from domain.scenario_design.scenario import Story
+from domain.scenario_design.scenario import BaseStory
 
 
 class ScenarioTest(TestCase):
+    def setUp(self) -> None:
+        self.scenario = MockScenarioBuilder.build_scenario()
 
     def test_scenario_add_story(self):
         inject = BaseChoiceInject(label="test inject", text="text")
-        story = Story(title="introduction", entry_node=inject)
+        story = BaseStory(title="introduction", entry_node=inject)
 
         scenario = BranchingScenarioBuilder.build_scenario()
         scenario.add_story(story)

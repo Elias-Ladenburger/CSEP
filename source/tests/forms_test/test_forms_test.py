@@ -1,7 +1,8 @@
 from unittest import TestCase
 
+from domain.common.auxiliary import BaseScenarioVariable
 from domain.game_play.mock_interface import MockScenarioBuilder
-from web.scenario_forms import Form2ScenarioConverter, ScenarioForm
+from web.controllers.scenario_design.scenario_forms import ScenarioForm, ScenarioVariableForm
 
 from web.app_factory import AppFactory
 
@@ -17,7 +18,7 @@ class ScenarioPersistenceTest(TestCase):
     def test_form_validation(self):
         with self.app.test_request_context():
             my_form = ScenarioForm(formdata=self.test_dict)
-            self.assertTrue(my_form.essentials_form.validate(my_form.essentials_form))
+            self.assertTrue(my_form.core_form.validate(my_form.core_form))
 
     def test_form_conversion(self):
         demo_scenario = MockScenarioBuilder.build_scenario()
@@ -28,16 +29,19 @@ class ScenarioPersistenceTest(TestCase):
     def test_hidden(self):
         with self.app.test_request_context():
             my_form = ScenarioForm()
-            hidden_field = my_form.essentials_form.scenario_id
+            hidden_field = my_form.core_form.scenario_id
             print(hidden_field)
             self.assertTrue('type="hidden"' in str(hidden_field))
 
-    def test_subforms(self):
+    def test_prerender_form(self):
         with self.app.test_request_context():
-            my_form = ScenarioForm()
-            my_form.stories_form.append_entry({})
-            for story in my_form.stories_form:
-                print(story.inject_form())
+            my_form = ScenarioVariableForm()
+            budget = BaseScenarioVariable(name="budget", value=100000, datatype="numeric", is_private=False)
+            budget_dict = budget.dict()
+            for field in my_form:
+                if field.name in budget_dict:
+                    field.data = budget_dict[field.name]
+                print(field)
 
     def _prepare_scenario(self):
         demo_scenario = MockScenarioBuilder.build_scenario()

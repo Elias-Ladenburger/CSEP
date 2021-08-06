@@ -59,26 +59,28 @@ class BaseScenario(BaseModel):
     stories: List[BaseStory] = []
 
     _variables: Dict[str, BaseScenarioVariable] = PrivateAttr({})
-    _variable_values: dict = PrivateAttr({})
 
     def __init__(self, title: str, scenario_description: str, scenario_id: str = "", **keyword_args):
         super().__init__(title=title, scenario_description=scenario_description, **keyword_args)
         self._id = scenario_id
+        var_dict = keyword_args.get("variables", {})
+        if var_dict:
+            for var_name, scenario_var in var_dict.items():
+                if not isinstance(scenario_var, BaseScenarioVariable):
+                    var_dict[var_name] = BaseScenarioVariable(**scenario_var)
+                self._variables = var_dict
 
     @property
     def scenario_id(self):
         return self._id
 
     @property
-    def variables(self):
-        return self._variables
+    def description(self):
+        return self.scenario_description
 
     @property
-    def variable_dict(self):
-        var_dict = {}
-        for var in self._variables:
-            var_dict[var] = self._variables[var].dict()
-        return var_dict
+    def variables(self):
+        return self._variables
 
     def get_inject_by_slug(self, inject_slug: str):
         for story in self.stories:
@@ -101,7 +103,6 @@ class BaseScenario(BaseModel):
         scenario_dict = super().dict(**kwargs)
         scenario_dict.update({
             "scenario_id": self.scenario_id,
-            "variables": self.variable_dict,
-            "variable_values": self._variable_values
+            "variables": {var_name: var.dict() for (var_name, var) in self.variables.items()},
         })
         return scenario_dict

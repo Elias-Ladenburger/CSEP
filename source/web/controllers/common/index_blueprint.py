@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, url_for, redirect
 
 index_gp = Blueprint('index', __name__,
-                     template_folder='templates', url_prefix="/")
+                     template_folder='../../templates', url_prefix="/")
 
 
 @index_gp.route("/")
@@ -18,6 +18,7 @@ def login():
 def scenarios():
     return redirect(url_for("scenarios.show_scenarios"))
 
+
 @index_gp.route("/register")
 def register():
     return render_template("signup.html")
@@ -31,3 +32,8 @@ def concept_page():
 @index_gp.route("/scenarios")
 def scenarios_page():
     return render_template("index.html")
+
+
+@index_gp.route("/404")
+def not_found_page():
+    return render_template("404_not_found.html")

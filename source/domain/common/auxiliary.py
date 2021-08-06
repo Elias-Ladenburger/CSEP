@@ -4,7 +4,7 @@ import operator
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
 
 
 class DataType(Enum):
@@ -18,7 +18,11 @@ class BaseScenarioVariable(BaseModel):
     name: str
     datatype: DataType
     is_private: bool = False
-    _value: str
+    _value: str = PrivateAttr("None")
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._value = kwargs.pop("value")
 
     @property
     def value(self):
@@ -49,6 +53,7 @@ class BaseScenarioVariable(BaseModel):
     def dict(self, **kwargs):
         var_dict = super().dict(**kwargs)
         var_dict["datatype"] = self.datatype.value
+        var_dict["value"] = self.value
         return var_dict
 
 
@@ -70,14 +75,19 @@ class LegalOperator:
 
     @classmethod
     def get_comparison_operator(cls, operator_string: str):
-        return cls._get_operator(operator_string, cls._comparison_operators)
+        return cls._get_operator_from_dict(operator_string, cls._comparison_operators)
 
     @classmethod
     def get_manipulation_operator(cls, operator_string: str):
-        return cls._get_operator(operator_string, cls._manipulation_operators)
+        return cls._get_operator_from_dict(operator_string, cls._manipulation_operators)
 
     @classmethod
-    def _get_operator(cls, operator_string: str, legal_operators):
+    def get_operator(cls, operator_string: str):
+        legal_operators = cls._comparison_operators.update(cls._manipulation_operators)
+        return cls._get_operator_from_dict(operator_string=operator_string, legal_operators=legal_operators)
+
+    @classmethod
+    def _get_operator_from_dict(cls, operator_string: str, legal_operators: dict):
         if operator_string in legal_operators:
             return legal_operators[operator_string]
         else:
@@ -106,6 +116,10 @@ class BaseVariableChange(BaseModel):
             return new_value
         else:
             raise ValueError("This variable cannot have a value of this type!")
+
+    @classmethod
+    def get_operator(cls, operator_string: str):
+        LegalOperator.get_manipulation_operator(operator_string)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):

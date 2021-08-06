@@ -3,7 +3,7 @@ from unittest import TestCase
 from domain.game_play.injects import Inject
 from domain.game_play.mock_interface import BranchingScenarioBuilder, MockScenarioBuilder
 from domain.common.injects import BaseChoiceInject
-from domain.scenario_design.scenario import BaseStory, Story
+from domain.scenario_design.scenarios import BaseStory, Story
 
 
 class ScenarioTest(TestCase):

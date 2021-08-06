@@ -3,11 +3,13 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional, List, Dict
 
+from pydantic import BaseModel
+
 from domain.common.auxiliary import BaseVariableChange
 from domain.common.injects import BaseChoiceInject
 from domain.common.scenarios import BaseScenario
 from domain.game_play.injects import Inject
-from domain.scenario_design.scenario import Scenario, BaseScenarioVariable
+from domain.scenario_design.scenarios import EditableScenario, BaseScenarioVariable
 
 
 class GameState(Enum):
@@ -16,21 +18,29 @@ class GameState(Enum):
     Closed = 3
 
 
-class Game(BaseScenario):
+class GameVariableChange(BaseVariableChange):
+    def calculate_new_value(self, old_value):
+        operator = self.get_operator(self.operator)
+        return operator(old_value, self._new_value)
+
+
+class Game(BaseModel):
     """A scenario_design that is currently being played or has been played."""
     _start_time: datetime.now()
     _end_time: Optional[datetime] = None
     _game_state: GameState = GameState.Open
-    current_story_index: int = 0
+    _current_story_index: int = 0
     _history = []
+    scenario: BaseScenario
+    variables: Dict[str, BaseScenarioVariable] = {}
 
-    def __init__(self, scenario: Scenario):
-        kwargs = scenario.dict()
-        super().__init__(**kwargs)
+    def __init__(self, scenario: BaseScenario, **kwargs):
+        super().__init__(scenario=scenario, **kwargs)
+        self.variables = copy.deepcopy(self.scenario.variables)
 
     @property
     def name(self):
-        return self.title
+        return self.scenario.title
 
     @property
     def is_open(self):
@@ -46,20 +56,20 @@ class Game(BaseScenario):
 
     @property
     def current_story(self):
-        return self.stories[self.current_story_index]
+        return self.scenario.stories[self._current_story_index]
 
     def start_game(self):
         self._game_state = GameState.In_Progress
-        return self.stories[0].entry_node
+        return self.scenario.stories[0].entry_node
 
     def set_game_variable(self, var: BaseScenarioVariable, new_value):
-        self.variables[var.name].update_value(new_value)
+        self.variables[var.name].value = new_value
 
     def get_visible_vars(self):
         visible_stats = {}
-        for var in self.variables:
-            if self.variables[var].is_private:
-                visible_stats[var.name] = self.variables[var.name]
+        for var_name in self.variables:
+            if self.variables[var_name].is_private:
+                visible_stats[var_name] = self.variables[var_name]
         return visible_stats
 
     def get_all_vars(self):
@@ -78,7 +88,7 @@ class Game(BaseScenario):
         """Provide an inject that has the given slug."""
         inject = self.current_story.get_inject_by_slug(inject_slug)
         if not inject:
-            inject = super().get_inject_by_slug(inject_slug)
+            inject = self.scenario.get_inject_by_slug(inject_slug=inject_slug)
         return inject
 
     def solve_inject(self, inject_candidate, solution):
@@ -100,14 +110,15 @@ class Game(BaseScenario):
         history = {"inject_slug": inject.slug, "end_time": datetime.now(), "solution": solution}
         self._history.append(history)
 
-    def _evaluate_change(self, change: BaseVariableChange):
+    def _evaluate_change(self, change: GameVariableChange):
         """Evaluate the conditions and variable changes of a given transition.
 
         :param change: the Transition to evaluate.
         :return: The Inject which this transition points to.
         """
         var_name = change.var.name
-        self.variables[var_name].update_value(change)
+        old_value = self.variables[var_name]
+        self.variables[var_name].value = change.calculate_new_value(old_value)
 
     def _evaluate_next_inject(self, inject: Inject):
         if not inject:
@@ -118,9 +129,9 @@ class Game(BaseScenario):
             return inject
 
     def _begin_next_story(self):
-        self.current_story_index += 1
-        if -1 < self.current_story_index < len(self.stories):
-            return self.stories[self.current_story_index].entry_node
+        self._current_story_index += 1
+        if -1 < self._current_story_index < len(self.scenario.stories):
+            return self.scenario.stories[self._current_story_index].entry_node
         else:
             self.end_game()
             return None
@@ -130,14 +141,14 @@ class Game(BaseScenario):
         self._end_time = datetime.now()
 
     def __str__(self):
-        return_str = "Game: " + self.title
-        for story in self.stories:
+        return_str = "Game: " + self.scenario.title
+        for story in self.scenario.stories:
             return_str += "\n" + str(story)
         return return_str
 
 
 class GroupGame(Game):
-    def __init__(self, scenario: Scenario):
+    def __init__(self, scenario: EditableScenario):
         super().__init__(scenario)
         self.breakpoints = []
         self.participants = []
@@ -162,13 +173,13 @@ class GroupGame(Game):
 
 class GameFactory:
     @staticmethod
-    def create_singleplayer_game(scenario: Scenario):
-        game = Game(scenario)
+    def create_singleplayer_game(scenario: EditableScenario):
+        game = Game(scenario=scenario)
         # GameRepository.save_game(game)
         return game
 
     @staticmethod
-    def create_multiplayer_game(scenario: Scenario):
+    def create_multiplayer_game(scenario: EditableScenario):
         return GroupGame(scenario)
 
 

@@ -1,8 +1,8 @@
 from unittest import TestCase
 
 from domain.game_play.mock_interface import MockScenarioBuilder
-from domain.scenario_design.scenario import Scenario
-from domain.scenario_design.scenario_management import ScenarioFactory
+from domain.scenario_design.scenarios import EditableScenario
+from domain.common.scenario_management import ScenarioFactory
 from infrastructure.database import CustomDB
 
 
@@ -17,7 +17,7 @@ class ScenarioMock(TestCase):
 
     def test_create_single_scenario(self):
         test_scenario = MockScenarioBuilder.build_scenario()
-        self.assertIsInstance(test_scenario, Scenario)
+        self.assertIsInstance(test_scenario, EditableScenario)
 
     def test_create_two_scenarios_with_id(self):
         scenario1 = ScenarioFactory.create_scenario(title="test", description="a description", scenario_id="31231asa")

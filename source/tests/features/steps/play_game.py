@@ -2,14 +2,14 @@ from behave import *
 
 from domain.game_play.game import GameFactory
 from domain.common.injects import BaseChoiceInject
-from domain.scenario_design.scenario import Scenario, BaseStory
+from domain.scenario_design.scenarios import EditableScenario, BaseStory
 
 use_step_matcher("parse")
 
 
 @step("a learning scenario")
 def step_impl(context):
-    learning_scenario = Scenario(title="test scenario", description="test description")
+    learning_scenario = EditableScenario(title="test scenario", description="test description")
 
     some_inject = BaseChoiceInject(title="Some inject", text="Some text")
     some_story = BaseStory(title="Some Story", entry_node=some_inject)

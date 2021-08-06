@@ -6,7 +6,7 @@ from domain.common.auxiliary import BaseVariableChange
 from domain.common.injects import BaseChoiceInject, BaseInjectChoice, BaseInjectCondition
 
 
-class Inject(BaseChoiceInject):
+class EditableInject(BaseChoiceInject):
     @property
     def title(self):
         return self.label

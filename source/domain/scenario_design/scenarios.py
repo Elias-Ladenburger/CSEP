@@ -2,11 +2,11 @@ from typing import Optional, List
 
 from domain.common.auxiliary import BaseScenarioVariable
 from domain.common.scenarios import BaseStory, BaseScenario
-from domain.scenario_design.injects import Inject
+from domain.scenario_design.injects import EditableInject
 
 
 class Story(BaseStory):
-    def add_injects(self, injects: List[Inject]):
+    def add_injects(self, injects: List[EditableInject]):
         """
         Adds a list of injects to the story.
         This will overwrite existing injects within the story, if they have the same slug as one of the new injects.
@@ -15,7 +15,7 @@ class Story(BaseStory):
         for inject in injects:
             self.injects[inject.slug] = inject
 
-    def add_inject(self, inject: Inject):
+    def add_inject(self, inject: EditableInject):
         """Adds a single inject to the story.
            If the story already contains an inject with this slug, the new inject will overwrite the existing inject.
 
@@ -30,7 +30,7 @@ class Story(BaseStory):
         :returns: the inject that has been removed."""
         if isinstance(inject, str):
             return self._remove_inject_by_slug(inject)
-        elif isinstance(inject, Inject):
+        elif isinstance(inject, EditableInject):
             return self.injects.pop(str(inject.slug))
         else:
             raise TypeError("Argument for removing inject must be of type 'str' or 'Inject'!")
@@ -39,7 +39,7 @@ class Story(BaseStory):
         return self.injects.pop(inject_slug)
 
 
-class Scenario(BaseScenario):
+class EditableScenario(BaseScenario):
     """
     A scenario is a number of realistic situations that are exposed to a participant.
     """
@@ -55,28 +55,34 @@ class Scenario(BaseScenario):
                          scenario_id=scenario_id, **keyword_args)
 
     def add_story(self, story: Story):
+        """Adds a new story to this scenario."""
         self.stories.append(story)
 
     def remove_story(self, story: Story):
+        """
+        Removes an entire chapter from this scenario.
+        """
         self.stories.remove(story)
 
-    def add_variable(self, var: BaseScenarioVariable, starting_value=None):
+    def add_variable(self, var: BaseScenarioVariable):
+        """
+        Adds a new variable to this scenario.
+        """
         if var.name in self._variables:
             raise ValueError("Cannot insert two scenario_design variables of the same name!")
         self._variables[var.name] = var
-        self.set_variable_starting_value(var, starting_value)
 
-    def remove_variable(self, var: BaseScenarioVariable):
-        self._variables.pop(var.name)
-        self._variable_values.pop(var.name)
-
-    def set_variable_starting_value(self, var: BaseScenarioVariable, starting_value=None):
-        if var.is_value_legal(starting_value):
-            self._variable_values[var.name] = starting_value
+    def remove_variable(self, scenario_var):
+        """
+        Removes a variable from this scenario.
+        :param scenario_var: either the name or the entire scenario variable to be removed
+        """
+        if isinstance(scenario_var, BaseScenarioVariable):
+            self._variables.pop(scenario_var.name)
         else:
-            raise ValueError("Trying to assign an illegal value to this scenario_design variable!")
+            self._variables.pop(scenario_var)
 
-    def _set_id(self, scenario_id: str):
-        if self._id:
+    def set_id(self, scenario_id: str):
+        if self._id and self._id != "new":
             raise ValueError("Cannot reassign id of a scenario object!")
-        self._scenario_id = scenario_id
+        self._id = scenario_id

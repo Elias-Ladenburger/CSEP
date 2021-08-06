@@ -14,6 +14,7 @@ class BaseInject(GraphNode):
 
     def __init__(self, label: str, **keyword_args):
         slug = keyword_args.pop("slug", label.replace(" ", "-").lower())
+        self.update_forward_refs()
         super().__init__(label=label, slug=slug, **keyword_args)
 
     @property

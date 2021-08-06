@@ -9,6 +9,10 @@ from domain.common.injects import BaseChoiceInject, InjectResult, BaseInjectCond
 class Inject(BaseChoiceInject):
     condition: InjectCondition = None
 
+    def __init__(self, **kwargs):
+        self.update_forward_refs()
+        super().__init__(**kwargs)
+
     def solve(self, solution: str):
         """
         Resolves user input (or lack thereof).

@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+
+
 {% block main_content %}
 
     <div class="container-fluid">
@@ -9,10 +11,11 @@
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover"
                    id="scenarios-table"
-                   data-data="{{ scenario }}"
                    data-delete-url="{{ url_for('scenarios.delete_scenario') }}"
+                   data-create-url="{{ url_for('scenarios.new_scenario') }}"
 
                    data-buttons="scenario_table_buttons"
+                   data-buttons-class="primary"
                    data-buttons-align="right"
                    data-buttons-order=["toggle"]
 
@@ -30,15 +33,19 @@
                    data-detail-view-by-click="true">
                 <thead class="bg-blue-2">
                 <tr>
-                    <th scope="col" id="scenario_name" data-sortable="true" data-field="name">Name</th>
-                    <th data-visible="false" scope="col" id="learning_objectives" data-field="learning_objectives">Learning Objectives</th>
+                    <th scope="col" id="scenario_name" data-sortable="true" data-field="title">Name</th>
+                    <th data-visible="false" scope="col" id="learning_objectives" data-field="learning_objectives">
+                        Learning Objectives
+                    </th>
                     <th data-visible="false" scope="col" id="target_group" data-field="target_group">Target Group</th>
-                    <th data-visible="false" scope="col" id="required_knowledge" data-field="required_knowledge">Required Knowledge</th>
+                    <th data-visible="false" scope="col" id="required_knowledge" data-field="required_knowledge">
+                        Required Knowledge
+                    </th>
                     <th data-visible="false" data-field="scenario_description">Description</th>
                     <th scope="col" id="scenario_actions" title="actions">Actions</th>
                 </tr>
                 </thead>
-                <tbody>
+<tbody>
                 {% for scenario in scenarios %}
                     <tr id="{{ scenario.scenario_id }}">
                         <td>{{ scenario.title }}</td>
@@ -48,10 +55,12 @@
                         <td>{{ scenario.scenario_description }}</td>
                         <td>
                             <a href="{{ url_for('scenarios.edit_scenario', scenario_id=scenario.scenario_id) }}"
-                               class="btn" title="Edit this scenario">
+                               class="btn btn-primary" title="Edit this scenario">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <button onclick="deleteScenario('{{ scenario.scenario_id }}')" class="btn" title="Delete this scenario">
+                            <button onclick="deleteScenario('{{ scenario.scenario_id }}',
+                                    '{{ url_for('scenarios.delete_scenario') }}')" class="btn btn-danger"
+                                    title="Delete this scenario">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </td>
@@ -61,56 +70,5 @@
             </table>
         </div>
     </div>
-
-    <script>
-        function scenario_table_buttons() {
-            return {
-                btnAdd: {
-                    text: 'Create scenario',
-                    icon: 'fas fa-plus-square',
-                    event: function () {
-                        window.location = "{{ url_for('scenarios.new_scenario') }}";
-                    },
-                    attributes: {
-                        title: 'Add a new scenario'
-                    }
-                },
-                btnTutorial: {
-                    text: 'Start Tutorial',
-                    icon: 'fas fa-graduation-cap',
-                    event: function () {
-                        window.location = "{{ url_for('scenarios.new_scenario') }}";
-                    },
-                    attributes: {
-                        title: 'Start a tutorial to create a scenario'
-                    }
-                },
-            }
-        }
-
-        function detailFormatter(index, row, element) {
-            let html = []
-            $.each(row, function (key, value) {
-                if (!key.startsWith('_') && !key.startsWith('5')) {
-                    key = key.replace("scenario", "")
-                    key = key.replace("_", " ")
-                    html.push('<p><b>' + key + ':</b> ' + value + '</p>')
-                }
-            })
-            return html.join('')
-        }
-
-        function deleteScenario(scenario_id){
-            const deleteURL = $('#scenarios-table').data()["deleteUrl"];
-            $('#'+scenario_id).remove();
-            jQuery.ajax({
-                url: deleteURL,
-                method: 'DELETE',
-                data: {
-                    scenario_id: scenario_id
-                }
-            })
-        }
-    </script>
 
 {% endblock %}

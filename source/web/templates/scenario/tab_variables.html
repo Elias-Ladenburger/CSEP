@@ -1,0 +1,87 @@
+{% extends "scenario_tab_details.html" %}
+{% from 'helpers/_form_helpers.html' import render_subform, render_field %}
+{% block details_content %}
+    <div class="container-fluid">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover"
+                   id="variablesTable"
+                   data-delete-url="{{ url_for('variables.delete_variable', scenario_id=scenario.scenario_id) }}"
+
+                   data-buttons="variableTableButtons"
+                   data-buttons-align="right"
+                   data-buttons-class="primary"
+                   data-buttons-order=["toggle"]
+
+                   data-toggle="table"
+                   data-show-toggle="true"
+                   data-card-view="false"
+
+                   data-pagination="true"
+                   data-search="true"
+                   data-search-align="left"
+            >
+                <thead class="bg-blue-2">
+                <tr>
+                    <th scope="col" id="variable_name">Name</th>
+                    <th id="datatype">Datatype</th>
+                    <th id="visibility">Visible to participant?</th>
+                    <th id="variable-value">Starting Value</th>
+                    <th id="actions">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for var_name in scenario.variables %}
+                    <tr id="variable-number-{{loop.index}}">
+                        <td>{{ var_name }}</td>
+                        <td>{{ scenario.variables[var_name].datatype.value }}</td>
+                        <td>{{ scenario.variables[var_name].is_private }}</td>
+                        <td>{{ scenario.variables[var_name].value }}</td>
+                        <td>
+                            <a href="{{ url_for('variables.save_variable', scenario_id=scenario.scenario_id) }}"
+                               class="btn btn-primary" title="Edit this variable">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button onclick="deleteVariable('{{ var_name }}', 'variable-number-{{ loop.index }}');" class="btn btn-danger" title="Delete this variable">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="variable-form-modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="variable-modal-title">Add a Variable</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ url_for('variables.save_variable', scenario_id=scenario.scenario_id) }}" method="POST"
+                      class="form">
+                    <div class="modal-body">
+                        {{ variables_form.csrf_token }}
+                        {{ render_field(variables_form.name) }}
+                        {{ render_field(variables_form.datatype) }}
+                        {{ render_field(variables_form.value) }}
+                        {{ render_field(variables_form.is_private) }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>Save Changes
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    </script>
+{% endblock %}

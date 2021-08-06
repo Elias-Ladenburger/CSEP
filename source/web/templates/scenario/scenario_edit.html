@@ -6,28 +6,27 @@
 {% block body %}
         <ul class="nav nav-tabs mx-auto" id="scenarioTabs" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
-                   aria-selected="true">Essentials</a>
+                <a class="nav-link active" id="core-tab" data-toggle="tab" href="#core" role="tab" aria-controls="core"
+                   aria-selected="true">Core Information</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
-                   aria-controls="profile"
-                   aria-selected="false">Chapters</a>
+                <a class="nav-link" id="stories-tab" data-toggle="tab" href="#stories" role="tab"
+                   aria-controls="stories" aria-selected="false">Chapters</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
-                   aria-controls="contact"
-                   aria-selected="false">Variables</a>
+                <a class="nav-link" id="variables-tab" data-toggle="tab" href="#variables" role="tab"
+                   aria-controls="variables" aria-selected="false">Variables</a>
             </li>
         </ul>
 
         <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="home" role="tabpanel"
-                 aria-labelledby="home-tab">{% include "essentials_view.html" %}</div>
-            <div class="tab-pane fade" id="profile" role="tabpanel"
-                 aria-labelledby="profile-tab">{% include "story_view_alternative.html" %}</div>
-            <div class="tab-pane fade" id="contact" role="tabpanel"
-                 aria-labelledby="contact-tab">{% include "variable_view.html" %}</div>
+            <div class="tab-pane fade show active" id="core" role="tabpanel" aria-labelledby="core-tab">
+                {% include 'tab_core_info.html' %}</div>
+            <div class="tab-pane fade" id="stories" role="tabpanel" aria-labelledby="stories-tab">
+                {% include 'tab_stories.html' %}</div>
+            <div class="tab-pane fade" id="variables" role="tabpanel" aria-labelledby="variables-tab">
+               {% include 'tab_variables.html' %}
+                </div>
         </div>
 
 

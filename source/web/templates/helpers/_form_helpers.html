@@ -1,5 +1,6 @@
-{% macro render_field(field) %}
+{% macro render_field(field, data) %}
 <div class="form-group">
+    {% if data %}<!--{{ field.process_data(data) }}-->{% endif %}
     {{ field.label|safe }}
     {{ field(**kwargs)|safe }}
 
@@ -35,4 +36,8 @@ Arguments:
         {% endfor %}
         <a class="remove" href="#">Remove</a>
     </div>
+{% endmacro %}
+
+{% macro render_variables_modal() %}
+
 {% endmacro %}

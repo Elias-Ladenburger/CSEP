@@ -1,0 +1,60 @@
+{% from 'helpers/_form_helpers.html' import render_subform, render_field %}
+
+{% block details_content %}
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#variable-form-modal">
+        {% if variable %}Edit variable{% else %}Create a new variable{% endif %}
+    </button>
+
+    <div class="modal" tabindex="-1" role="dialog" id="variable-form-modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add a variable</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ url_for('variables.save_variable', scenario_id=scenario.scenario_id) }}" method="POST"
+                      class="form">
+                    <div class="modal-body">
+                        {% if variable %}
+                            form.name.process_data(variable.name)
+                            form.datatype.process_data(variable.datatype)
+                            form.value.process_data(variable.value)
+                            form.is_private.process_data(variable.is_private)
+                        {% endif %}
+                        {{ render_field(form.name) }}
+                        {{ render_field(form.datatype) }}
+                        {{ render_field(form.value) }}
+                        {{ render_field(form.is_private) }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>Save Changes
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+
+        function variable_table_buttons() {
+            return {
+                btnAdd: {
+                    text: 'New Variable',
+                    icon: 'fas fa-plus-square',
+                    event: function () {
+                        window.location = "{{ url_for('scenarios.new_scenario') }}";
+                    },
+                    attributes: {
+                        title: 'Add a new variable to this scenario'
+                    }
+                },
+            }
+        }
+    </script>
+{% endblock %}

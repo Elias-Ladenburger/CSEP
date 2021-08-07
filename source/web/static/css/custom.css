@@ -1,6 +1,7 @@
 :root {
   --light-gray: #d3d5d4ff;
   --red-danger: #bb342fff;
+  --failure: #721c24;
   --bootstrap-blue: #007bff;
   --blue-uno: #5386e4ff;
   --blue-space-cadet: #273469ff;
@@ -12,7 +13,7 @@
 body {
     font: 20px Montserrat, sans-serif;
     line-height: 1.8;
-    color: var(--light-gray);
+    color: var(--blue-space-cadet-2);
   }
 h1, h2, h3, h4, h5 {
   color:inherit;
@@ -146,12 +147,6 @@ input[type=text], input[type=password], input[type=email]{
   width:100%;
 }
 
-select, textarea {
-  background-color: var(--blue-space-cadet-2);
-  color: var(--light-gray);
-  font: 15px Montserrat, sans-serif;
-}
-
 .alert-failure {
   color: #721c24;
   background-color: #f8d7da;
@@ -160,14 +155,17 @@ select, textarea {
 
 label {
   display:block;
-  color: var(--blue-space-cadet-2)
-}
-
-.disclaimer {
-  font-size: 12px;
 }
 
 .badge-tag {
   background-color: var(--blue-space-cadet);
   color: var(--light-gray)
+}
+
+.danger {
+  color: var(--danger);
+}
+
+.quiet-footer {
+  color: var(--light-gray);
 }

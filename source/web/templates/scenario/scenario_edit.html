@@ -1,39 +1,34 @@
 {% extends "base_scenario.html" %}
+
 {% block headings %}
     {{ super() }}
 {% endblock %}
 
 {% block body %}
-        <ul class="nav nav-tabs mx-auto" id="scenarioTabs" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="core-tab" data-toggle="tab" href="#core" role="tab" aria-controls="core"
-                   aria-selected="true">Core Information</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="stories-tab" data-toggle="tab" href="#stories" role="tab"
-                   aria-controls="stories" aria-selected="false">Chapters</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="variables-tab" data-toggle="tab" href="#variables" role="tab"
-                   aria-controls="variables" aria-selected="false">Variables</a>
-            </li>
-        </ul>
+    <ul class="nav nav-tabs mx-auto" id="scenarioTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="core-tab" data-toggle="tab" href="#core" role="tab" aria-controls="core"
+               aria-selected="true">Core Information</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="stories-tab" data-toggle="tab" href="#stories" role="tab"
+               aria-controls="stories" aria-selected="false">Chapters</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="variables-tab" data-toggle="tab" href="#variables" role="tab"
+               aria-controls="variables" aria-selected="false">Variables</a>
+        </li>
+    </ul>
 
-        <div class="tab-content" id="myTabContent">
-            <div class="tab-pane fade show active" id="core" role="tabpanel" aria-labelledby="core-tab">
-                {% include 'tab_core_info.html' %}</div>
-            <div class="tab-pane fade" id="stories" role="tabpanel" aria-labelledby="stories-tab">
-                {% include 'tab_stories.html' %}</div>
-            <div class="tab-pane fade" id="variables" role="tabpanel" aria-labelledby="variables-tab">
-               {% include 'tab_variables.html' %}
-                </div>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="core" role="tabpanel" aria-labelledby="core-tab">
+            {% include 'tab_core_info.html' %}</div>
+        <div class="tab-pane fade" id="stories" role="tabpanel" aria-labelledby="stories-tab">
+            {% include 'tab_stories.html' %}</div>
+        <div class="tab-pane fade" id="variables" role="tabpanel" aria-labelledby="variables-tab">
+            {% include 'tab_variables.html' %}
         </div>
-
-
+    </div>
 
 
 {% endblock %}
-
-{% block custom_script %}
-    {{ super() }}
-{% endblock custom_script %}

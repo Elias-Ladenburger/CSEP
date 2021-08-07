@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% from 'helpers/_form_helpers.html' import render_field %}
 
 {% block main_content %}
 
@@ -45,7 +45,7 @@
                     <th scope="col" id="scenario_actions" title="actions">Actions</th>
                 </tr>
                 </thead>
-<tbody>
+                <tbody>
                 {% for scenario in scenarios %}
                     <tr id="{{ scenario.scenario_id }}">
                         <td>{{ scenario.title }}</td>
@@ -68,6 +68,36 @@
                 {% endfor %}
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="scenario-form-modal">
+        <div class="modal-dialog" role="document">
+            <div id="variable-modal-content" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="h5 modal-title">Create Scenario</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ url_for('scenarios.save_scenario') }}" method="POST" class="form">
+                    <div id="scenario-modal-content" class="modal-content">
+                        <div class="modal-body">
+                            {{ render_field(core_form.title, class="form-control") }}
+                            {{ render_field(core_form.scenario_description, class="form-control") }}
+                            {{ render_field(core_form.learning_objectives, class="form-control") }}
+                            {{ render_field(core_form.target_group, class="form-control") }}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>Save Changes
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 

@@ -1,5 +1,5 @@
 import flask
-from flask import Blueprint, render_template, redirect, flash
+from flask import Blueprint, render_template, redirect, flash, url_for
 
 from domain.scenario_design.scenario_management import EditableScenarioRepository, EditableScenarioFactory
 from web.controllers.scenario_design.scenario_forms import *
@@ -12,27 +12,30 @@ scenario_bp = Blueprint('scenarios', __name__,
 @scenario_bp.route("/")
 def show_scenarios():
     scenarios = EditableScenarioRepository.get_all_scenarios()
+    core_form = ScenarioCoreForm()
     scenarios = list(scenarios)
-    return render_template("scenarios_overview.html", scenarios=scenarios)
+    return render_template("scenarios_overview.html", scenarios=scenarios, core_form=core_form)
 
 
 @scenario_bp.route("/<scenario_id>/edit", methods=["GET", "POST"])
 def edit_scenario(scenario_id):
     scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
-    core_form = ScenarioCoreForm()
-    story_form = StoryForm()
-    variables_form = ScenarioVariableForm()
-    return edit_scenario_view(scenario=scenario, core_form=core_form, story_form=story_form, variables_form=variables_form)
+    return edit_scenario_view(scenario=scenario)
 
 
 @scenario_bp.route("/new")
 def new_scenario():
     scenario = EditableScenarioFactory.create_scenario(scenario_id="new")
-    return edit_scenario_view(scenario=scenario)
+    core_form = ScenarioCoreForm()
+    return render_template("tab_core_info.html", scenario=scenario, core_form=core_form)
 
 
 def edit_scenario_view(scenario: EditableScenario, **kwargs):
-    return render_template("scenario_edit.html", scenario=scenario, **kwargs)
+    core_form = ScenarioCoreForm()
+    story_form = StoryForm()
+    variables_form = ScenarioVariableForm()
+    return render_template("scenario_edit.html", scenario=scenario, core_form=core_form,
+                           story_form=story_form, variables_form=variables_form, **kwargs)
 
 
 @scenario_bp.route("/save", methods=["POST"])
@@ -45,7 +48,7 @@ def save_scenario(**kwargs):
         scenario = EditableScenarioFactory.build_from_dict(**scenario_dict)
         scenario = EditableScenarioRepository.save_scenario(scenario)
         flash("Scenario saved successfully!", category="success")
-        return redirect(flask.request.referrer)
+        return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario.scenario_id))
     else:
         flash("Something went wrong!", category="failure")
         redirect(flask.request.referrer)
@@ -109,4 +112,3 @@ def show_stats(scenario_id):
 
 def tab_details(template, scenario, form, **kwargs):
     return render_template(template, scenario=scenario, form=form, **kwargs)
-

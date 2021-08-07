@@ -1,0 +1,29 @@
+{% from 'helpers/_form_helpers.html' import render_field %}
+
+<div class="modal-header">
+    <h5 class="modal-title">{% if title %}{{ title }}{% else %}Add variable{% endif %}</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form action="{{ url_for('variables.save_variable', scenario_id=scenario.scenario_id) }}" method="POST"
+      class="form">
+    <div class="modal-body">
+        {% if variable %}<!--
+            {{ variables_form.name.process_data(variable.name) }}
+            {{ variables_form.datatype.process_data(variable.datatype) }}
+            {{ variables_form.value.process_data(variable.value) }}
+            {{ variables_form.is_private.process_data(variable.is_private) }}-->
+        {% endif %}
+        {{ render_field(variables_form.name) }}
+        {{ render_field(variables_form.datatype) }}
+        {{ render_field(variables_form.value) }}
+        {{ render_field(variables_form.is_private) }}
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i>Save Changes
+        </button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    </div>
+</form>

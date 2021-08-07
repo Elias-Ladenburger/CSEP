@@ -1,5 +1,9 @@
 $(document).ready(function () {
     $('[data-role="tags-input"]').tagsInput();
+    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="popover"]').popover();
+    const url = window.location.href;
+    loadTab(url);
 });
 
 function detailFormatter(index, row, element) {
@@ -28,13 +32,28 @@ function deleteScenario(scenario_id) {
     window.reload();
 }
 
+function loadTab(url) {
+    if (url.indexOf("#") > 0) {
+        let activeTab = url.substring(url.indexOf("#") + 1);
+        $('.nav[role="tablist"] a[href="#' + activeTab + '"]').tab('show');
+    }
+
+    $('ul[role="tab"]').on("click", function () {
+        let newUrl;
+        const hash = $(this).attr("href");
+        newUrl = url.split("#")[0] + hash;
+        history.replaceState(null, null, newUrl);
+    });
+}
+
 function scenario_table_buttons() {
     return {
         btnAddScenario: {
             text: 'Create scenario',
             icon: 'fas fa-plus-square',
             event: function () {
-                window.location = $('#scenarios-table').data()['createUrl'];
+                const createUrl = $('#scenarios-table').data()['createUrl'];
+                showFormModal('#scenario-form-modal');
             },
             attributes: {
                 title: 'Add a new scenario',
@@ -84,26 +103,14 @@ function buildStoryListFromObject(storyList) {
     return stories;
 }
 
-
-function addTableRow(tableId = "editable-table", numberOfCells = 4, framename = null) {
-    let table = document.getElementById(tableId);
-    if (table == null) {
-        table = document.getElementById(framename).contentWindow.document.getElementById(tableId);
-    }
-    let row = table.insertRow();
-    for (let i = 0; i++; i < numberOfCells) {
-        row.insertCell();
-    }
-}
-
 function variableTableButtons() {
     return {
         btnAdd: {
             text: 'New Variable',
             icon: 'fas fa-plus-square',
             event: function () {
-                $('#variable-modal-title').html('Add a variable');
-                $('#variable-form-modal').modal('show');
+                const createUrl = $('#variablesTable').data()["createUrl"];
+                showFormModal('#variable-form-modal', createUrl);
             },
             attributes: {
                 title: 'Add a new variable to this scenario'
@@ -112,22 +119,29 @@ function variableTableButtons() {
     }
 }
 
+function showFormModal(modalId='', targetUrl = '') {
+    let modal = $(modalId);
+    if (targetUrl !== '') {
+        $.get(targetUrl, function (data) {
+            modal.find('.modal-content').html(data);
+        });
+        modal.modal('show');
+    } else {
+        modal.modal('show');
+    }
+}
+
 function deleteVariable(variableName, rowId) {
     let confirmation = confirm('Do you really want to delete the variable ' + variableName + '?')
+    document.getElementById(rowId).remove();
     if (confirmation === true) {
         const deleteURL = $('#variablesTable').data()["deleteUrl"];
         jQuery.ajax({
             url: deleteURL,
             method: 'DELETE',
-            async: false,
             data: {
                 variable_name: variableName
-            },
-            success: function (data) {
-                let remote = data;
             }
         });
-        return remote;
-        //.contentDocument.location.reload(true)
     }
 }

@@ -27,10 +27,10 @@ def save_variable(scenario_id):
         variable = BaseScenarioVariable(**variable_dict)
         scenario = EditableScenarioRepository.save_variable(scenario_id=scenario_id, variable=variable)
         flash("Save successful!", category="success")
-        return redirect(flask.request.referrer)
+        return redirect(flask.request.referrer + "#variables")
     else:
         flash("Something went wrong!", category="failure")
-        redirect(flask.request.referrer)
+        redirect(flask.request.referrer + "#variables")
     return redirect(flask.request.referrer)
 
 
@@ -40,9 +40,28 @@ def delete_variable(scenario_id):
     scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
     scenario.remove_variable(scenario_var)
     EditableScenarioRepository.save_scenario(scenario)
-    return redirect(url_for('variables.edit_variables', scenario_id=scenario_id))
+    return redirect(url_for('variables.edit_variables', scenario_id=scenario_id)+"#variables")
 
 
 @variables_bp.route("/<scenario_id>/variables/delete", methods=["POST"])
 def save_variables(scenario_id):
     pass
+
+
+@variables_bp.route('<scenario_id>/variables/<var_name>/edit')
+def edit_variable(scenario_id, var_name):
+    scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id)
+    scenario_var = scenario.variables.get(var_name)
+    return variables_form(scenario, title="Edit variable", variable=scenario_var)
+
+
+@variables_bp.route('<scenario_id>/variables/new')
+def add_variable(scenario_id):
+    scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id)
+    return variables_form(scenario=scenario, title="Add a variable")
+
+
+def variables_form(scenario, title="Edit Variable", variable=None):
+    form = ScenarioVariableForm()
+    return render_template('variables_modal_form.html', title=title, variable=variable,
+                           scenario=scenario, variables_form=form)

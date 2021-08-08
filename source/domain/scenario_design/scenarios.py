@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from domain.common.auxiliary import BaseScenarioVariable
 from domain.common.scenarios import BaseStory, BaseScenario
@@ -6,13 +6,24 @@ from domain.scenario_design.injects import EditableInject
 
 
 class Story(BaseStory):
-    def add_injects(self, injects: List[EditableInject]):
+    """A Story is a collection of injects within a scenario design"""
+    injects: Dict[str, EditableInject] = {}
+
+    class Config:
+        allow_mutation = True
+
+    def __init__(self, title: str, entry_node: EditableInject, **kwargs):
+        if isinstance(entry_node, EditableInject):
+            entry_node = entry_node.dict()
+        super().__init__(title=title, entry_node=entry_node["slug"], **kwargs)
+        self.injects[entry_node["slug"]] = EditableInject(**entry_node)
+
+    def add_injects(self, new_injects: List[EditableInject]):
         """
         Adds a list of injects to the story.
-        This will overwrite existing injects within the story, if they have the same slug as one of the new injects.
+        This will overwrite existing injects within the story if they have the same slug as one of the new injects.
         """
-        self.injects[self.entry_node.slug] = self.entry_node
-        for inject in injects:
+        for inject in new_injects:
             self.injects[inject.slug] = inject
 
     def add_inject(self, inject: EditableInject):

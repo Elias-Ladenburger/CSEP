@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import List
 
 from domain.common.auxiliary import BaseScenarioVariable
-from domain.common.injects import BaseInject
 from domain.common.scenario_management import ScenarioRepository, ScenarioFactory
 from domain.game_play.injects import Inject
+from domain.scenario_design.injects import EditableInject
 from domain.scenario_design.scenarios import EditableScenario, Story
 
 
@@ -22,7 +22,7 @@ class EditableScenarioFactory(ScenarioFactory):
         :returns: a Scenario which can be edited.
         """
         scenario_id = scenario_data.pop("scenario_id", None) or scenario_data.pop("_id", None)
-        title = scenario_data.pop("title", "new scenario")
+        title = scenario_data.pop("title")
         description = scenario_data.pop("scenario_description", None) or scenario_data.pop("description")
 
         stories = scenario_data.pop("stories", [])
@@ -63,7 +63,7 @@ class EditableScenarioFactory(ScenarioFactory):
     @classmethod
     def _build_inject_from_dict(cls, inject_data):
         inject_data.pop("slug")
-        inject = Inject(**inject_data)
+        inject = EditableInject(**inject_data)
         return inject
 
     @classmethod

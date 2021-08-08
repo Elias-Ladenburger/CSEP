@@ -42,7 +42,7 @@
                         {% else %}<span><i class="fas fa-check-square"></i></span>{% endif %}</td>
                         <td>
 
-                            <button onclick="showFormModal('{{ url_for("variables.edit_variable",
+                            <button onclick="showFormModal('#variable-form-modal', '{{ url_for("variables.edit_variable",
                             scenario_id=scenario.scenario_id, var_name=var_name) }}')"
                                     class="btn btn-primary" title="Edit this variable">
                                 <i class="fas fa-edit"></i>
@@ -60,7 +60,7 @@
         </div>
     </div>
 
-    <div class="modal modal-lg" tabindex="-1" role="dialog" id="variable-form-modal">
+    <div class="modal" tabindex="-1" role="dialog" id="variable-form-modal">
         <div class="modal-dialog" role="document">
             <div id="variable-modal-content" class="modal-content">
                 {% include 'variables_modal_form.html' %}

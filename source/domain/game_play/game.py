@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 from domain.common.auxiliary import BaseVariableChange
 from domain.common.injects import BaseChoiceInject
-from domain.common.scenarios import BaseScenario
+from domain.common.scenarios import BaseScenario, BaseStory
 from domain.game_play.injects import Inject
 from domain.scenario_design.scenarios import EditableScenario, BaseScenarioVariable
 
@@ -16,6 +16,20 @@ class GameState(Enum):
     Open = 1
     In_Progress = 2
     Closed = 3
+
+
+class Story(BaseStory):
+    def solve_inject(self, inject_slug: str, solution):
+        """
+        Solves an inject with the given solution.
+        Returns the next inject, if one exists.
+
+        :param solution: The solution to this inject. Can be either a string or a Transition or a number.
+        :param inject_slug: The slug of the inject that has been solved.
+        :return: A transition that points to the next inject. Returns None if there is no next inject.
+        """
+        inject = self.get_inject_by_slug(inject_slug=inject_slug)
+        return inject.solve(solution)
 
 
 class GameVariableChange(BaseVariableChange):

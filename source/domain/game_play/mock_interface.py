@@ -69,7 +69,7 @@ class MockScenarioBuilder:
 
         final_chapter = Story(title="final chapter", entry_node=second_last_inject)
 
-        final_chapter.add_injects(injects=[second_last_inject, last_inject])
+        final_chapter.add_injects(new_injects=[second_last_inject, last_inject])
 
         scenario.add_story(final_chapter)
         return scenario

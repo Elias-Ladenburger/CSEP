@@ -7,13 +7,31 @@ from domain.common.injects import BaseChoiceInject
 
 
 class BaseStory(BaseModel):
-    """A Story is a collection of injects within a scenario design"""
+    """An immutable collection of injects. Use this class only for data-transfer."""
+
     title: str
-    entry_node: BaseChoiceInject
+    _entry_node: Optional[str] = PrivateAttr("")
     injects: Optional[Dict[str, BaseChoiceInject]] = {}
 
-    def __init__(self, title: str, entry_node: BaseChoiceInject, **keyword_args):
-        super().__init__(title=title, entry_node=entry_node, **keyword_args)
+    class Config:
+        allow_mutation = False
+
+    def __init__(self, title: str, entry_node: str = "", **keyword_args):
+        """
+        :param title: The title of this story.
+        :param entry_node: A string of the slug of the first inject of this story.
+        :param injects: A list of injects.
+        If `entry_node` is not specified, the first inject from this list will be selected as the entry_node.
+        """
+        super().__init__(title=title, **keyword_args)
+        self._entry_node = entry_node
+
+    @property
+    def entry_node(self):
+        """
+        Returns the first inject in this story.
+        """
+        return self.get_inject_by_slug(self._entry_node)
 
     def has_inject_with_slug(self, inject_slug: str):
         """
@@ -30,23 +48,12 @@ class BaseStory(BaseModel):
         :param inject_slug: A string with the inject-slug.
         :returns: an inject with this slug, if one exists in this story. False if no inject is found.
         """
-        inject = self.injects[inject_slug]
-        return inject
-
-    def solve_inject(self, inject_slug: str, solution):
-        """
-        Solves an inject with the given solution.
-        Returns the next inject, if one exists.
-
-        :param solution: The solution to this inject. Can be either a string or a Transition or a number.
-        :param inject_slug: The slug of the inject that has been solved.
-        :return: A transition that points to the next inject. Returns None if there is no next inject.
-        """
-        inject = self.get_inject_by_slug(inject_slug=inject_slug)
-        return inject.solve(solution)
+        return self.injects[inject_slug]
 
     def dict(self, **kwargs):
         story_dict = super().dict(**kwargs)
+        story_dict["entry_node"] = self._entry_node
+        story_dict["injects"] = {inject_slug: inject.dict() for inject_slug, inject in self.injects.items()}
         return story_dict
 
 

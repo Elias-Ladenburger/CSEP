@@ -3,13 +3,12 @@ from flask import Blueprint, render_template, redirect, flash, url_for
 
 from domain.scenario_design.scenario_management import EditableScenarioRepository, EditableScenarioFactory
 from web.controllers.scenario_design.scenario_forms import *
-from web.controllers.scenario_design.scenario_forms import ScenarioForm
 
 scenario_bp = Blueprint('scenarios', __name__,
                         template_folder='../../templates/scenario', url_prefix="/scenarios")
 
 
-@scenario_bp.route("/")
+@scenario_bp.route("/", strict_slashes=False)
 def show_scenarios():
     scenarios = EditableScenarioRepository.get_all_scenarios()
     core_form = ScenarioCoreForm()

@@ -12,7 +12,7 @@ from infrastructure_layer.database import CustomDB
 
 class ScenarioPersistenceTest(TestCase):
 
-    def setUp(self):
+    def setUpClass(self):
         test_env = "DEV"
         from globalconfig import config
         config.set_env(test_env)
@@ -22,7 +22,7 @@ class ScenarioPersistenceTest(TestCase):
         self.db = CustomDB
         print("Test Config: {}".format(test_env))
 
-    def tearDown(self):
+    def tearDownClass(self):
         #
         # self.db._purge_database(collection_name="scenarios")
         pass

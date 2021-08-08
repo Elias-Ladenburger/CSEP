@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from domain_layer.common.auxiliary import BaseVariableChange
 from domain_layer.common.injects import BaseChoiceInject
 from domain_layer.common.scenarios import BaseScenario, BaseStory
-from domain_layer.game_play.injects import Inject
+from domain_layer.game_play.injects import GameInject
 from domain_layer.scenario_design.scenarios import EditableScenario, BaseScenarioVariable
 
 
@@ -134,7 +134,7 @@ class Game(BaseModel):
         old_value = self.variables[var_name]
         self.variables[var_name].value = change.calculate_new_value(old_value)
 
-    def _evaluate_next_inject(self, inject: Inject):
+    def _evaluate_next_inject(self, inject: GameInject):
         if not inject:
             return self._begin_next_story()
         if inject.condition:

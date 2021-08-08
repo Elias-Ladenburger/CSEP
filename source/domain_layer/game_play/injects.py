@@ -6,7 +6,7 @@ from domain_layer.common.auxiliary import BaseScenarioVariable, LegalOperator, B
 from domain_layer.common.injects import BaseChoiceInject, InjectResult, BaseInjectCondition
 
 
-class Inject(BaseChoiceInject):
+class GameInject(BaseChoiceInject):
     condition: InjectCondition = None
 
     def __init__(self, **kwargs):

@@ -2,7 +2,7 @@ from domain_layer.common.auxiliary import DataType, BaseScenarioVariable
 from domain_layer.common.injects import InjectResult
 from domain_layer.game_play.game import Game, GameFactory
 from domain_layer.scenario_design.injects import EditableInject, InjectChoice, InjectCondition
-from domain_layer.scenario_design.scenarios import EditableScenario, Story
+from domain_layer.scenario_design.scenarios import EditableScenario, EditableStory
 from domain_layer.scenario_design.scenario_management import EditableScenarioFactory
 
 
@@ -51,7 +51,7 @@ class MockScenarioBuilder:
 
         intro_inject.choices.append(other_first_second)
 
-        introduction = Story(title="Introduction", entry_node=intro_inject)
+        introduction = EditableStory(title="Introduction", entry_node=intro_inject)
         introduction.add_injects([intro_inject, second_inject])
 
         scenario.add_story(introduction)
@@ -67,7 +67,7 @@ class MockScenarioBuilder:
         alternative_transition = InjectChoice(label="Turn Right")
         second_last_inject.add_choices([final_transition, alternative_transition])
 
-        final_chapter = Story(title="final chapter", entry_node=second_last_inject)
+        final_chapter = EditableStory(title="final chapter", entry_node=second_last_inject)
 
         final_chapter.add_injects(new_injects=[second_last_inject, last_inject])
 
@@ -89,7 +89,7 @@ class BranchingScenarioBuilder(MockScenarioBuilder):
         return BranchingScenarioBuilder._insert_transition(scenario, story, "Turn left")
 
     @staticmethod
-    def _insert_transition(scenario: EditableScenario, story: Story, transition_label: str):
+    def _insert_transition(scenario: EditableScenario, story: EditableStory, transition_label: str):
         inject_0 = story.entry_node
         inject_1 = story.injects[inject_0.slug].next_inject
         new_inject = EditableInject(label="A different inject", text="Turns out that branching scenarios work now...")

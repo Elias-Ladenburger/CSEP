@@ -1,9 +1,8 @@
 from unittest import TestCase
 
-from domain_layer.game_play.injects import Inject
 from domain_layer.game_play.mock_interface import BranchingScenarioBuilder, MockScenarioBuilder
-from domain_layer.common.injects import BaseChoiceInject
-from domain_layer.scenario_design.scenarios import BaseStory, Story
+from domain_layer.scenario_design.injects import EditableInject
+from domain_layer.scenario_design.scenarios import EditableStory
 
 
 class ScenarioTest(TestCase):
@@ -11,8 +10,8 @@ class ScenarioTest(TestCase):
         self.scenario = MockScenarioBuilder.build_scenario()
 
     def test_scenario_add_story(self):
-        inject = BaseChoiceInject(label="test inject", text="text")
-        story = BaseStory(title="introduction", entry_node=inject)
+        inject = EditableInject(label="test inject", text="text")
+        story = EditableStory(title="introduction", entry_node=inject)
 
         scenario = BranchingScenarioBuilder.build_scenario()
         scenario.add_story(story)
@@ -41,7 +40,7 @@ class ScenarioTest(TestCase):
 
     def test_set_story(self):
         stories = self.scenario.stories
-        new_story = Story("A final chapter!", Inject(label="A final inject", text=""))
+        new_story = EditableStory("A final chapter!", EditableInject(label="A final inject", text=""))
         stories.append(new_story)
         self.scenario.stories = stories
         self.assertEqual(self.scenario.stories[len(self.scenario.stories) - 1], new_story)

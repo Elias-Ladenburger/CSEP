@@ -5,27 +5,30 @@ from domain_layer.game_play.mock_interface import MockScenarioBuilder
 from domain_layer.common.injects import BaseChoiceInject
 from domain_layer.scenario_design.injects import EditableInject
 from domain_layer.scenario_design.scenario_management import EditableScenarioRepository
-from domain_layer.scenario_design.scenarios import EditableScenario, BaseStory, Story
+from domain_layer.scenario_design.scenarios import EditableScenario, BaseStory, EditableStory
 from domain_layer.common.scenario_management import ScenarioRepository, ScenarioFactory
 from infrastructure_layer.database import CustomDB
 
 
 class ScenarioPersistenceTest(TestCase):
+    repo = EditableScenarioRepository
+    db = CustomDB
 
-    def setUpClass(self):
-        test_env = "DEV"
+    @classmethod
+    def setUpClass(cls):
+        test_env = "TEST"
         from globalconfig import config
         config.set_env(test_env)
-        self.repo = ScenarioRepository
-        test_scenario = MockScenarioBuilder.build_scenario()
-        self.test_scenario = self.repo.save_scenario(test_scenario)
-        self.db = CustomDB
         print("Test Config: {}".format(test_env))
 
-    def tearDownClass(self):
-        #
-        # self.db._purge_database(collection_name="scenarios")
-        pass
+    @classmethod
+    def tearDownClass(cls):
+        cls.db._purge_database(collection_name="scenarios")
+        super().tearDownClass()
+
+    def setUp(self):
+        test_scenario = MockScenarioBuilder.build_scenario()
+        self.test_scenario = self.repo.save_scenario(test_scenario)
 
     def test_insert_scenario_title_description(self):
         scenario = ScenarioFactory.create_scenario(title="yay!", description="This is a new scenario")
@@ -85,10 +88,9 @@ class ScenarioPersistenceTest(TestCase):
 
     def test_modify_scenario(self):
         original_scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id=self.test_scenario.scenario_id)
-
         scenario = EditableScenario(**original_scenario.dict())
         inject = EditableInject(label="First inject", text="Inject Text")
-        story = Story("Test Story", entry_node=inject)
+        story = EditableStory("Test Story", entry_node=inject)
         scenario.add_story(story)
         ScenarioRepository.save_scenario(scenario)
         changed_scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id=self.test_scenario.scenario_id)

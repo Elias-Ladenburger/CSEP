@@ -4,16 +4,14 @@ from typing import List
 
 from domain_layer.common.auxiliary import BaseScenarioVariable
 from domain_layer.common.scenario_management import ScenarioRepository, ScenarioFactory
-from domain_layer.game_play.injects import Inject
 from domain_layer.scenario_design.injects import EditableInject
-from domain_layer.scenario_design.scenarios import EditableScenario, Story
+from domain_layer.scenario_design.scenarios import EditableScenario, EditableStory
 
 
 class EditableScenarioFactory(ScenarioFactory):
     @classmethod
     def create_scenario(cls, title="new scenario", description="This is a new scenario", **kwargs):
-        return EditableScenario(title=title,
-                                description=description, **kwargs)
+        return EditableScenario(title=title, description=description, **kwargs)
 
     @classmethod
     def build_from_dict(cls, **scenario_data):
@@ -49,7 +47,8 @@ class EditableScenarioFactory(ScenarioFactory):
     @classmethod
     def _build_story_from_dict(cls, story_data):
         injects_data = story_data.pop("injects", {})
-        entry_data = story_data.pop("entry_node", {})
+        entry_slug = story_data.pop("entry_node", "")
+        entry_data = injects_data.pop(entry_slug, {})
         entry_node = cls._build_inject_from_dict(entry_data)
         injects = {}
 
@@ -57,7 +56,7 @@ class EditableScenarioFactory(ScenarioFactory):
             inject = cls._build_inject_from_dict(inject_data=injects_data[inject_data])
             injects[inject.slug] = inject
 
-        story = Story(**story_data, entry_node=entry_node, injects=injects)
+        story = EditableStory(**story_data, entry_node=entry_node, injects=injects)
         return story
 
     @classmethod
@@ -76,7 +75,7 @@ class EditableScenarioFactory(ScenarioFactory):
 
 class EditableScenarioRepository(ScenarioRepository):
     @classmethod
-    def add_story(cls, scenario_id: str, story: Story):
+    def add_story(cls, scenario_id: str, story: EditableStory):
         scenario = cls.get_scenario_by_id(scenario_id)
         scenario.stories.append(story)
         return cls.save_scenario(scenario)

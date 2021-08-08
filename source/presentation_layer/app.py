@@ -1,5 +1,5 @@
 
-from web.app_factory import AppFactory
+from presentation_layer.app_factory import AppFactory
 
 app = AppFactory.create_app()
 

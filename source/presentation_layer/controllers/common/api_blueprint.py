@@ -3,9 +3,9 @@ import collections.abc
 import flask
 from flask import Blueprint, jsonify
 
-from domain.common.scenario_management import ScenarioRepository, ScenarioTransformer
-from domain.scenario_design.scenario_management import EditableScenarioRepository, EditableScenarioFactory
-from domain.scenario_design.scenarios import Story
+from domain_layer.common.scenario_management import ScenarioRepository, ScenarioTransformer
+from domain_layer.scenario_design.scenario_management import EditableScenarioRepository, EditableScenarioFactory
+from domain_layer.scenario_design.scenarios import Story
 
 api_bp = Blueprint('api', __name__, url_prefix="/api/v0")
 

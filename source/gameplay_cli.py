@@ -1,4 +1,4 @@
-from domain.game_play.mock_interface import MockGameProvider
+from domain_layer.game_play.mock_interface import MockGameProvider
 
 
 class MockPlayer:

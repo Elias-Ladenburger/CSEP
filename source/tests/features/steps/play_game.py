@@ -1,8 +1,8 @@
 from behave import *
 
-from domain.game_play.game import GameFactory
-from domain.common.injects import BaseChoiceInject
-from domain.scenario_design.scenarios import EditableScenario, BaseStory
+from domain_layer.game_play.game import GameFactory
+from domain_layer.common.injects import BaseChoiceInject
+from domain_layer.scenario_design.scenarios import EditableScenario, BaseStory
 
 use_step_matcher("parse")
 

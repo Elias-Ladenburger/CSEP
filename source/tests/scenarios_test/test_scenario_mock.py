@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from domain.game_play.mock_interface import MockScenarioBuilder
-from domain.scenario_design.scenarios import EditableScenario
-from domain.common.scenario_management import ScenarioFactory
-from infrastructure.database import CustomDB
+from domain_layer.game_play.mock_interface import MockScenarioBuilder
+from domain_layer.scenario_design.scenarios import EditableScenario
+from domain_layer.common.scenario_management import ScenarioFactory
+from infrastructure_layer.database import CustomDB
 
 
 class ScenarioMock(TestCase):

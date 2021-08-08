@@ -2,8 +2,8 @@ from __future__ import annotations
 from typing import List, Dict, Optional
 from pydantic import BaseModel
 
-from domain.common.auxiliary import BaseScenarioVariable, LegalOperator, BaseVariableChange
-from domain.scenario_design.graphs import GraphNode
+from domain_layer.common.auxiliary import BaseScenarioVariable, LegalOperator, BaseVariableChange
+from domain_layer.scenario_design.graphs import GraphNode
 
 
 class BaseInject(GraphNode):

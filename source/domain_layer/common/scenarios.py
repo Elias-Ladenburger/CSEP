@@ -2,8 +2,8 @@ from typing import Optional, Dict, List
 
 from pydantic import BaseModel, PrivateAttr
 
-from domain.common.auxiliary import BaseScenarioVariable
-from domain.common.injects import BaseChoiceInject
+from domain_layer.common.auxiliary import BaseScenarioVariable
+from domain_layer.common.injects import BaseChoiceInject
 
 
 class BaseStory(BaseModel):

@@ -1,9 +1,9 @@
-from domain.common.auxiliary import DataType, BaseScenarioVariable
-from domain.common.injects import InjectResult
-from domain.game_play.game import Game, GameFactory
-from domain.scenario_design.injects import EditableInject, InjectChoice, InjectCondition
-from domain.scenario_design.scenarios import EditableScenario, Story
-from domain.scenario_design.scenario_management import EditableScenarioFactory
+from domain_layer.common.auxiliary import DataType, BaseScenarioVariable
+from domain_layer.common.injects import InjectResult
+from domain_layer.game_play.game import Game, GameFactory
+from domain_layer.scenario_design.injects import EditableInject, InjectChoice, InjectCondition
+from domain_layer.scenario_design.scenarios import EditableScenario, Story
+from domain_layer.scenario_design.scenario_management import EditableScenarioFactory
 
 
 class MockScenarioBuilder:

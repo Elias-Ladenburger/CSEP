@@ -1,8 +1,8 @@
 import json
 from typing import List
 
-from domain.common.scenarios import BaseScenario, BaseStory
-from infrastructure.repository import Repository
+from domain_layer.common.scenarios import BaseScenario, BaseStory
+from infrastructure_layer.repository import Repository
 
 
 class ScenarioFactory:

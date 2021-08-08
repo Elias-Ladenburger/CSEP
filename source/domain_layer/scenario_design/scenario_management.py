@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import List
 
-from domain.common.auxiliary import BaseScenarioVariable
-from domain.common.scenario_management import ScenarioRepository, ScenarioFactory
-from domain.game_play.injects import Inject
-from domain.scenario_design.injects import EditableInject
-from domain.scenario_design.scenarios import EditableScenario, Story
+from domain_layer.common.auxiliary import BaseScenarioVariable
+from domain_layer.common.scenario_management import ScenarioRepository, ScenarioFactory
+from domain_layer.game_play.injects import Inject
+from domain_layer.scenario_design.injects import EditableInject
+from domain_layer.scenario_design.scenarios import EditableScenario, Story
 
 
 class EditableScenarioFactory(ScenarioFactory):

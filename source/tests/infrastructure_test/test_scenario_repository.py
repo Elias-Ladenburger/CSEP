@@ -1,13 +1,13 @@
 from unittest import TestCase
 
-from domain.common.scenarios import BaseScenario
-from domain.game_play.mock_interface import MockScenarioBuilder
-from domain.common.injects import BaseChoiceInject
-from domain.scenario_design.injects import EditableInject
-from domain.scenario_design.scenario_management import EditableScenarioRepository
-from domain.scenario_design.scenarios import EditableScenario, BaseStory, Story
-from domain.common.scenario_management import ScenarioRepository, ScenarioFactory
-from infrastructure.database import CustomDB
+from domain_layer.common.scenarios import BaseScenario
+from domain_layer.game_play.mock_interface import MockScenarioBuilder
+from domain_layer.common.injects import BaseChoiceInject
+from domain_layer.scenario_design.injects import EditableInject
+from domain_layer.scenario_design.scenario_management import EditableScenarioRepository
+from domain_layer.scenario_design.scenarios import EditableScenario, BaseStory, Story
+from domain_layer.common.scenario_management import ScenarioRepository, ScenarioFactory
+from infrastructure_layer.database import CustomDB
 
 
 class ScenarioPersistenceTest(TestCase):

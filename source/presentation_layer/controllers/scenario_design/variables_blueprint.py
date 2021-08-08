@@ -1,10 +1,10 @@
 import flask
 from flask import Blueprint, render_template, redirect, flash, url_for
 
-from domain.scenario_design.scenario_management import EditableScenarioRepository, EditableScenarioFactory
-from web.controllers.scenario_design.scenario_blueprint import tab_details
-from web.controllers.scenario_design.scenario_forms import *
-from web.controllers.scenario_design.scenario_forms import ScenarioForm
+from domain_layer.scenario_design.scenario_management import EditableScenarioRepository, EditableScenarioFactory
+from presentation_layer.controllers.scenario_design.scenario_blueprint import tab_details
+from presentation_layer.controllers.scenario_design.scenario_forms import *
+from presentation_layer.controllers.scenario_design.scenario_forms import ScenarioForm
 
 variables_bp = Blueprint('variables', __name__,
                         template_folder='../../templates/scenario', url_prefix="/scenarios")

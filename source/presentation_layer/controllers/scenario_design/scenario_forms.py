@@ -7,8 +7,8 @@ from wtforms import StringField, FormField, TextAreaField, FieldList, SelectFiel
 from wtforms.validators import DataRequired, Optional
 from wtforms.widgets import HiddenInput
 
-from domain.common.auxiliary import BaseScenarioVariable, DataType
-from domain.scenario_design.scenarios import EditableScenario, BaseStory
+from domain_layer.common.auxiliary import BaseScenarioVariable, DataType
+from domain_layer.scenario_design.scenarios import EditableScenario, BaseStory
 
 
 class CustomForm(Form):

@@ -5,11 +5,11 @@ from typing import Optional, List, Dict
 
 from pydantic import BaseModel
 
-from domain.common.auxiliary import BaseVariableChange
-from domain.common.injects import BaseChoiceInject
-from domain.common.scenarios import BaseScenario, BaseStory
-from domain.game_play.injects import Inject
-from domain.scenario_design.scenarios import EditableScenario, BaseScenarioVariable
+from domain_layer.common.auxiliary import BaseVariableChange
+from domain_layer.common.injects import BaseChoiceInject
+from domain_layer.common.scenarios import BaseScenario, BaseStory
+from domain_layer.game_play.injects import Inject
+from domain_layer.scenario_design.scenarios import EditableScenario, BaseScenarioVariable
 
 
 class GameState(Enum):

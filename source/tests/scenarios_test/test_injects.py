@@ -1,5 +1,5 @@
 from unittest import TestCase
-from domain.common.injects import BaseChoiceInject
+from domain_layer.common.injects import BaseChoiceInject
 
 
 class InjectsTest(TestCase):

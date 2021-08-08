@@ -1,6 +1,6 @@
 from behave import given, when, then, use_step_matcher
 
-from domain.common.injects import BaseChoiceInject, BaseInjectChoice
+from domain_layer.common.injects import BaseChoiceInject, BaseInjectChoice
 
 use_step_matcher('parse')
 

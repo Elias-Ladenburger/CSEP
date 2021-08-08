@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import bson
 
-from infrastructure.database import CustomDB
+from infrastructure_layer.database import CustomDB
 
 
 class ScenarioPersistenceTest(TestCase):

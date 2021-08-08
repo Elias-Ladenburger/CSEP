@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from pydantic import BaseModel, PrivateAttr
 
-from infrastructure.database import CustomDB
+from infrastructure_layer.database import CustomDB
 
 
 class TestModel(BaseModel):

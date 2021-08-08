@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from domain.game_play.mock_interface import MockScenarioBuilder
-from infrastructure.database import CustomDB
+from domain_layer.game_play.mock_interface import MockScenarioBuilder
+from infrastructure_layer.database import CustomDB
 
 
 class DictConversionTest(TestCase):

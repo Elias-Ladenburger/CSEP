@@ -36,11 +36,11 @@ class AppFactory:
 
     @classmethod
     def _register_blueprints(cls, new_app):
-        from web.controllers.common.api_blueprint import api_bp
-        from web.controllers.game_play.game_blueprint import game_gp
-        from web.controllers.common.index_blueprint import index_gp
-        from web.controllers.scenario_design.scenario_blueprint import scenario_bp
-        from web.controllers.scenario_design.variables_blueprint import variables_bp
+        from presentation_layer.controllers.common.api_blueprint import api_bp
+        from presentation_layer.controllers.game_play.game_blueprint import game_gp
+        from presentation_layer.controllers.common.index_blueprint import index_gp
+        from presentation_layer.controllers.scenario_design.scenario_blueprint import scenario_bp
+        from presentation_layer.controllers.scenario_design.variables_blueprint import variables_bp
         blueprints = [api_bp, game_gp, index_gp, scenario_bp, variables_bp]
         for bp in blueprints:
             new_app.register_blueprint(bp)

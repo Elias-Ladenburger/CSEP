@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Dict
 
-from domain.common.auxiliary import BaseScenarioVariable, LegalOperator, BaseVariableChange
-from domain.common.injects import BaseChoiceInject, InjectResult, BaseInjectCondition
+from domain_layer.common.auxiliary import BaseScenarioVariable, LegalOperator, BaseVariableChange
+from domain_layer.common.injects import BaseChoiceInject, InjectResult, BaseInjectCondition
 
 
 class Inject(BaseChoiceInject):

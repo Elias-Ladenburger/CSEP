@@ -1,8 +1,8 @@
 from typing import Optional, List, Dict
 
-from domain.common.auxiliary import BaseScenarioVariable
-from domain.common.scenarios import BaseStory, BaseScenario
-from domain.scenario_design.injects import EditableInject
+from domain_layer.common.auxiliary import BaseScenarioVariable
+from domain_layer.common.scenarios import BaseStory, BaseScenario
+from domain_layer.scenario_design.injects import EditableInject
 
 
 class Story(BaseStory):

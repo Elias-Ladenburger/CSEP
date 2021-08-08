@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import List
 
-from domain.common.auxiliary import BaseVariableChange
-from domain.common.injects import BaseChoiceInject, BaseInjectChoice, BaseInjectCondition
+from domain_layer.common.auxiliary import BaseVariableChange
+from domain_layer.common.injects import BaseChoiceInject, BaseInjectChoice, BaseInjectCondition
 
 
 class EditableInject(BaseChoiceInject):

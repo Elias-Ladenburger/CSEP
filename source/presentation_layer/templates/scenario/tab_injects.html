@@ -1,37 +1,39 @@
-<div id="inject-graph" style="height:400px;width:1200px" data-injects=""></div>
+{% extends 'scenario_tab_details.html' %}
 
-<script type="text/javascript">
-    // create an array with nodes
-    var injects = new vis.DataSet([
-        {id: "introduction", x:1, y:1, label: "Introduction", text: "This is the first inject"},
-        {id: "second-inject", x:2, y:1, label: "second-inject", title: "Second inject", text: "This is the second inject"},
-        {id: "other-inject", x:3, y:1, label: "other-inject", title: "Other Inject", text: "This is a completely different inject"},
-        {id: "fourth-inject", x:4, y:1, label: "fourth-inject", title: "Fourth Inject", text: "This is yet another inject"},
-    ]);
+{% block details_content %}
+    <div class="container-fluid ">
+        <div class="row">
+            <div class="col col-lg-5 text-white-50">
+                {% include 'injects_graph.html' %}
+            </div>
+            <div class="col col-lg-5">
+                <button class="btn btn-secondary" onclick="network.stabilize()">Render Injects Graph</button>
+                <button class="btn btn-secondary" onclick="network.fit()">Toggle Conditions</button>
+                <button class="btn btn-primary" onclick="showFormModal('#create-inject-form-modal',
+                    '{{ url_for("injects.get_inject_modal", scenario_id=scenario.scenario_id) }}')">
+                    New inject</button>
+                <hr/>
+                <!-- inject card -->
+                <div id="inject-details">
+                    <div class="remote-content">
+                        <!-- will be populated, once an inject is selected from the graph -->
+                    </div>
+                </div>
+                <div id="inject-form">
+                    <div class="remote-content">
+                        <!-- will be populated, once user selects to edit an inject -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    // create an array with edges
-    var injectConnections = new vis.DataSet([
-        {from: "introduction", to: "second-inject", arrowhead: "arrow"},
-        {from: "introduction", to: "other-inject"},
-        {from: "second-inject", to: "other-inject"},
-        {from: "other-inject", to: "fourth-inject"},
-    ]);
+    <div class="modal" tabindex="-1" role="dialog" id="create-inject-form-modal">
+        <div class="modal-dialog" role="document">
+            <div id="variable-modal-content" class="modal-content">
+                {% include 'forms/injects_modal_form.html' %}
+            </div>
+        </div>
+    </div>
 
-    // create a network
-    var container = document.getElementById("inject-graph");
-    var data = {
-        nodes: injects,
-        edges: injectConnections,
-    };
-    var options = {
-        autoResize: true,
-        width: "100%",
-        height: "100%",
-        clickToUse: true,
-        interaction: {
-            navigationButtons:true
-        }
-
-    };
-    var network = new vis.Network(container, data, options);
-</script>
+{% endblock details_content %}

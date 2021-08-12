@@ -1,6 +1,7 @@
 import flask
 from flask import Blueprint, render_template, redirect, flash, url_for
 
+from application_layer.M2MTransformationService import InjectTransformer
 from domain_layer.scenario_design.scenario_management import EditableScenarioRepository, EditableScenarioFactory
 from presentation_layer.controllers.scenario_design.scenario_forms import *
 
@@ -19,7 +20,9 @@ def show_scenarios():
 @scenario_bp.route("/<scenario_id>/edit", methods=["GET", "POST"])
 def edit_scenario(scenario_id):
     scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
-    return edit_scenario_view(scenario=scenario)
+    stories = scenario.stories
+    nodes, edges = InjectTransformer.transform_stories_to_visjs(stories)
+    return edit_scenario_view(scenario=scenario, graphnodes=nodes, graphedges=edges)
 
 
 @scenario_bp.route("/new")
@@ -31,10 +34,11 @@ def new_scenario():
 
 def edit_scenario_view(scenario: EditableScenario, **kwargs):
     core_form = ScenarioCoreForm()
-    story_form = StoryForm()
+    inject_form = InjectForm()
+    inject_form.initialize(scenario)
     variables_form = ScenarioVariableForm()
     return render_template("scenario_edit.html", scenario=scenario, core_form=core_form,
-                           story_form=story_form, variables_form=variables_form, **kwargs)
+                           inject_form=inject_form, variables_form=variables_form, **kwargs)
 
 
 @scenario_bp.route("/save", methods=["POST"])
@@ -69,7 +73,7 @@ def view_stories(scenario_id):
     return tab_details("tab_stories.html", scenario=scenario, form=form)
 
 
-@scenario_bp.route("<scenario_id>/essentials")
+@scenario_bp.route("/<scenario_id>/essentials")
 def edit_core(scenario_id):
     scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id)
     form = ScenarioCoreForm()
@@ -94,13 +98,6 @@ def insert_story(scenario_id):
     story = scenario.add_story(story)
     flash("Successfully added story!")
     return edit_story(scenario_id=scenario_id, story_id=story.story_id)
-
-
-@scenario_bp.route("/<scenario_id>/stories/<story_id>/injects/<inject_slug>")
-def edit_inject(scenario_id, story_id, inject_slug):
-    scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
-    form = InjectForm()
-    return tab_details("tab_injects.html", scenario=scenario, form=form)
 
 
 @scenario_bp.route("/<scenario_id>/stats")

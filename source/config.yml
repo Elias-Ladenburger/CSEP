@@ -28,5 +28,6 @@ FLASK:
 
   SECRET_KEY: "This is an INSECURE secret!! DO NOT use this in production!!"
 
-  STATIC_FOLDER: static
-  TEMPLATES_FOLDER: templates
+  STATIC_FOLDER: "static"
+  TEMPLATES_FOLDER: "templates"
+  UPLOAD_FOLDER: "static/assets/uploads"

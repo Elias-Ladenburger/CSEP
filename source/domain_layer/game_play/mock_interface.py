@@ -16,8 +16,7 @@ class MockScenarioBuilder:
                                                                "high-ranking executives.")
 
         cls._add_variables(scenario)
-        cls._build_chapter_1(scenario)
-        cls._build_chapter_2(scenario)
+        cls._build_injects(scenario)
 
         return scenario
 
@@ -34,7 +33,7 @@ class MockScenarioBuilder:
         return scenario
 
     @classmethod
-    def _build_chapter_1(cls, scenario):
+    def _build_injects(cls, scenario):
         intro_inject = EditableInject(label="Introduction",
                                       text="Hello Player! In this scenario you will indulge in your dark side: "
                                    "playing through the eyes of an expert social engineer. "
@@ -45,60 +44,47 @@ class MockScenarioBuilder:
         second_inject = EditableInject(label="Second Inject",
                                        text="Interesting choice... "
                                     "let's see, if your preparation pays off. How will you proceed?")
-        intro_inject.next_inject = second_inject
+        intro_inject.next_inject = second_inject.slug
 
         other_first_second = InjectChoice(label="Do nothing")
-
         intro_inject.choices.append(other_first_second)
 
-        introduction = EditableStory(title="Introduction", entry_node=intro_inject)
-        introduction.add_injects([intro_inject, second_inject])
-
-        scenario.add_story(introduction)
-        return scenario
-
-    @classmethod
-    def _build_chapter_2(cls, scenario):
         last_inject = EditableInject(label="Finish", text="You have completed the test scenario!")
         second_last_inject = EditableInject(label="Almost Done", text="Well done, you are almost there!",
-                                            next_inject=last_inject)
+                                            next_inject=last_inject.slug)
+
+        second_inject.next_inject = second_last_inject.slug
 
         final_transition = InjectChoice(label="Walk straight ahead")
         alternative_transition = InjectChoice(label="Turn Right")
         second_last_inject.add_choices([final_transition, alternative_transition])
 
-        final_chapter = EditableStory(title="final chapter", entry_node=second_last_inject)
+        injects = [intro_inject, second_inject, second_last_inject, last_inject]
 
-        final_chapter.add_injects(new_injects=[second_last_inject, last_inject])
+        introduction = EditableStory(title="Introduction", entry_node=intro_inject.slug, injects=injects)
 
-        scenario.add_story(final_chapter)
+        scenario.add_story(introduction)
         return scenario
 
 
 class BranchingScenarioBuilder(MockScenarioBuilder):
     @classmethod
-    def _build_chapter_1(cls, scenario: EditableScenario):
-        scenario = MockScenarioBuilder._build_chapter_1(scenario)
+    def _build_injects(cls, scenario: EditableScenario):
+        scenario = MockScenarioBuilder._build_injects(scenario)
         story = scenario.stories[0]
         return BranchingScenarioBuilder._insert_transition(scenario, story, "Research on Social Media")
-
-    @classmethod
-    def _build_chapter_2(cls, scenario: EditableScenario):
-        scenario = MockScenarioBuilder._build_chapter_2(scenario)
-        story = scenario.stories[1]
-        return BranchingScenarioBuilder._insert_transition(scenario, story, "Turn left")
 
     @staticmethod
     def _insert_transition(scenario: EditableScenario, story: EditableStory, transition_label: str):
         inject_0 = story.entry_node
-        inject_1 = story.injects[inject_0.slug].next_inject
+        inject_1 = story.get_inject_by_slug(inject_0.next_inject)
         new_inject = EditableInject(label="A different inject", text="Turns out that branching scenarios work now...")
 
         budget_var = scenario.variables["Budget"]
-        condition = InjectCondition(budget_var, comparison_operator="=",
-                                        variable_threshold=100000, alternative_inject=new_inject)
+        condition = InjectCondition(budget_var.name, comparison_operator="=",
+                                        variable_threshold=100000, alternative_inject=new_inject.slug)
         choice_1 = InjectChoice(label=transition_label,
-                                    outcome=InjectResult(next_inject=new_inject, variable_changes=[]))
+                                    outcome=InjectResult(next_inject=new_inject.slug, variable_changes=[]))
 
         inject_0.choices.append(choice_1)
         story.add_inject(new_inject)

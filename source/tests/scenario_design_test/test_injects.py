@@ -8,7 +8,7 @@ class InjectsTest(TestCase):
         inject_1 = BaseChoiceInject(label="test inject", text="inject text")
         inject_1.update_forward_refs()
 
-        inject_2 = BaseChoiceInject(label="second inject", text="inject text", next_inject=inject_1)
+        inject_2 = BaseChoiceInject(label="second inject", text="inject text", next_inject=inject_1.slug)
         inject_2.update_forward_refs()
         print(inject_2)
         self.assertIsInstance(inject_2, BaseChoiceInject)

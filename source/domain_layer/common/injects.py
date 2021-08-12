@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import List, Dict, Optional
-from pydantic import BaseModel
+from typing import List, Optional
+from pydantic import BaseModel, PrivateAttr
 
 from domain_layer.common.auxiliary import BaseScenarioVariable, LegalOperator, BaseVariableChange
 from domain_layer.scenario_design.graphs import GraphNode
@@ -10,7 +10,7 @@ class BaseInject(GraphNode):
     """An inject in a story."""
     text: str
     slug: str
-    media_path: str = ""
+    media_path: Optional[str] = ""
 
     def __init__(self, label: str, **keyword_args):
         slug = keyword_args.pop("slug", label.replace(" ", "-").lower())
@@ -31,26 +31,31 @@ class BaseInjectCondition(BaseModel):
     Base object for inject choices.
     A choice may have a condition which, if met, leads to another inject or a different outcome.
     """
-    variable: BaseScenarioVariable
+    variable_name: str
     comparison_operator: str
     variable_threshold: str
-    alternative_inject: BaseInject
+    alternative_inject: str
 
-    def __init__(self, variable: BaseScenarioVariable, comparison_operator, variable_threshold,
-                 alternative_inject: BaseInject, **keyword_args):
-        super().__init__(variable=variable, comparison_operator=comparison_operator,
+    def __init__(self, variable_name: str, comparison_operator, variable_threshold,
+                 alternative_inject: str, **keyword_args):
+        super().__init__(variable_name=variable_name, comparison_operator=comparison_operator,
                          variable_threshold=variable_threshold, alternative_inject=alternative_inject, **keyword_args)
-        if variable.is_value_legal(variable_threshold):
-            self.variable_threshold = variable_threshold
-        else:
-            raise ValueError("The threshold is not a valid value for the data type of this variable!")
+
+    def __str__(self):
+        return_str = "If (" + str(self.variable_name) + " " + str(self.comparison_operator)
+        return_str += " " + str(self.variable_threshold) + ") "
+        return_str += "then go to inject " + str(self.alternative_inject)
+        return return_str
 
 
 class InjectResult(BaseModel):
     """The outcome of solving an inject.
     Provides the next inject as well as a list of effects that may change the scenario."""
-    next_inject: BaseInject = None
+    next_inject: Optional[str] = ""
     variable_changes: List[BaseVariableChange] = []
+
+    class Config:
+        allow_mutation = False
 
 
 class BaseInjectChoice(BaseModel):
@@ -74,10 +79,9 @@ class BaseInjectChoice(BaseModel):
 
 
 class BaseChoiceInject(BaseInject):
-    choices: List[BaseInjectChoice] = []
-    condition: BaseInjectCondition = None
-
-    next_inject: Optional[BaseInject] = None
+    choices: Optional[List[BaseInjectChoice]] = []
+    condition: Optional[BaseInjectCondition] = None
+    next_inject: Optional[str] = ""
 
     def __init__(self, label: str, text: str,  **kwargs):
         super().__init__(label=label, text=text, **kwargs)

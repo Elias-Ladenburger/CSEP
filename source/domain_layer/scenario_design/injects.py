@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
+
+from pydantic import PrivateAttr
 
 from domain_layer.common.auxiliary import BaseVariableChange
 from domain_layer.common.injects import BaseChoiceInject, BaseInjectChoice, BaseInjectCondition
@@ -21,12 +23,15 @@ class EditableInject(BaseChoiceInject):
 
 
 class InjectCondition(BaseInjectCondition):
-    pass
+    variable_name: str
+    comparison_operator: str
+    variable_threshold: str
+    alternative_inject: str
 
 
 class InjectChoice(BaseInjectChoice):
     def set_target_inject(self, inject: BaseChoiceInject):
-        self.outcome.next_inject = inject
+        self.outcome.next_inject = inject.slug
 
     def add_effect(self, var_change: BaseVariableChange):
         self.outcome.variable_changes.append(var_change)

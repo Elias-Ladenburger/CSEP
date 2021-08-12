@@ -3,6 +3,7 @@
 
 <form action="{{ url_for('scenarios.save_scenario') }}" method="POST" class="form">
     <div class="modal-body">
+            {{ core_form.csrf_token }}
                 {{ render_field(core_form.title, class="form-control", data=scenario.title) }}
 
                 {{ render_field(core_form.scenario_description, class="form-control", data=scenario.description) }}

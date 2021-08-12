@@ -46,6 +46,64 @@ function loadTab(url) {
     });
 }
 
+function renderNetwork(networkId, injectData, edgeData) {
+    // create a network
+    for (let i = 0; i < injectData.length; i++) {
+        let tmp_node = injectData[i];
+        if (tmp_node.hasOwnProperty("is_entry_node") && injectData[i]["is_entry_node"] === true) {
+            tmp_node["label"] += ":entry point";
+           tmp_node["color"] = 'orange';
+        }
+        else if(tmp_node["label"] === "condition"){
+            tmp_node["color"] = "lightgreen";
+            tmp_node["size"] = 4;
+            tmp_node["label"] = "";
+            tmp_node["hidden"] = true;
+        }
+    }
+    let injects = new vis.DataSet(injectData);
+    let injectConnections = new vis.DataSet(edgeData);
+    let container = document.getElementById(networkId);
+
+    let data = {
+        nodes: injects,
+        edges: injectConnections,
+    };
+    let options = {
+        autoResize: false,
+        width: "80%",
+        height: getMapHeight() + "px",
+        clickToUse: false,
+        interaction: {
+            navigationButtons: true,
+            dragNodes: false,
+            dragView: true,
+        },
+        layout: {hierarchical: true},
+        physics: {
+            hierarchicalRepulsion: {
+                nodeDistance: 120,
+                avoidOverlap: 0.6
+            }
+
+        },
+        edges: {
+            arrows: {to: {enabled: true, type: "arrow"}},
+            smooth: {type: "curvedCW"}
+        },
+
+    };
+    $(window).on('resize', function () {
+        network.setOptions({
+            height: getMapHeight() + "px",
+        });
+    });
+
+    let network = new vis.Network(container, data, options);
+    network.stabilize();
+    return network;
+}
+
 function scenario_table_buttons() {
     return {
         btnAddScenario: {
@@ -73,34 +131,9 @@ function scenario_table_buttons() {
     }
 }
 
-
-Array.prototype.move = function (start_index, target_index) {
-    this.splice(start_index, 0, this.splice(target_index, 1)[0]);
-};
-
-Array.prototype.moveUp = function (start_index) {
-    this.move(start_index, start_index - 1)
-};
-
-Array.prototype.moveDown = function (start_index) {
-    this.move(start_index, start_index + 1)
-};
-
-function buildObjectArrayFromHTML(objectID = '.ol', selectorElement = 'li') {
-    return $(objectID).find(selectorElement).map(function () {
-        var item = {};
-        item.title = $(this).attr("title");
-        return item;
-    });
-}
-
-function buildStoryListFromObject(storyList) {
-    let stories = [];
-    for (let i = 0; i < storyList.length; i++) {
-        stories.push(storyList[i].title);
-        //add injects
-    }
-    return stories;
+function removeImage(imageId = '#inject_image') {
+    hideElement(imageId);
+    $('remove_image').checked = true;
 }
 
 function variableTableButtons() {
@@ -119,7 +152,7 @@ function variableTableButtons() {
     }
 }
 
-function showFormModal(modalId='', targetUrl = '') {
+function showFormModal(modalId = '', targetUrl = '') {
     let modal = $(modalId);
     if (targetUrl !== '') {
         $.get(targetUrl, function (data) {
@@ -129,6 +162,32 @@ function showFormModal(modalId='', targetUrl = '') {
     } else {
         modal.modal('show');
     }
+}
+
+function populateElement(elemId = '', sourceUrl = '') {
+    let elem = $(elemId);
+    if (sourceUrl !== '') {
+        $.get(sourceUrl, function (data) {
+            elem.find('.remote-content').html(data);
+        });
+        $(elemId).show();
+    } else {
+        $(elemId).show();
+    }
+}
+
+function hideElement(elemId = '') {
+    let elem = $(elemId);
+    elem.find('.remote-content').html('')
+    elem.hide();
+}
+
+function showElement(elemId = '') {
+    $(elemId).show();
+}
+
+function getMapHeight() {
+    return (window.innerHeight - 120);
 }
 
 function deleteVariable(variableName, rowId) {
@@ -144,4 +203,23 @@ function deleteVariable(variableName, rowId) {
             }
         });
     }
+}
+
+function renderInjectDetails(url, showForm = false) {
+    const detailsId = '#inject-details';
+    const formId = '#inject-form';
+    if (showForm) {
+        populateElement(formId, url)
+    } else if (elementIsHidden(detailsId)) {
+        hideElement(formId);
+        populateElement(detailsId, url);
+    } else {
+        hideElement(detailsId);
+        populateElement(formId, url);
+    }
+    $('body').tooltip({selector: '[data-toggle=tooltip]'});
+}
+
+function elementIsHidden(elemId) {
+    return $(elemId).offsetParent === null
 }

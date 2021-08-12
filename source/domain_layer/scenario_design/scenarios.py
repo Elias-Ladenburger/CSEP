@@ -1,22 +1,24 @@
 from typing import Optional, List, Dict
 
 from domain_layer.common.auxiliary import BaseScenarioVariable
+from domain_layer.common.injects import BaseInject
 from domain_layer.common.scenarios import BaseStory, BaseScenario
 from domain_layer.scenario_design.injects import EditableInject
 
 
-class Story(BaseStory):
+class EditableStory(BaseStory):
     """A Story is a collection of injects within a scenario design"""
     injects: Dict[str, EditableInject] = {}
 
     class Config:
         allow_mutation = True
 
-    def __init__(self, title: str, entry_node: EditableInject, **kwargs):
-        if isinstance(entry_node, EditableInject):
-            entry_node = entry_node.dict()
-        super().__init__(title=title, entry_node=entry_node["slug"], **kwargs)
-        self.injects[entry_node["slug"]] = EditableInject(**entry_node)
+    def __init__(self, title: str, entry_node: str, **kwargs):
+        super().__init__(title=title, entry_node=entry_node, **kwargs)
+
+    def set_entry_node(self, new_entry_node_slug):
+        if new_entry_node_slug in self.injects:
+            self._entry_node = new_entry_node_slug
 
     def add_injects(self, new_injects: List[EditableInject]):
         """
@@ -26,13 +28,29 @@ class Story(BaseStory):
         for inject in new_injects:
             self.injects[inject.slug] = inject
 
-    def add_inject(self, inject: EditableInject):
+    def add_inject(self, inject: EditableInject, preceded_by_inject: str = "", entry_node=False):
         """Adds a single inject to the story.
-           If the story already contains an inject with this slug, the new inject will overwrite the existing inject.
-
            :param inject: the inject to be added.
+           :param preceded_by_inject: the slug of an existing inject that will now point to this inject.
+           :param entry_node: a boolean to indicate whether this inject will be the new entry node.
            """
-        self.injects[str(inject.slug)] = inject
+        i = 1
+        slug = inject.slug
+        if slug == "new-inject":
+            slug = inject.label.replace(" ", "-").lower()
+        while slug in self.injects:
+            slug = inject.slug + str(i)
+            i += 1
+        inject.slug = slug
+        self.update_inject(inject, entry_node)
+        if preceded_by_inject and preceded_by_inject in self.injects:
+            self.injects[preceded_by_inject].next_inject = inject.slug
+
+    def update_inject(self, inject: EditableInject, entry_node=False):
+        """Updates a single inject in the story."""
+        self.injects[inject.slug] = inject
+        if entry_node:
+            self.set_entry_node(inject.slug)
 
     def remove_inject(self, inject):
         """Removes an inject from the story.
@@ -41,20 +59,35 @@ class Story(BaseStory):
         :returns: the inject that has been removed."""
         if isinstance(inject, str):
             return self._remove_inject_by_slug(inject)
-        elif isinstance(inject, EditableInject):
-            return self.injects.pop(str(inject.slug))
+        elif isinstance(inject, BaseInject):
+            return self._remove_inject_by_slug(str(inject.slug))
         else:
             raise TypeError("Argument for removing inject must be of type 'str' or 'Inject'!")
 
     def _remove_inject_by_slug(self, inject_slug: str):
+        """Deletes an inject from this story.
+        Updates all references to this inject so that they point to the inject that comes after."""
+        inject = self.get_inject_by_slug(inject_slug)
+        self._update_inject_references(inject_slug, inject.next_inject)
         return self.injects.pop(inject_slug)
+
+    def _update_inject_references(self, old_reference: str, new_reference: str):
+        """Updates all references to this inject so that they point to the inject that comes after."""
+        if old_reference == self.entry_node.slug:
+            self._entry_node = new_reference
+        for slug in self.injects:
+            if self.injects[slug].next_inject == old_reference:
+                self.injects[slug].next_inject = new_reference
+            if self.injects[slug].condition:
+                if self.injects[slug].condition.alternative_inject == old_reference:
+                    self.injects[slug].condition.alternative_inject = new_reference
 
 
 class EditableScenario(BaseScenario):
     """
     A scenario is a number of realistic situations that are exposed to a participant.
     """
-    stories: List[Story] = []
+    stories: List[EditableStory] = []
 
     learning_objectives: Optional[str] = ""
     required_knowledge: Optional[str] = ""
@@ -65,15 +98,43 @@ class EditableScenario(BaseScenario):
         super().__init__(title=title, scenario_description=scenario_description,
                          scenario_id=scenario_id, **keyword_args)
 
-    def add_story(self, story: Story):
+    def add_story(self, story: EditableStory):
         """Adds a new story to this scenario."""
         self.stories.append(story)
 
-    def remove_story(self, story: Story):
+    def remove_story(self, story: EditableStory):
         """
-        Removes an entire chapter from this scenario.
+        Removes an entire story from this scenario.
         """
         self.stories.remove(story)
+
+    def add_inject(self, inject: EditableInject, story_index: int = 0,
+                   preceded_by_inject: str = "", entry_node=False):
+        """
+        Adds an inject to this scenario.
+        :param inject: the inject to be added.
+        :param story_index: the story to which to add this inject. Will append a new story if index is -1.
+        """
+        self.stories[story_index].add_inject(inject,
+                                              preceded_by_inject=preceded_by_inject, entry_node=entry_node)
+
+    def update_inject(self, inject: EditableInject, story_index: int = 0, entry_node=False):
+        """
+        Adds an inject to this scenario.
+        :param inject: the inject to be added.
+        :param story_index: the story to which to add this inject. Will append a new story if index is -1.
+        """
+        self.stories[story_index].update_inject(inject, entry_node=entry_node)
+
+    def remove_inject(self, inject: EditableInject, story_index: int = 0):
+        """Removes an inject from this story."""
+        self.stories[story_index].remove_inject(inject)
+
+    def get_all_injects(self):
+        injects = []
+        for story in self.stories:
+            injects += [*story.injects.values()]
+        return injects
 
     def add_variable(self, var: BaseScenarioVariable):
         """
@@ -88,10 +149,33 @@ class EditableScenario(BaseScenario):
         Removes a variable from this scenario.
         :param scenario_var: either the name or the entire scenario variable to be removed
         """
+
         if isinstance(scenario_var, BaseScenarioVariable):
-            self._variables.pop(scenario_var.name)
+            var_name = scenario_var.name
         else:
-            self._variables.pop(scenario_var)
+            var_name = scenario_var
+        self._variables.pop(scenario_var)
+        for inject in self.get_all_injects():
+            if inject.condition:
+                if inject.condition.var_name == var_name:
+                    inject.condition = None
+
+    def conditions_with_var(self, scenario_var):
+        """
+        Counts how often a given scenario variable is used in any inject conditions.
+        :param scenario_var: the name of the scenario variable to look for.
+        :returns: the number of occurrences of this scenario variable.
+        """
+        if isinstance(scenario_var, BaseScenarioVariable):
+            var_name = scenario_var.name
+        else:
+            var_name = scenario_var
+        counter = 0
+        for inject in self.get_all_injects():
+            if inject.condition:
+                if inject.condition.var_name == var_name:
+                    counter += 1
+        return counter
 
     def set_id(self, scenario_id: str):
         if self._id and self._id != "new":

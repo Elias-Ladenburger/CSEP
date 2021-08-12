@@ -1,0 +1,87 @@
+{% extends '/forms/base_form.html' %}
+
+{% block form_body %}
+    <!--{% if inject %}
+        {% set url = url_for('injects.save_inject', scenario_id=scenario.scenario_id) %}
+        {% if inject.condition %}
+            {{ inject_form.condition.variable_name.process_data(inject.condition.variable_name) }}
+            {{ inject_form.condition.comparison_operator.process_data(inject.condition.comparison_operator) }}
+            {{ inject_form.condition.variable_threshold.process_data(inject.condition.variable_threshold) }}
+            {{ inject_form.condition.alternative_inject.process_data(inject.condition.alternative_inject) }}
+        {% endif %}
+        {% else %}
+        {% set url = url_for('injects.add_inject', scenario_id=scenario.scenario_id) %}
+    {% endif %}-->
+
+    <ul class="nav nav-tabs mx-auto" id="injectTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="inject-core-tab" data-toggle="tab" href="#inject-core" role="tab"
+               aria-controls="core"
+               aria-selected="true">Core Information
+                <i class='fas fa-info-circle' data-toggle='tooltip'
+                   title='The basic information, such as the title and text of the image. The information in this tab is absolutely required for an inject.'></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="inject-condition-tab" data-toggle="tab" href="#inject-condition" role="tab"
+               aria-controls="stories" aria-selected="false">Condition
+                <i class='fas fa-info-circle' data-toggle='tooltip'
+                   title='Depending on the value of the game variables, you might want to alter the path of the scenario. This can be done using an inject condition. A condition is evaluated before an inject is shown.'></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="inject-choices-tab" data-toggle="tab" href="#inject-choices" role="tab"
+               aria-controls="inject-choices" aria-selected="false">Choices
+                <i class='fas fa-info-circle' data-toggle='tooltip'
+                   title='By default, all injects are a linked list. You can make the scenario more interesting, however, by giving participants multiple choices to choose from. Choices can be configured to have an effect on the scenario, such as by changing variables or leading to a different branch.'></i>
+
+            </a>
+        </li>
+    </ul>
+
+    <form action="{{ url }}" method="POST"
+          class="form" enctype="multipart/form-data">
+        {{ inject_form.csrf_token }}
+        {{ inject_form.slug }}
+
+        <div class="tab-content" id="injectTabContent">
+            <div class="tab-pane fade show active" id="inject-core" role="tabpanel" aria-labelledby="core-tab">
+                {{ render_field(inject_form.label, class="form-control") }}
+                {{ render_field(inject_form.text, class="form-control") }}
+                {{ render_field(inject_form.next_inject, class="form-control") }}
+                {{ render_field(inject_form.is_entry_node) }}
+                {% if inject and inject.media_path %}
+                    <!--{% set inject_url = url_for('static', filename='assets/uploads/'+inject.media_path) %}-->
+                    <img id="inject_image" class="card-img-top"
+                         src="{{ inject_url }}"
+                         alt="Card image cap">
+                    <button type="button" class="btn btn-danger" onclick="removeImage('#inject_image')">Remove Image
+                    </button>
+                    <!--{{ render_field(inject_form.remove_image) }}-->
+                {% endif %}
+                {{ render_field(inject_form.media_path, class="form-control-file") }}
+            </div>
+            <div class="tab-pane fade" id="inject-condition" role="tabpanel"
+                 aria-labelledby="inject-condition-tab">
+                {{ render_field(inject_form.condition.variable_name) }}
+                {{ render_field(inject_form.condition.comparison_operator) }}
+                {{ render_field(inject_form.condition.variable_threshold) }}
+                {{ render_field(inject_form.condition.alternative_inject) }}
+            </div>
+
+            <div class="tab-pane fade" id="inject-choices" role="tabpanel" aria-labelledby="variables-tab">
+                {% if inject %}
+                    {% for choice in choice_forms.choices %}
+                        {{ render_subform(choice) }}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <hr/>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i>Save Inject
+        </button>
+    </form>
+
+
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% from 'helpers/_form_helpers.html' import render_field, render_subform %}
+
+{% block main_content %}
+    <form action="{{ url }}" method="POST"
+          class="form" enctype="multipart/form-data">
+        {{ render_subform(form) }}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+{% endblock %}

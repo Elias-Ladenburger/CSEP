@@ -38,7 +38,8 @@ class ScenarioRepository(Repository):
         if scenario_id == "new":
             return factory.create_scenario(scenario_id="new")
         else:
-            scenario_id, scenario_data = cls._get_entity_by_id(collection_name=cls.collection_name, entity_id=scenario_id)
+            scenario_id, scenario_data = cls._get_entity_by_id(
+                collection_name=cls.collection_name, entity_id=scenario_id)
             scenario = factory.build_from_dict(scenario_id=scenario_id, **scenario_data)
             return scenario
 

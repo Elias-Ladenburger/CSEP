@@ -84,6 +84,7 @@
                 <form action="{{ url_for('scenarios.save_scenario') }}" method="POST" class="form">
                     <div id="scenario-modal-content" class="modal-content">
                         <div class="modal-body">
+                            {{ core_form.csrf_token }}
                             {{ render_field(core_form.title, class="form-control") }}
                             {{ render_field(core_form.scenario_description, class="form-control") }}
                             {{ render_field(core_form.learning_objectives, class="form-control") }}

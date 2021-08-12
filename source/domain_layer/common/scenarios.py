@@ -16,13 +16,15 @@ class BaseStory(BaseModel):
     class Config:
         allow_mutation = False
 
-    def __init__(self, title: str, entry_node: str = "", **keyword_args):
+    def __init__(self, title: str, entry_node: str = "", injects=None,  **keyword_args):
         """
         :param title: The title of this story.
         :param entry_node: A string of the slug of the first inject of this story.
-        :param injects: A list of injects.
+        :param injects: A list or dict of injects.
         If `entry_node` is not specified, the first inject from this list will be selected as the entry_node.
         """
+        if injects:
+            keyword_args["injects"] = self._parse_injects(injects)
         super().__init__(title=title, **keyword_args)
         self._entry_node = entry_node
 
@@ -46,15 +48,25 @@ class BaseStory(BaseModel):
         """Provides an inject with the given slug in this story.
 
         :param inject_slug: A string with the inject-slug.
-        :returns: an inject with this slug, if one exists in this story. False if no inject is found.
+        :returns: an inject with this slug, if one exists in this story. None if no inject is found.
         """
-        return self.injects[inject_slug]
+        return self.injects.get(inject_slug, None)
 
     def dict(self, **kwargs):
         story_dict = super().dict(**kwargs)
         story_dict["entry_node"] = self._entry_node
         story_dict["injects"] = {inject_slug: inject.dict() for inject_slug, inject in self.injects.items()}
         return story_dict
+
+    def _parse_injects(self, injects):
+        if isinstance(injects, list):
+            if isinstance(injects[0], BaseChoiceInject):
+                return {inject.slug: inject for inject in injects}
+            elif isinstance(injects[0], dict):
+                return {inject["slug"]: inject for inject in injects}
+        elif isinstance(injects, dict):
+            return injects
+        raise TypeError("injects must be a list or dictionary of injects!")
 
 
 class BaseScenario(BaseModel):
@@ -64,7 +76,6 @@ class BaseScenario(BaseModel):
     title: str
     scenario_description: str
     stories: List[BaseStory] = []
-
     _variables: Dict[str, BaseScenarioVariable] = PrivateAttr({})
 
     def __init__(self, title: str, scenario_description: str, scenario_id: str = "", **keyword_args):
@@ -90,6 +101,7 @@ class BaseScenario(BaseModel):
         return self._variables
 
     def get_inject_by_slug(self, inject_slug: str):
+        """Looks for an inject with the given slug."""
         for story in self.stories:
             inject = story.get_inject_by_slug(inject_slug=inject_slug)
             if inject:

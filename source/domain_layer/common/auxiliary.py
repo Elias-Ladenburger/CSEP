@@ -74,6 +74,14 @@ class LegalOperator:
                              'set': operator}
 
     @classmethod
+    def comparison_operators(cls):
+        return cls._comparison_operators
+
+    @classmethod
+    def manipulation_operators(cls):
+        return cls._manipulation_operators
+
+    @classmethod
     def get_comparison_operator(cls, operator_string: str):
         return cls._get_operator_from_dict(operator_string, cls._comparison_operators)
 
@@ -120,6 +128,10 @@ class BaseVariableChange(BaseModel):
     @classmethod
     def get_operator(cls, operator_string: str):
         LegalOperator.get_manipulation_operator(operator_string)
+
+    def __str__(self):
+        return_str = str(self.var)
+        return_str += self.operator + str(self._new_value)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):

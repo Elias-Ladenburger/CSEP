@@ -9,6 +9,7 @@
 <form action="{{ url_for('variables.save_variable', scenario_id=scenario.scenario_id) }}" method="POST"
       class="form">
     <div class="modal-body">
+    {{ variables_form.csrf_token }}
         {% if variable %}<!--
             {{ variables_form.name.process_data(variable.name) }}
             {{ variables_form.datatype.process_data(variable.datatype) }}

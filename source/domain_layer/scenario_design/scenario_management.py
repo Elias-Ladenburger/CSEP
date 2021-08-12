@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import List
 
 from domain_layer.common.auxiliary import BaseScenarioVariable
+from domain_layer.common.injects import BaseInject
 from domain_layer.common.scenario_management import ScenarioRepository, ScenarioFactory
 from domain_layer.scenario_design.injects import EditableInject
 from domain_layer.scenario_design.scenarios import EditableScenario, EditableStory
@@ -26,8 +27,7 @@ class EditableScenarioFactory(ScenarioFactory):
         stories = scenario_data.pop("stories", [])
         scenario_vars = scenario_data.pop("variables", {})
 
-        stories = cls._build_stories_from_dict(
-            stories_data=stories)
+        stories = cls._build_stories_from_dict(stories_data=stories)
 
         variables = cls._build_vars_from_dict(scenario_vars=scenario_vars)
 
@@ -48,20 +48,17 @@ class EditableScenarioFactory(ScenarioFactory):
     def _build_story_from_dict(cls, story_data):
         injects_data = story_data.pop("injects", {})
         entry_slug = story_data.pop("entry_node", "")
-        entry_data = injects_data.pop(entry_slug, {})
-        entry_node = cls._build_inject_from_dict(entry_data)
         injects = {}
 
         for inject_data in injects_data:
             inject = cls._build_inject_from_dict(inject_data=injects_data[inject_data])
             injects[inject.slug] = inject
 
-        story = EditableStory(**story_data, entry_node=entry_node, injects=injects)
+        story = EditableStory(**story_data, entry_node=entry_slug, injects=injects)
         return story
 
     @classmethod
     def _build_inject_from_dict(cls, inject_data):
-        inject_data.pop("slug")
         inject = EditableInject(**inject_data)
         return inject
 
@@ -75,14 +72,20 @@ class EditableScenarioFactory(ScenarioFactory):
 
 class EditableScenarioRepository(ScenarioRepository):
     @classmethod
+    def get_factory(cls):
+        return EditableScenarioFactory
+
+    @classmethod
     def add_story(cls, scenario_id: str, story: EditableStory):
         scenario = cls.get_scenario_by_id(scenario_id)
         scenario.stories.append(story)
         return cls.save_scenario(scenario)
 
     @classmethod
-    def get_factory(cls):
-        return EditableScenarioFactory
+    def delete_story(cls, scenario_id: str, story_index: int):
+        scenario = cls.get_scenario_by_id(scenario_id)
+        scenario.stories.pop(story_index)
+        return cls.save_scenario(scenario)
 
     @classmethod
     def save_variable(cls, scenario_id, variable: BaseScenarioVariable):

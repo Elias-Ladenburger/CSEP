@@ -15,59 +15,18 @@ class EditableScenarioFactory(ScenarioFactory):
         return EditableScenario(title=title, description=description, **kwargs)
 
     @classmethod
-    def build_from_dict(cls, **scenario_data):
-        """
-        Takes any number of keywords as argument and tries to build a valid scenario object from the key-value pairs.
-        :returns: a Scenario which can be edited.
-        """
-        scenario_id = scenario_data.pop("scenario_id", None) or scenario_data.pop("_id", None)
-        title = scenario_data.pop("title")
-        description = scenario_data.pop("scenario_description", None) or scenario_data.pop("description")
-
-        stories = scenario_data.pop("stories", [])
-        scenario_vars = scenario_data.pop("variables", {})
-
-        stories = cls._build_stories_from_dict(stories_data=stories)
-
-        variables = cls._build_vars_from_dict(scenario_vars=scenario_vars)
-
-        scenario = EditableScenario(title=title, scenario_description=description, scenario_id=scenario_id,
-                                    stories=stories, variables=variables, **scenario_data)
-
-        return scenario
+    def _build_scenario(cls, title, scenario_description, scenario_id,
+                        stories, variables, **scenario_data):
+        return EditableScenario(title=title, scenario_description=scenario_description,
+                                scenario_id=scenario_id, stories=stories, variables=variables, **scenario_data)
 
     @classmethod
-    def _build_stories_from_dict(cls, stories_data):
-        stories = []
-        for story_data in stories_data:
-            story = cls._build_story_from_dict(story_data)
-            stories.append(story)
-        return stories
+    def _build_story(cls, entry_slug, injects, **story_data):
+        return EditableStory(**story_data, entry_node=entry_slug, injects=injects)
 
     @classmethod
-    def _build_story_from_dict(cls, story_data):
-        injects_data = story_data.pop("injects", {})
-        entry_slug = story_data.pop("entry_node", "")
-        injects = {}
-
-        for inject_data in injects_data:
-            inject = cls._build_inject_from_dict(inject_data=injects_data[inject_data])
-            injects[inject.slug] = inject
-
-        story = EditableStory(**story_data, entry_node=entry_slug, injects=injects)
-        return story
-
-    @classmethod
-    def _build_inject_from_dict(cls, inject_data):
-        inject = EditableInject(**inject_data)
-        return inject
-
-    @classmethod
-    def _build_vars_from_dict(cls, scenario_vars):
-        new_vars = {}
-        for var_name in scenario_vars:
-            new_vars[var_name] = BaseScenarioVariable(**scenario_vars[var_name])
-        return new_vars
+    def _build_inject(cls, inject_data):
+        return EditableInject(**inject_data)
 
 
 class EditableScenarioRepository(ScenarioRepository):

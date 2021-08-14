@@ -31,3 +31,9 @@ def open_game(scenario_id):
 def show_lobby(game_id):
     game_id, game = GameRepository.get_game_by_id(game_id)
     return render_template("trainer_lobby.html", game=game)
+
+
+@facilitation_bp.route("/games/<game_id>/facilitate")
+def facilitate_game(game_id):
+    game_id, game = GameRepository.get_game_by_id(game_id)
+    return render_template("trainer_lobby.html", game=game)

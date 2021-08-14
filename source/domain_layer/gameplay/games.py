@@ -5,6 +5,7 @@ from typing import Optional, List, Dict
 
 from pydantic import BaseModel, PrivateAttr
 
+from domain_layer.common._domain_objects import AggregateRoot
 from domain_layer.common.auxiliary import BaseVariableChange
 from domain_layer.common.injects import BaseChoiceInject
 from domain_layer.common.scenarios import BaseScenario, BaseStory
@@ -57,30 +58,27 @@ class InjectHistory(BaseModel):
         allow_mutation = False
 
 
-class GameHistory(BaseModel):
-    _inject_history: List[InjectHistory] = PrivateAttr([])
-
-    def append_solution(self, history: InjectHistory):
-        self._inject_history.append(history)
-
-    @property
-    def inject_history(self):
-        return self._inject_history
-
-
-class Game(BaseModel):
+class Game(AggregateRoot):
     """A scenario that is currently being played or has been played."""
-    _start_time: datetime = PrivateAttr(datetime.now())
+    _start_time: Optional[datetime] = PrivateAttr(None)
     _end_time: Optional[datetime] = PrivateAttr(None)
     _game_state: GameState = PrivateAttr(GameState.Open)
     _current_story_index: int = PrivateAttr(0)
-    _history = []
+    _history: List[InjectHistory] = PrivateAttr([])
     scenario: GameScenario
     game_variables: Dict[str, BaseScenarioVariable] = {}
 
     def __init__(self, scenario: BaseScenario, **kwargs):
         super().__init__(scenario=scenario, **kwargs)
         self.game_variables = copy.deepcopy(self.scenario.variables)
+        self._start_time = kwargs.get("start_time", datetime.now())
+        self._end_time = kwargs.get("end_time", None)
+        self._game_state = kwargs.get("game_state", GameState.Open)
+        self._current_story_index = kwargs.get("current_story_index", 0)
+
+    @property
+    def game_id(self):
+        return self._entity_id
 
     @property
     def name(self):
@@ -184,6 +182,19 @@ class Game(BaseModel):
     def end_game(self):
         self._game_state = GameState.Closed
         self._end_time = datetime.now()
+
+    def dict(self, **kwargs):
+        kwargs["by_alias"] = True
+        return_dict = super().dict(**kwargs)
+        return_dict.pop("scenario")
+        return_dict["scenario_id"] = self.scenario.scenario_id
+        return_dict.update(
+            {"start_time": self._start_time,
+             "end_time": self._end_time,
+             "game_state": self._game_state,
+             "current_story_index": self._current_story_index,
+             "history": self._history})
+        return return_dict
 
     def __str__(self):
         return_str = "Game: " + self.scenario.title

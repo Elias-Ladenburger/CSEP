@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% from 'helpers/_form_helpers.html' import render_field %}
 
+{# requires a list of playable scenarios (type DetailedScenario) #}
+{#  requires a list of ongoing games (type GroupGame) #}
+
 {% block main_content %}
 
     <div class="container-fluid">
@@ -11,7 +14,6 @@
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover"
                    id="scenarios-table"
-
                    data-buttons-class="primary"
 
                    data-toggle="table"
@@ -52,7 +54,61 @@
                         <td>
                             <a href="{{ url_for('facilitation.open_game', scenario_id=scenario.scenario_id) }}"
                                class="btn btn-primary" title="Play this scenario">
-                                <i class="fas fa-play"> Open Game</i>
+                                <i class="fas fa-play"></i> Open Game
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <h2>Current Games</h2>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover"
+                   id="scenarios-table"
+                   data-buttons-class="primary"
+
+                   data-toggle="table"
+                   data-show-toggle="true"
+                   data-card-view="false"
+
+                   data-pagination="true"
+                   data-pagination-parts = ["pageList"]
+                   data-search="true"
+                   data-search-align="left"
+
+                   data-detail-view="true"
+                   data-detail-view-icon="false"
+                   data-detail-formatter="detailFormatter"
+                   data-detail-view-by-click="true">
+                <thead class="bg-blue-2">
+                <tr>
+                    <th scope="col" id="game_name" data-sortable="true" data-field="title">Scenario Name</th>
+                    <th data-visible="true" scope="col" id="game_status" data-field="status">Status</th>
+                    <th data-visible="true" scope="col" id="game_link" data-field="game_link">Participant Link</th>
+                    <th scope="col" id="game_actions" title="actions">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for game in games %}
+                    <tr id="{{ game.game_id }}">
+                        <td>{{ scenario.title }}</td>
+                        <td>{{ scenario.learning_objectives }}</td>
+                        <td>{{ scenario.target_group }}</td>
+                        <td>{{ scenario.required_knowledge }}</td>
+                        <td>{{ scenario.scenario_description }}</td>
+                        <td>
+                            <a href="{{ url_for('facilitation.open_game', scenario_id=scenario.scenario_id) }}"
+                               class="btn btn-primary" title="Play this scenario">
+                                <i class="fas fa-play"></i> Open Game
                             </a>
                         </td>
                     </tr>

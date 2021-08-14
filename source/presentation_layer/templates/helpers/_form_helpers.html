@@ -17,7 +17,7 @@
                 </div>
             {% else %}
                 {{ field.label}}
-                {{ field() }}
+                {{ field(**kwargs)|safe }}
             {% endif %}
         {% endif %}
 

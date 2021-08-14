@@ -1,8 +1,7 @@
-import flask
 from flask import Blueprint, render_template, redirect, flash, url_for
 
-from domain_layer.scenario_design.scenario_management import EditableScenarioRepository, EditableScenarioFactory
-from presentation_layer.controllers.common import auxiliary as aux
+from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository
+from presentation_layer.controllers.scenario_design import auxiliary as aux
 from presentation_layer.controllers.scenario_design.scenario_blueprint import tab_details
 from presentation_layer.controllers.scenario_design.scenario_forms import *
 
@@ -46,7 +45,7 @@ def delete_variable(scenario_id):
 @variables_bp.route('<scenario_id>/variables/<var_name>/edit')
 def edit_variable(scenario_id, var_name):
     scenario = aux.get_single_scenario(scenario_id=scenario_id)
-    scenario_var = scenario.variables.get(var_name)
+    scenario_var = scenario.game_variables.get(var_name)
     return variables_form(scenario, title="Edit variable", variable=scenario_var)
 
 

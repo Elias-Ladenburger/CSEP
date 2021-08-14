@@ -48,7 +48,7 @@ class GameInject(BaseChoiceInject):
 class InjectCondition(BaseInjectCondition):
     def evaluate_condition(self, game_variables: Dict[str, BaseScenarioVariable]):
         if self.variable_name.name not in game_variables:
-            raise ValueError("This variable is not in the game's variables. Cannot evaluate condition!")
+            raise ValueError("This variable is not in the gameplay's variables. Cannot evaluate condition!")
         else:
             current_value = game_variables[self.variable_name.name].value
             operator_method = LegalOperator.get_comparison_operator(self.comparison_operator)

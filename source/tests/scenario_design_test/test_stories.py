@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from domain_layer.game_play.mock_interface import MockScenarioBuilder
-from domain_layer.scenario_design.scenarios import EditableStory
+from domain_layer.gameplay.mock_interface import MockScenarioBuilder
+from domain_layer.scenariodesign.scenarios import EditableStory
 
 
 class ScenarioTest(TestCase):

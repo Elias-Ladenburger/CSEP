@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel, PrivateAttr
 
 from domain_layer.common.auxiliary import BaseScenarioVariable, LegalOperator, BaseVariableChange
-from domain_layer.scenario_design.graphs import GraphNode
+from domain_layer.scenariodesign.graphs import GraphNode
 
 
 class BaseInject(GraphNode):

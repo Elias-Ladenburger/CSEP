@@ -4,9 +4,9 @@ from flask import Blueprint, jsonify
 
 
 from domain_layer.common.scenario_management import ScenarioTransformer
-from domain_layer.scenario_design.scenario_management import EditableScenarioRepository, EditableScenarioFactory
-from domain_layer.scenario_design.scenarios import EditableStory
-from presentation_layer.controllers.common import auxiliary as aux
+from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository, EditableScenarioFactory
+from domain_layer.scenariodesign.scenarios import EditableStory
+from presentation_layer.controllers.scenario_design import auxiliary as aux
 
 api_bp = Blueprint('api', __name__, url_prefix="/api/v0")
 

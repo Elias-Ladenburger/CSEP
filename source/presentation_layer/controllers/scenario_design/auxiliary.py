@@ -1,4 +1,4 @@
-from domain_layer.scenario_design.scenario_management import EditableScenarioRepository
+from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository
 
 
 def get_single_scenario(scenario_id):

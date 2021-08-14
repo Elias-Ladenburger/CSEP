@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from domain_layer.game_play.mock_interface import BranchingScenarioBuilder, MockScenarioBuilder
-from domain_layer.scenario_design.injects import EditableInject
-from domain_layer.scenario_design.scenarios import EditableStory
+from domain_layer.gameplay.mock_interface import BranchingScenarioBuilder, MockScenarioBuilder
+from domain_layer.scenariodesign.injects import EditableInject
+from domain_layer.scenariodesign.scenarios import EditableStory
 
 
 class ScenarioTest(TestCase):
@@ -20,7 +20,7 @@ class ScenarioTest(TestCase):
 
     def test_scenario_vars(self):
         scenario = BranchingScenarioBuilder.build_scenario()
-        scenario_vars = scenario.variables
+        scenario_vars = scenario.game_variables
         self.assertIsInstance(scenario_vars, dict)
 
     def test_set_description(self):

@@ -1,8 +1,8 @@
 from unittest import TestCase
 
 from domain_layer.common.scenarios import BaseScenario
-from domain_layer.scenario_design.scenario_management import EditableScenarioFactory
-from domain_layer.scenario_design.scenarios import EditableScenario
+from domain_layer.scenariodesign.scenario_management import EditableScenarioFactory
+from domain_layer.scenariodesign.scenarios import EditableScenario
 from domain_layer.common.scenario_management import ScenarioFactory
 
 

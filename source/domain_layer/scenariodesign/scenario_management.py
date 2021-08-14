@@ -5,8 +5,8 @@ from typing import List
 from domain_layer.common.auxiliary import BaseScenarioVariable
 from domain_layer.common.injects import BaseInject
 from domain_layer.common.scenario_management import ScenarioRepository, ScenarioFactory
-from domain_layer.scenario_design.injects import EditableInject
-from domain_layer.scenario_design.scenarios import EditableScenario, EditableStory
+from domain_layer.scenariodesign.injects import EditableInject
+from domain_layer.scenariodesign.scenarios import EditableScenario, EditableStory
 
 
 class EditableScenarioFactory(ScenarioFactory):

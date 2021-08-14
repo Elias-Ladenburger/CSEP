@@ -125,3 +125,17 @@ class BaseScenario(BaseModel):
             "variables": {var_name: var.dict() for (var_name, var) in self.variables.items()},
         })
         return scenario_dict
+
+
+class DetailedScenario(BaseScenario):
+    """
+    A scenario is a number of realistic situations that are exposed to a participant.
+    """
+    learning_objectives: Optional[str] = ""
+    required_knowledge: Optional[str] = ""
+    target_group: Optional[str]
+
+    def __init__(self, title: str, description: str = "", scenario_id: str = "", **keyword_args):
+        scenario_description = keyword_args.pop("scenario_description", description)
+        super().__init__(title=title, scenario_description=scenario_description,
+                         scenario_id=scenario_id, **keyword_args)

@@ -1,5 +1,5 @@
-from domain_layer.game_play.mock_interface import MockScenarioBuilder
-from domain_layer.scenario_design.scenario_management import EditableScenarioRepository
+from domain_layer.gameplay.mock_interface import MockScenarioBuilder
+from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository
 from infrastructure_layer.database import CustomDB
 
 

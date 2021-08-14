@@ -4,17 +4,16 @@ from flask import Blueprint, flash, redirect, render_template, request, make_res
 from werkzeug.datastructures import CombinedMultiDict
 from werkzeug.utils import secure_filename
 
-from domain_layer.scenario_design.injects import EditableInject
-from domain_layer.scenario_design.scenario_management import EditableScenarioRepository
-from presentation_layer.controllers.common import auxiliary as aux
-from presentation_layer.controllers.scenario_design.scenario_forms import InjectForm, InjectChoiceForm, \
-    InjectChoicesForm
+from domain_layer.scenariodesign.injects import EditableInject
+from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository
+from presentation_layer.controllers.scenario_design import auxiliary as aux
+from presentation_layer.controllers.scenario_design.scenario_forms import InjectForm, InjectChoicesForm
 
-inject_bp = Blueprint('injects', __name__,
-                      template_folder='../../templates/scenario', url_prefix="/scenarios")
+injects_bp = Blueprint('injects', __name__,
+                       template_folder='../../templates/scenario', url_prefix="/scenarios")
 
 
-@inject_bp.route("<scenario_id>/injects/forms_test", methods=["GET", "POST"])
+@injects_bp.route("<scenario_id>/injects/forms_test", methods=["GET", "POST"])
 def test_inject_form(scenario_id):
     scenario = aux.get_single_scenario(scenario_id)
     choices_form = InjectChoicesForm(scenario)
@@ -42,14 +41,14 @@ def test_inject_form(scenario_id):
 
 
 
-@inject_bp.route("<scenario_id>/injects/modal")
+@injects_bp.route("<scenario_id>/injects/modal")
 def get_inject_modal(scenario_id):
     scenario = aux.get_single_scenario(scenario_id)
     inject_form = InjectForm(scenario)
     return render_template('/forms/inject_modal_form.html', scenario=scenario, form=inject_form)
 
 
-@inject_bp.route("/<scenario_id>/inject_details")
+@injects_bp.route("/<scenario_id>/inject_details")
 def get_inject_details(scenario_id):
     inject_slug = request.args.get("inject_slug", False)
     if inject_slug and inject_slug != "new":
@@ -60,7 +59,7 @@ def get_inject_details(scenario_id):
         return make_response(404, "No inject found!")
 
 
-@inject_bp.route("/<scenario_id>/edit_inject", methods=["GET"])
+@injects_bp.route("/<scenario_id>/edit_inject", methods=["GET"])
 def get_inject_form(scenario_id):
     inject_slug = request.args.get("inject_slug", False)
     scenario = aux.get_single_scenario(scenario_id)
@@ -76,23 +75,23 @@ def get_inject_form(scenario_id):
                            inject=inject, title=title, inject_form=inject_form, choice_forms=choice_forms)
 
 
-@inject_bp.route("/<scenario_id>/injects/add", methods=["POST"])
+@injects_bp.route("/<scenario_id>/injects/add", methods=["POST"])
 def add_inject(scenario_id):
     scenario = aux.get_single_scenario(scenario_id)
     inject_dict = process_inject_form(scenario, CombinedMultiDict((request.files, request.form)))
     if not inject_dict:
         flash("Something went wrong!", category="failure")
     else:
-        new_entry_node = inject_dict.pop("is_entry_node", False)
+        is_entry_node = inject_dict.pop("is_entry_node", False)
         preceded_by = inject_dict.pop("preceded_by", "")
         inject = EditableInject(**inject_dict)
-        scenario.add_inject(inject=inject, story_index=0, preceded_by_inject=preceded_by, new_entry_node=new_entry_node)
+        scenario.add_inject(inject=inject, story_index=0, preceded_by_inject=preceded_by, make_entry_node=is_entry_node)
         EditableScenarioRepository.save_scenario(scenario)
         flash("Successfully added the inject!", category="success")
-    return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario_id) + "#" + inject_bp.name)
+    return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario_id) + "#" + injects_bp.name)
 
 
-@inject_bp.route("/<scenario_id>/injects/update", methods=["POST", "PUT"])
+@injects_bp.route("/<scenario_id>/injects/update", methods=["POST", "PUT"])
 def save_inject(scenario_id):
     scenario = aux.get_single_scenario(scenario_id)
     inject_dict = process_inject_form(scenario, CombinedMultiDict((request.files, request.form)))
@@ -135,7 +134,7 @@ def process_inject_form(scenario, form_data):
         return None
 
 
-@inject_bp.route("/<scenario_id>/injects/<inject_slug>/delete")
+@injects_bp.route("/<scenario_id>/injects/<inject_slug>/delete")
 def delete_inject(scenario_id, inject_slug):
     scenario = aux.get_single_scenario(scenario_id)
     scenario.remove_inject(inject_slug)

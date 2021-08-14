@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, redirect, url_for, request
 
-from domain_layer.game_play.mock_interface import MockGameProvider
+from domain_layer.gameplay.mock_interface import MockGameProvider
 
 game_provider = MockGameProvider()
 game = game_provider.get_branching_game()
 
 game_gp = Blueprint('games', __name__,
-                        template_folder='../../templates/game', url_prefix="/games")
+                        template_folder='../../templates/gameplay', url_prefix="/games")
 
 
 @game_gp.route("/")

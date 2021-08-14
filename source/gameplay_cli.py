@@ -1,4 +1,4 @@
-from domain_layer.game_play.mock_interface import MockGameProvider
+from domain_layer.gameplay.mock_interface import MockGameProvider
 
 
 class MockPlayer:
@@ -14,7 +14,7 @@ class MockPlayer:
             self._show_next_inject(inject_slug)
             print("Please input the number that corresponds to your choice.")
             print("Write 'stats' to see your current stats.")
-            print("Write 'q' to quit the game.")
+            print("Write 'q' to quit the gameplay.")
             next_inject = self._handle_input(inject_slug=inject_slug)
         self._handle_end()
 
@@ -58,7 +58,7 @@ class MockPlayer:
 
     def _handle_end(self):
         self._game.end_game()
-        print("You have finished the game. Thank you for playing!")
+        print("You have finished the gameplay. Thank you for playing!")
 
 
 if __name__ == "__main__":

@@ -104,7 +104,7 @@ class LegalOperator:
 
 
 class BaseVariableChange(BaseModel):
-    """Represents a change of the value of a game's variables."""
+    """Represents a change of the value of a gameplay's variables."""
     var: BaseScenarioVariable
     _new_value: Any
     operator: str

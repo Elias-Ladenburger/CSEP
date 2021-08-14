@@ -3,9 +3,9 @@ from behave import *
 use_step_matcher("re")
 
 
-@given("an open group game")
+@given("an open group gameplay")
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Given an open group game')
+    raise NotImplementedError(u'STEP: Given an open group gameplay')
 
 
 @when("a participant wants to join")
@@ -13,14 +13,14 @@ def step_impl(context):
     raise NotImplementedError(u'STEP: When a participant wants to join')
 
 
-@then("they enter the game lobby")
+@then("they enter the gameplay lobby")
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Then they enter the game lobby')
+    raise NotImplementedError(u'STEP: Then they enter the gameplay lobby')
 
 
-@given("a closed group game")
+@given("a closed group gameplay")
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Given a closed group game')
+    raise NotImplementedError(u'STEP: Given a closed group gameplay')
 
 
 @when("a participants wants to join")
@@ -38,11 +38,11 @@ def step_impl(context):
     raise NotImplementedError(u'STEP: And the maximum number of participants has already been reached')
 
 
-@step("the game currently has fewer participants than have started the game")
+@step("the gameplay currently has fewer participants than have started the gameplay")
 def step_impl(context):
-    raise NotImplementedError(u'STEP: And the game currently has fewer participants than have started the game')
+    raise NotImplementedError(u'STEP: And the gameplay currently has fewer participants than have started the gameplay')
 
 
-@when('the trainer select "start game"')
+@when('the trainer select "start gameplay"')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: When the trainer select "start game"')
+    raise NotImplementedError(u'STEP: When the trainer select "start gameplay"')

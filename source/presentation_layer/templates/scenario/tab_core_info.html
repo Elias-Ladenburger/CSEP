@@ -8,6 +8,7 @@
                 {% if scenario.scenario_id %}
                     {{ core_form.scenario_id(value=scenario.scenario_id) }}
                 {% endif %}
+                {{ core_form.csrf_token() }}
                 {{ render_field(core_form.title, class="form-control", data=scenario.title) }}
 
                 {{ render_field(core_form.scenario_description, class="form-control", data=scenario.description) }}

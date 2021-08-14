@@ -2,7 +2,7 @@ import json
 from unittest import TestCase
 
 from application_layer.M2MTransformationService import InjectTransformer
-from domain_layer.game_play.mock_interface import MockScenarioBuilder
+from domain_layer.gameplay.mock_interface import MockScenarioBuilder
 
 
 class ScenarioPersistenceTest(TestCase):

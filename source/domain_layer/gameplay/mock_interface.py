@@ -1,9 +1,10 @@
 from domain_layer.common.auxiliary import DataType, BaseScenarioVariable
 from domain_layer.common.injects import InjectResult
-from domain_layer.game_play.game import Game, GameFactory
-from domain_layer.scenario_design.injects import EditableInject, InjectChoice, InjectCondition
-from domain_layer.scenario_design.scenarios import EditableScenario, EditableStory
-from domain_layer.scenario_design.scenario_management import EditableScenarioFactory
+from domain_layer.gameplay.game_management import GameFactory
+from domain_layer.gameplay.games import Game
+from domain_layer.scenariodesign.injects import EditableInject, InjectChoice, InjectCondition
+from domain_layer.scenariodesign.scenarios import EditableScenario, EditableStory
+from domain_layer.scenariodesign.scenario_management import EditableScenarioFactory
 
 
 class MockScenarioBuilder:
@@ -96,18 +97,18 @@ class VariableScenarioBuilder(MockScenarioBuilder):
 
 
 class MockGameProvider:
-    """A scenario_design that is currently being played or has been played."""
+    """A scenariodesign that is currently being played or has been played."""
 
     @staticmethod
     def get_simple_game():
         scenario = MockScenarioBuilder.build_scenario()
-        game = GameFactory.create_singleplayer_game(scenario)
+        game = GameFactory.create_game(scenario)
         return game
 
     @staticmethod
     def get_branching_game():
         scenario = BranchingScenarioBuilder.build_scenario()
-        game = GameFactory.create_singleplayer_game(scenario)
+        game = GameFactory.create_game(scenario)
         return game
 
     @staticmethod

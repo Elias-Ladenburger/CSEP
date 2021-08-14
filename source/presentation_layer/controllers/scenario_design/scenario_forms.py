@@ -13,7 +13,7 @@ from wtforms.widgets import HiddenInput
 
 from domain_layer.common.auxiliary import BaseScenarioVariable, DataType, LegalOperator
 from domain_layer.common.injects import BaseInjectChoice
-from domain_layer.scenario_design.scenarios import EditableScenario, BaseStory
+from domain_layer.scenariodesign.scenarios import EditableScenario, BaseStory
 
 empty_pair = ("", "---")
 

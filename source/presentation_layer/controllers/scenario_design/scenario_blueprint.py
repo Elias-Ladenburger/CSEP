@@ -2,7 +2,7 @@ import flask
 from flask import Blueprint, render_template, redirect, flash, url_for
 
 from application_layer.M2MTransformationService import InjectTransformer
-from domain_layer.scenario_design.scenario_management import EditableScenarioRepository, EditableScenarioFactory
+from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository, EditableScenarioFactory
 from presentation_layer.controllers.scenario_design.scenario_forms import *
 
 scenario_bp = Blueprint('scenarios', __name__,
@@ -53,6 +53,7 @@ def save_scenario(**kwargs):
         flash("Scenario saved successfully!", category="success")
         return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario.scenario_id))
     else:
+        print(scenario_form.errors)
         flash("Something went wrong!", category="failure")
         redirect(flask.request.referrer)
     return redirect(flask.request.referrer)

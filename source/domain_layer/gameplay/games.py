@@ -3,13 +3,14 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional, List, Dict
 
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
 
 from domain_layer.common.auxiliary import BaseVariableChange
 from domain_layer.common.injects import BaseChoiceInject
 from domain_layer.common.scenarios import BaseScenario, BaseStory
-from domain_layer.game_play.injects import GameInject
-from domain_layer.scenario_design.scenarios import EditableScenario, BaseScenarioVariable
+from domain_layer.gameplay.injects import GameInject
+from domain_layer.gameplay.participants import GameParticipant
+from domain_layer.scenariodesign.scenarios import BaseScenarioVariable
 
 
 class GameState(Enum):
@@ -18,7 +19,12 @@ class GameState(Enum):
     Closed = 3
 
 
-class Story(BaseStory):
+class GameStory(BaseStory):
+    injects: Optional[Dict[str, GameInject]] = {}
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def solve_inject(self, inject_slug: str, solution):
         """
         Solves an inject with the given solution.
@@ -32,25 +38,49 @@ class Story(BaseStory):
         return inject.solve(solution)
 
 
+class GameScenario(BaseScenario):
+    stories: List[GameStory] = []
+
+
 class GameVariableChange(BaseVariableChange):
     def calculate_new_value(self, old_value):
         operator = self.get_operator(self.operator)
         return operator(old_value, self._new_value)
 
 
+class InjectHistory(BaseModel):
+    inject_slug: str
+    timestamp: datetime = datetime.now()
+    solution: str
+
+    class Config:
+        allow_mutation = False
+
+
+class GameHistory(BaseModel):
+    _inject_history: List[InjectHistory] = PrivateAttr([])
+
+    def append_solution(self, history: InjectHistory):
+        self._inject_history.append(history)
+
+    @property
+    def inject_history(self):
+        return self._inject_history
+
+
 class Game(BaseModel):
-    """A scenario_design that is currently being played or has been played."""
-    _start_time: datetime.now()
-    _end_time: Optional[datetime] = None
-    _game_state: GameState = GameState.Open
-    _current_story_index: int = 0
+    """A scenario that is currently being played or has been played."""
+    _start_time: datetime = PrivateAttr(datetime.now())
+    _end_time: Optional[datetime] = PrivateAttr(None)
+    _game_state: GameState = PrivateAttr(GameState.Open)
+    _current_story_index: int = PrivateAttr(0)
     _history = []
-    scenario: BaseScenario
-    variables: Dict[str, BaseScenarioVariable] = {}
+    scenario: GameScenario
+    game_variables: Dict[str, BaseScenarioVariable] = {}
 
     def __init__(self, scenario: BaseScenario, **kwargs):
         super().__init__(scenario=scenario, **kwargs)
-        self.variables = copy.deepcopy(self.scenario.variables)
+        self.game_variables = copy.deepcopy(self.scenario.variables)
 
     @property
     def name(self):
@@ -77,17 +107,17 @@ class Game(BaseModel):
         return self.scenario.stories[0].entry_node
 
     def set_game_variable(self, var: BaseScenarioVariable, new_value):
-        self.variables[var.name].value = new_value
+        self.game_variables[var.name].value = new_value
 
     def get_visible_vars(self):
         visible_stats = {}
-        for var_name in self.variables:
-            if self.variables[var_name].is_private:
-                visible_stats[var_name] = self.variables[var_name]
+        for var_name in self.game_variables:
+            if self.game_variables[var_name].is_private:
+                visible_stats[var_name] = self.game_variables[var_name]
         return visible_stats
 
     def get_all_vars(self):
-        return self.variables
+        return self.game_variables
 
     def get_inject(self, inject_candidate):
         """Get an inject object that comes closest to the inject candidate."""
@@ -107,12 +137,13 @@ class Game(BaseModel):
 
     def solve_inject(self, inject_candidate, solution):
         """Evaluates a solution to a given inject and provides the next inject in response.
-        Side effects include appending the solution to the game history and ending the game, if no more injects exist.
+        Side effects include appending the solution to the gameplay history
+        and ending the gameplay, if no more injects exist.
 
         :param inject_candidate: The inject to be solved. Can be either the slug (as str)
         of the inject or an instance of Inject itself.
         :param solution: The solution to be passed. Implementation will vary, depending on inject type.
-        :return: The next inject if one exists. Otherwise returns 'None' and ends the game."""
+        :return: The next inject if one exists. Otherwise returns 'None' and ends the gameplay."""
         inject = self.get_inject(inject_candidate)
         self._add_inject_history(inject, solution)
         inject_result = self.current_story.solve_inject(inject.slug, solution)
@@ -131,14 +162,14 @@ class Game(BaseModel):
         :return: The Inject which this transition points to.
         """
         var_name = change.var.name
-        old_value = self.variables[var_name]
-        self.variables[var_name].value = change.calculate_new_value(old_value)
+        old_value = self.game_variables[var_name]
+        self.game_variables[var_name].value = change.calculate_new_value(old_value)
 
     def _evaluate_next_inject(self, inject: GameInject):
         if not inject:
             return self._begin_next_story()
         if inject.condition:
-            return inject.condition.evaluate_condition(self.variables)
+            return inject.condition.evaluate_condition(self.game_variables)
         else:
             return inject
 
@@ -162,43 +193,19 @@ class Game(BaseModel):
 
 
 class GroupGame(Game):
-    def __init__(self, scenario: EditableScenario):
+    breakpoints: List[str] = []
+    participants: List[GameParticipant] = []
+
+    def __init__(self, scenario: BaseScenario):
         super().__init__(scenario)
-        self.breakpoints = []
-        self.participants = []
-        self._trainers = []
-        self.observers = []
 
-    @property
-    def trainer(self):
-        return self._trainers
-
-    def add_breakpoint(self, story_index):
+    def add_breakpoint(self, inject_slug: str):
         """
         Add a breakpoint which prevents players from moving past a specific story.
-        :param story_index: The index of the story which players cannot move past.
+        :param inject_slug: The index of the story which players cannot move past.
         :return:
         """
-        self.breakpoints.append(story_index)
+        self.breakpoints.append(inject_slug)
 
-    def remove_breakpoint(self, story_index):
-        self.breakpoints.remove(story_index)
-
-
-class GameFactory:
-    @staticmethod
-    def create_singleplayer_game(scenario: EditableScenario):
-        game = Game(scenario=scenario)
-        # GameRepository.save_game(game)
-        return game
-
-    @staticmethod
-    def create_multiplayer_game(scenario: EditableScenario):
-        return GroupGame(scenario)
-
-
-class GameRepository:
-    @staticmethod
-    def save_game(game: Game):
-        db = CustomDatabase()
-        db.insert_one("games", game)
+    def remove_breakpoint(self, inject_slug: str):
+        self.breakpoints.remove(inject_slug)

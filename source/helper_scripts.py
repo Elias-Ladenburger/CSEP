@@ -4,7 +4,7 @@ from infrastructure_layer.database import CustomDB
 
 
 def setup_mock_db():
-    CustomDB._purge_database(collection_name="scenarios")
+    CustomDB._purge_entire_database()
     for i in range(0, 3):
         test_scenario = MockScenarioBuilder.build_scenario()
         EditableScenarioRepository.save_scenario(test_scenario)

@@ -128,6 +128,15 @@ class CustomDB:
             raise NotImplementedError("Purging a production database has consciously not been implemented."
                                       "If this is truly a necessary step, please clear the database directly.")
 
+    @classmethod
+    def _purge_entire_database(cls):
+        """Should NOT be used in production"""
+        for collection_name in cls.collections:
+            collection = cls.get_collection_by_name(collection_name)
+            query_filter = {}
+            collection.delete_many(filter=query_filter)
+
+
     @staticmethod
     def _build_filter(criteria: dict):
         if not criteria:
@@ -137,6 +146,7 @@ class CustomDB:
             criteria["_id"] = CustomDB._build_object_id(entity_id)
         tmp_filter = criteria
         return tmp_filter
+
 
     @staticmethod
     def _build_object_id(entity_id):

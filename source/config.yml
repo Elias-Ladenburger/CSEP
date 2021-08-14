@@ -26,7 +26,7 @@ FLASK:
   USER_ENABLE_USERNAME: "True"
   USER_REQUIRE_RETYPE_PASSWORD: "False"
 
-  SECRET_KEY: "This is an INSECURE secret!! DO NOT use this in production!!"
+  SECRET_KEY: "asdwasdf3ASD3q289472we%fiSADFsdfr34$2453rfwsidufh2FF89234%%ioup}sdf"
 
   STATIC_FOLDER: "static"
   TEMPLATES_FOLDER: "templates"

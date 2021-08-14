@@ -2,6 +2,7 @@ from typing import Optional, Dict, List
 
 from pydantic import BaseModel, PrivateAttr
 
+from domain_layer.common._domain_objects import AggregateRoot
 from domain_layer.common.auxiliary import BaseScenarioVariable
 from domain_layer.common.injects import BaseChoiceInject
 
@@ -69,10 +70,9 @@ class BaseStory(BaseModel):
         raise TypeError("injects must be a list or dictionary of injects!")
 
 
-class BaseScenario(BaseModel):
+class BaseScenario(AggregateRoot):
     """A container for all the data of a scenario."""
 
-    _id: str = PrivateAttr()
     title: str
     scenario_description: str
     stories: List[BaseStory] = []
@@ -80,7 +80,7 @@ class BaseScenario(BaseModel):
 
     def __init__(self, title: str, scenario_description: str, scenario_id: str = "", **keyword_args):
         super().__init__(title=title, scenario_description=scenario_description, **keyword_args)
-        self._id = scenario_id
+        self._entity_id = scenario_id
         var_dict = keyword_args.get("variables", {})
         if var_dict:
             for var_name, scenario_var in var_dict.items():
@@ -90,7 +90,7 @@ class BaseScenario(BaseModel):
 
     @property
     def scenario_id(self):
-        return self._id
+        return self._entity_id
 
     @property
     def description(self):

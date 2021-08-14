@@ -36,11 +36,19 @@ class Repository:
 
     @classmethod
     def _insert_entity(cls, collection_name: str, entity: dict):
+        """Insert a new entity to the database.
+        :param collection_name: The name of the database collection to insert the entity into.
+        :param entity: A dictionary object of the entity data.
+        :returns: The ID with which this entity can be retrieved from the database."""
         inserted_id = cls.my_db.insert_one(collection_name=collection_name, entity=entity)
         return inserted_id
 
     @classmethod
     def _delete_one(cls, collection_name: str, entity_id: str):
+        """Remove an existing entity from the database.
+            :param collection_name: The name of the database collection to insert the entity into.
+            :param entity: A dictionary object of the entity data.
+            :returns: The ID with which this entity can be retrieved from the database."""
         delete_criteria = {"_id": entity_id}
         return cls.my_db.delete_one(collection_name=collection_name, criteria=delete_criteria)
 

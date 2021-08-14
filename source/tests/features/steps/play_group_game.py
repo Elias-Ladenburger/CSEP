@@ -3,9 +3,9 @@ from behave import *
 use_step_matcher("parse")
 
 
-@given('a group game in progress')
+@given('a group gameplay in progress')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Given a group game in progress')
+    raise NotImplementedError(u'STEP: Given a group gameplay in progress')
 
 
 @given(u'{participant_count} participants')

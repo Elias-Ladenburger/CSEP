@@ -1,8 +1,8 @@
 from behave import *
 
-from domain_layer.game_play.game import GameFactory
+from domain_layer.gameplay.games import GameFactory
 from domain_layer.common.injects import BaseChoiceInject
-from domain_layer.scenario_design.scenarios import EditableScenario, BaseStory
+from domain_layer.scenariodesign.scenarios import EditableScenario, BaseStory
 
 use_step_matcher("parse")
 
@@ -24,7 +24,7 @@ def step_impl(context):
     context.execute_steps("Given a learning scenario")
 
 
-@given(u'a game in progress')
+@given(u'a gameplay in progress')
 def step_impl(context):
     context.execute_steps('''
     Given one scenario
@@ -36,7 +36,7 @@ def step_impl(context):
     context.game = GameFactory.create_singleplayer_game(context.scenario)
 
 
-@then('the game must end.')
+@then('the gameplay must end.')
 def step_impl(context):
     next_inject = context.game.solve_inject(context.source_inject, 0)
 

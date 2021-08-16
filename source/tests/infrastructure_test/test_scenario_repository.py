@@ -87,12 +87,13 @@ class ScenarioPersistenceTest(TestCase):
         return inserted_id
 
     def test_modify_scenario(self):
-        original_scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id=self.test_scenario.scenario_id)
+        repo = EditableScenarioRepository
+        original_scenario = repo.get_scenario_by_id(scenario_id=self.test_scenario.scenario_id)
         scenario = EditableScenario(**original_scenario.dict())
         inject = EditableInject(label="First inject", text="Inject Text")
         story = EditableStory("Test Story", entry_node=inject)
         scenario.add_story(story)
-        ScenarioRepository.save_scenario(scenario)
-        changed_scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id=self.test_scenario.scenario_id)
+        repo.save_scenario(scenario)
+        changed_scenario = repo.get_scenario_by_id(scenario_id=self.test_scenario.scenario_id)
         print(changed_scenario.target_group)
         self.assertTrue(changed_scenario.target_group == original_scenario.target_group)

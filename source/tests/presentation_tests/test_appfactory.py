@@ -17,8 +17,4 @@ class AppFactoryTest(TestCase):
         new_app = app_factory.AppFactory.create_app()
         self.assertIsInstance(new_app, Flask)
 
-    def test_process_choices_helper(self):
-        scenario = MockScenarioBuilder.build_scenario()
-        choices = app_factory.process_field_choices(scenario.get_all_injects(), "slug", "label")
-        print(choices)
-        self.assertIsInstance(choices, list)
+

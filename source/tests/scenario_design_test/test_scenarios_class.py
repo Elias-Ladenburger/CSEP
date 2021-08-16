@@ -20,7 +20,7 @@ class ScenarioTest(TestCase):
 
     def test_scenario_vars(self):
         scenario = BranchingScenarioBuilder.build_scenario()
-        scenario_vars = scenario.game_variables
+        scenario_vars = scenario.variables
         self.assertIsInstance(scenario_vars, dict)
 
     def test_set_description(self):

@@ -37,8 +37,13 @@ class DictConversionTest(TestCase):
         print(self.model._test3)
 
     def test_set_protected_attribute(self):
-        self.model._test3 = "another test"
-        print(self.model._test3)
+        try:
+            self.model._test3 = "another test"
+            print(self.model._test3)
+        except ValueError as ve:
+            print(ve)
+            self.assertIsInstance(ve, Exception)
+
 
     def test_access_via_alias(self):
         print(self.model._test3)

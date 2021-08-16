@@ -1,0 +1,34 @@
+{% macro inject_details(inject, facilitation_view=False, edit_view=False) %}
+    {% if edit_view %}{% set facilitation_view = True %}{% endif %}
+    <div class="card text-body" id="injectCard">
+        {% if inject.media_path %}
+            <img class="card-img-top"
+                 src="{{ url_for('static', filename='assets/uploads/'+inject.media_path) }}"
+                 alt="Card image cap">
+        {% endif %}
+
+        <div class="card-body">
+            {% if facilitation_view and inject.condition %}
+                <p class="bg-blue-3 rounded">Condition: IF (<span
+                        class="badge badge-primary">{{ inject.condition.variable_name }}</span> {{ inject.condition.comparison_operator }}
+                    <span class="badge badge-primary">{{ inject.condition.variable_threshold }}</span>) then go to
+                    inject <span class="badge badge-primary">{{ inject.condition.alternative_inject }}</span>
+                </p>{% endif %}
+            <h5 class="card-title" id="injectName">{{ inject.label }}</h5>
+            <p class="card-text" id="injectText">{{ inject.text }}</p>
+            {% if inject.has_choices %}
+                <ul class="text-body">
+                    {% for choice in inject.choices %}
+                        <li class="text">{{ choice.label }}<br>
+                            <p class="small">
+                                {% if facilitation_view and choice.outcome.next_inject %}
+                                    {{ choice.outcome.next_inject }}{% endif %}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+
+
+{% endmacro %}

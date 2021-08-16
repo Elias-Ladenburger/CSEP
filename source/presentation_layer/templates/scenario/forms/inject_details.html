@@ -1,24 +1,11 @@
-<div class="card" id="injectCard" style="width: 18rem;">
-    {% if inject.media_path %}
-        <img class="card-img-top" src="{{ url_for('static', filename='assets/uploads/'+inject.media_path) }}"
-             alt="Card image cap">
-    {% endif %}
-    <div class="card-body">
-        <h5 class="card-title" id="injectName">{{ inject.label }}</h5>
-        <p class="card-text" id="injectText">{{ inject.text }}</p>
-        {% if inject.has_choices %}
-            <ul class="text-body">
-            {% for choice in inject.choices %}
-                <li class="text">{{ choice.label }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        <button
-                onclick="renderInjectDetails(
-                    '{{ url_for("injects.get_inject_form", scenario_id=scenario_id, inject_slug=inject.slug) }}')"
-                class="btn btn-primary">Edit Inject
-        </button>
-        <button onclick="deleteElement('{{ url_for('injects.delete_inject', scenario_id=scenario_id, inject_slug=inject.slug)}}')"
-           class="btn btn-danger">Delete Inject</button>
-    </div>
-</div>
+{% from '/helpers/_detail_helpers.html' import inject_details %}
+
+{{ inject_details(inject=inject, edit_view=True) }}
+<button
+        onclick="renderInjectDetails(
+                '{{ url_for("injects.get_inject_form", scenario_id=scenario_id, inject_slug=inject.slug) }}')"
+        class="btn btn-primary">Edit Inject
+</button>
+<button onclick="deleteElement('{{ url_for('injects.delete_inject', scenario_id=scenario_id, inject_slug=inject.slug) }}')"
+        class="btn btn-danger">Delete Inject
+</button>

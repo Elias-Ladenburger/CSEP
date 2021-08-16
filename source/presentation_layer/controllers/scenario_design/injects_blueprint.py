@@ -1,5 +1,6 @@
 import os
 
+import flask
 from flask import Blueprint, flash, redirect, render_template, request, make_response, url_for
 from werkzeug.datastructures import CombinedMultiDict
 from werkzeug.utils import secure_filename
@@ -134,7 +135,7 @@ def process_inject_form(scenario, form_data):
         return None
 
 
-@injects_bp.route("/<scenario_id>/injects/<inject_slug>/delete")
+@injects_bp.route("/<scenario_id>/injects/<inject_slug>/delete", methods=["DELETE"])
 def delete_inject(scenario_id, inject_slug):
     scenario = aux.get_single_scenario(scenario_id)
     scenario.remove_inject(inject_slug)

@@ -5,7 +5,6 @@
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover"
                    id="variablesTable"
-                   data-delete-url="{{ url_for('variables.delete_variable', scenario_id=scenario.scenario_id) }}"
                    data-add-url="{{ url_for('variables.add_variable', scenario_id=scenario.scenario_id) }}"
 
                    data-buttons="variableTableButtons"
@@ -47,7 +46,8 @@
                                     class="btn btn-primary" title="Edit this variable">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button onclick="deleteVariable('{{ var_name }}', 'variablenumber{{ loop.index }}');"
+                            <button onclick="deleteElement('{{ url_for('variables.delete_variable', scenario_id=scenario.scenario_id) }}',
+                                    {variable_name: '{{ var_name }}'}, 'variablenumber{{ loop.index }}')"
                                     class="btn btn-danger" title="Delete this variable">
                                 <i class="fas fa-trash-alt"></i>
                             </button>

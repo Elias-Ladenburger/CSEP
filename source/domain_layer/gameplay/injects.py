@@ -7,7 +7,7 @@ from domain_layer.common.injects import BaseChoiceInject, InjectResult, BaseInje
 
 
 class GameInject(BaseChoiceInject):
-    condition: InjectCondition = None
+    condition: GameInjectCondition = None
 
     def __init__(self, **kwargs):
         self.update_forward_refs()
@@ -45,12 +45,12 @@ class GameInject(BaseChoiceInject):
             raise TypeError("Solution for choice injects must be of type int!")
 
 
-class InjectCondition(BaseInjectCondition):
-    def evaluate_condition(self, game_variables: Dict[str, BaseScenarioVariable]):
-        if self.variable_name.name not in game_variables:
+class GameInjectCondition(BaseInjectCondition):
+    def evaluate(self, game_variables: Dict[str, BaseScenarioVariable]):
+        if self.variable_name not in game_variables:
             raise ValueError("This variable is not in the gameplay's variables. Cannot evaluate condition!")
         else:
-            current_value = game_variables[self.variable_name.name].value
+            current_value = game_variables[self.variable_name].value
             operator_method = LegalOperator.get_comparison_operator(self.comparison_operator)
             return operator_method(current_value, self.variable_threshold)
 
@@ -64,6 +64,7 @@ class GameVariable(BaseScenarioVariable):
 
 
 class VariableChange(BaseVariableChange):
+    """Represents a change of a GameVariable"""
     def get_new_value(self, old_value):
         """
         :param old_value: The current value of the variable.

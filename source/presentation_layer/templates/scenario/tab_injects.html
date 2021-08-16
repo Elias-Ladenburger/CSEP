@@ -3,25 +3,19 @@
 {% block details_content %}
     <div class="container-fluid ">
         <div class="row">
-            <div class="col col-lg-5 text-white-50">
+            <div class="col-sm-5 text-white-50">
                 {% include 'injects_graph.html' %}
             </div>
-            <div class="col col-lg-5">
+            <div class="col-sm-5">
                 <button class="btn btn-secondary" onclick="network.stabilize()">Render Injects Graph</button>
                 <button class="btn btn-secondary" onclick="network.fit()">Toggle Conditions</button>
                 <button class="btn btn-primary" onclick="showFormModal('#create-inject-form-modal',
                     '{{ url_for("injects.get_inject_modal", scenario_id=scenario.scenario_id) }}')">
                     New inject</button>
                 <hr/>
-                <!-- inject card -->
                 <div id="inject-details">
                     <div class="remote-content">
                         <!-- will be populated, once an inject is selected from the graph -->
-                    </div>
-                </div>
-                <div id="inject-form">
-                    <div class="remote-content">
-                        <!-- will be populated, once user selects to edit an inject -->
                     </div>
                 </div>
             </div>

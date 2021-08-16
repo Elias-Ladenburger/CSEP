@@ -4,7 +4,7 @@ from pydantic import BaseModel, PrivateAttr
 
 from domain_layer.common._domain_objects import AggregateRoot
 from domain_layer.common.auxiliary import BaseScenarioVariable
-from domain_layer.common.injects import BaseChoiceInject
+from domain_layer.common.injects import BaseChoiceInject, BaseInject
 
 
 class BaseStory(BaseModel):
@@ -17,7 +17,7 @@ class BaseStory(BaseModel):
     class Config:
         allow_mutation = False
 
-    def __init__(self, title: str, entry_node: str = "", injects=None,  **keyword_args):
+    def __init__(self, title: str, entry_node: str, injects=None,  **keyword_args):
         """
         :param title: The title of this story.
         :param entry_node: A string of the slug of the first inject of this story.
@@ -26,6 +26,8 @@ class BaseStory(BaseModel):
         """
         if injects:
             keyword_args["injects"] = self._parse_injects(injects)
+        if isinstance(entry_node, BaseInject):
+            entry_node = entry_node.slug
         super().__init__(title=title, **keyword_args)
         self._entry_node = entry_node
 
@@ -72,7 +74,6 @@ class BaseStory(BaseModel):
 
 class BaseScenario(AggregateRoot):
     """A container for all the data of a scenario."""
-
     title: str
     scenario_description: str
     stories: List[BaseStory] = []

@@ -4,7 +4,7 @@
 {% block details_content %}
     <form action="{{ url_for('scenarios.save_scenario') }}" method="POST" class="form">
         <div class="row">
-            <div class="col">
+            <div class="col-sm">
                 {% if scenario.scenario_id %}
                     {{ core_form.scenario_id(value=scenario.scenario_id) }}
                 {% endif %}
@@ -15,7 +15,7 @@
 
                 {{ render_field(core_form.learning_objectives, class="form-control", data=scenario.learning_objectives) }}
             </div>
-            <div class="col">
+            <div class="col-sm">
                 {{ render_field(core_form.target_group, class="form-control", data=scenario.target_group) }}
 
                 {{ render_field(core_form.required_knowledge, class="form-control", data=scenario.required_knowledge) }}
@@ -29,7 +29,4 @@
         </a>
     </form>
 
-
-    <script>
-    </script>
 {% endblock %}

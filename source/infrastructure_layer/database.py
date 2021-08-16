@@ -52,13 +52,19 @@ class CustomDB:
         return result_id, result
 
     @classmethod
+    def get_many(cls, collection_name: str, criteria: dict, exact_match=True):
+        collection = cls.get_collection_by_name(collection_name)
+        criteria = cls._build_filter(criteria, exact_match)
+        return collection.find(criteria)
+
+    @classmethod
     def get_all(cls, collection_name: str):
         """
         Convenience function. Returns all entities within a collection.
         :param collection_name: The collection from which all entities are to be retrieved.
         """
-        collection = cls.get_collection_by_name(collection_name)
-        return collection.find({})
+        return cls.get_many(collection_name, {})
+
 
     @classmethod
     def save_one(cls, collection_name: str, new_values: dict, entity_id=None):
@@ -138,7 +144,7 @@ class CustomDB:
 
 
     @staticmethod
-    def _build_filter(criteria: dict):
+    def _build_filter(criteria: dict, exact_match=True):
         if not criteria:
             pass
         if "_id" in criteria:

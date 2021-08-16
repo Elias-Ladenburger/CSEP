@@ -104,7 +104,7 @@ class LegalOperator:
 
 
 class BaseVariableChange(BaseModel):
-    """Represents a change of the value of a gameplay's variables."""
+    """Represents a change of the value of a game's variables."""
     var: BaseScenarioVariable
     _new_value: Any
     operator: str
@@ -117,6 +117,10 @@ class BaseVariableChange(BaseModel):
         """
         super().__init__(var=var, new_value=new_value, value_operator=value_operator, **keyword_args)
         self._new_value = self._parse_new_value(var, new_value)
+
+    @property
+    def new_value(self):
+        return self._new_value
 
     @staticmethod
     def _parse_new_value(var, new_value):

@@ -97,7 +97,6 @@ class ScenarioFactory:
 
 class ScenarioRepository(Repository):
     collection_name = "scenarios"
-    story_collection_name = "stories"
 
     @classmethod
     def get_factory(cls):

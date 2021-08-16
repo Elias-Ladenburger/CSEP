@@ -93,6 +93,12 @@ h1, h2, h3, h4, h5 {
   color: var(--light-gray) !important;
 }
 
+.btn-transparent{
+  color: var(--blue-uno);
+  background-color: transparent;
+  border-color: transparent;
+}
+
 .btn:hover{
   text-decoration: underline;
   border-color: inherit;

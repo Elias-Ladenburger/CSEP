@@ -3,7 +3,7 @@
 {# requires a Game object #}
 
 {% block main_content %}
-    {% set game_url = "https://www.csepgames.com/games/12sef23454390" %}
+    {% set game_url = url_for('games.group_game', game_id=game.game_id, _external=True) %}
     <div class="container-fluid bg-3 text-center text-white-50">
         <h3 class="h3">{{ game.name }}</h3>
         <p>{{ game.scenario.scenario_description }}</p>
@@ -17,13 +17,19 @@
                     <input type="text" class="form-control" id="url-input" value="{{ game_url }}" disabled>
                     <div class="input-group-append">
                         <button type="button" class="input-group-text btn btn-primary"
-                                onclick="copyGameURL('{{ game_url }}')"><i class="far fa-copy"></i></button>
+                                onclick="copyToClipboard('{{ game_url }}')"><i class="far fa-copy"></i></button>
                     </div>
                 </div>
                 <hr/>
                 <div class="row align-items-center justify-content-center">
-                    <a class="btn btn-primary" href="#"><i class="fas fa-play"></i> Start Game</a>
-                    <a class="btn btn-danger" href="#">X Abort Game</a>
+                    <a href="{{ url_for('facilitation.start_game', game_id=game.game_id) }}"
+                       class="btn btn-primary" title="Facilitate this Game">
+                        <i class="fas fa-play"></i> Start Game
+                    </a>
+                    <a href="{{ url_for('facilitation.close_game', game_id=game.game_id) }}"
+                       class="btn btn-danger" title="Abort this Game">
+                        <i class="fas fa-times-circle"></i> Abort Game
+                    </a>
                 </div>
                 <hr/>
                 <h3 class="h3">Participants<i class="fas fa-info-circle"
@@ -35,15 +41,5 @@
         </div>
     </div>
 
-    <script>
-        function copyGameURL(gameURL) {
-            navigator.clipboard.writeText(gameURL).then(function () {
-                window.alert("Successfully copied the game URL")
-            }, function () {
-                window.alert("Could not copy game URL automatically. " +
-                    "Please copy manually.")
-            });
-        }
-    </script>
 
 {% endblock %}

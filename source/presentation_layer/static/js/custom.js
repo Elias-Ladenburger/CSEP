@@ -19,17 +19,31 @@ function detailFormatter(index, row, element) {
     return html.join('')
 }
 
-function deleteScenario(scenario_id) {
-    const deleteURL = $('#scenarios-table').data()["deleteUrl"];
-    $('#' + scenario_id).remove();
-    jQuery.ajax({
-        url: deleteURL,
-        method: 'DELETE',
-        data: {
-            scenario_id: scenario_id
-        }
+function copyToClipboard(clipboardText) {
+    navigator.clipboard.writeText(clipboardText).then(function () {
+        window.alert("Successfully copied to Clipboard");
+        return true;
+    }, function () {
+        window.alert("Could not copy to clipboard automatically. " +
+            "Please copy manually.");
+        return true;
     });
-    window.reload();
+}
+
+
+function deleteElement(deleteURL, requestData, elemToRemove = "") {
+    let confirmation = confirm('Do you really want to delete this element?')
+    if (confirmation === true) {
+        if (elemToRemove !== "") {
+            $('#' + elemToRemove).remove();
+        }
+        jQuery.ajax({
+            url: deleteURL,
+            method: 'DELETE',
+            data: requestData
+        });
+        window.reload();
+    }
 }
 
 function loadTab(url) {
@@ -52,9 +66,8 @@ function renderNetwork(networkId, injectData, edgeData) {
         let tmp_node = injectData[i];
         if (tmp_node.hasOwnProperty("is_entry_node") && injectData[i]["is_entry_node"] === true) {
             tmp_node["label"] += ":entry point";
-           tmp_node["color"] = 'orange';
-        }
-        else if(tmp_node["label"] === "condition"){
+            tmp_node["color"] = 'orange';
+        } else if (tmp_node["label"] === "condition") {
             tmp_node["color"] = "lightgreen";
             tmp_node["size"] = 4;
             tmp_node["label"] = "";
@@ -207,16 +220,7 @@ function deleteVariable(variableName, rowId) {
 
 function renderInjectDetails(url, showForm = false) {
     const detailsId = '#inject-details';
-    const formId = '#inject-form';
-    if (showForm) {
-        populateElement(formId, url)
-    } else if (elementIsHidden(detailsId)) {
-        hideElement(formId);
-        populateElement(detailsId, url);
-    } else {
-        hideElement(detailsId);
-        populateElement(formId, url);
-    }
+    populateElement(detailsId, url);
     $('body').tooltip({selector: '[data-toggle=tooltip]'});
 }
 

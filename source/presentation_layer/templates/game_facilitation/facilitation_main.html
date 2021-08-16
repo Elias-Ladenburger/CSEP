@@ -1,0 +1,52 @@
+{% extends '/game_facilitation/facilitation_main_base.html' %}
+{% from '/helpers/_detail_helpers.html' import inject_details %}
+
+{% block content %}
+    {% set inject = game.scenario.stories[0].entry_node %}
+
+    <div class="container-fluid bg-darkgrey-3 text-light">
+        <h2 class="h2">Scenario: {{ game.name }}</h2>
+        <hr/>
+        <div class="container-fluid bg-light">
+            <div class="row bg-light text-body">
+                <div class="col-sm-5">
+                    <h3 class="h3">Variables</h3>
+                    {% for var_name, game_var in game.game_variables.items() %}
+                        {% set var_id = var_name.replace(" ", "-") %}
+                        <form>
+                            <div class="form-group row">
+                                <label class="col-sm-4" for="{{ var_id }}">{{ var_name }}</label>
+                                <input class="col-sm-5" id="{{ var_id }}" type="text" value="{{ game_var.value }}">
+                            </div>
+                        </form>
+                    {% endfor %}
+                <hr/>
+                </div>
+                <div class="col-sm-5">
+                    <div class="row">
+                        <h4 class="h4">Current Inject</h4>
+                        {{ inject_details(game.current_inject, True) }}
+                    </div>
+                    <hr/>
+                    <div class="row">
+                        <h4 class="h4">Next Inject</h4>
+                        {% set next_inject = game.get_inject_by_slug(game.current_inject.next_inject) %}
+                        {{ inject_details(next_inject, True) }}
+                    </div>
+                    <hr/>
+                </div>
+            </div>
+            <div class="row bg-light align-items-center justify-content-center">
+                <a href="{{ url_for('facilitation.start_game', game_id=game.game_id) }}"
+                   class="btn btn-primary" title="Facilitate this Game">
+                    <i class="fas fa-play"></i> Allow Next Inject
+                </a>
+                    <a href="{{ url_for('facilitation.close_game', game_id=game.game_id) }}"
+                       class="btn btn-danger" title="Abort this Game">
+                        <i class="fas fa-times-circle"></i> Abort Game
+                    </a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

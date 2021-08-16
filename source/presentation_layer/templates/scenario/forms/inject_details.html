@@ -18,7 +18,7 @@
                     '{{ url_for("injects.get_inject_form", scenario_id=scenario_id, inject_slug=inject.slug) }}')"
                 class="btn btn-primary">Edit Inject
         </button>
-        <a href="{{ url_for('injects.delete_inject', scenario_id=scenario_id, inject_slug=inject.slug) }}"
-           class="btn btn-danger">Delete Inject</a>
+        <button onclick="deleteElement('{{ url_for('injects.delete_inject', scenario_id=scenario_id, inject_slug=inject.slug)}}')"
+           class="btn btn-danger">Delete Inject</button>
     </div>
 </div>

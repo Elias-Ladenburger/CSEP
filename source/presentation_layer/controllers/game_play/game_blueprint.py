@@ -83,3 +83,7 @@ def inject_feedback(game_id, inject_slug):
     return render_template(template_name, scenario_name=game.name,  game_id=game_id,
                            next_inject_slug=inject_slug)
 
+
+@game_gp.route("/<game_id>/")
+def group_game(game_id):
+    pass

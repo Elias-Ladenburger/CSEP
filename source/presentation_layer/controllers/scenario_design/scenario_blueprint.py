@@ -42,14 +42,18 @@ def edit_scenario_view(scenario: EditableScenario, **kwargs):
 
 
 @scenario_bp.route("/save", methods=["POST"])
-def save_scenario(**kwargs):
+def save_scenario():
     raw_form = flask.request.form
     scenario_form = ScenarioCoreForm(raw_form)
     if scenario_form.validate():
         scenario_dict = scenario_form.data
-
-        scenario = EditableScenarioFactory.build_from_dict(**scenario_dict)
-        scenario = EditableScenarioRepository.save_scenario(scenario)
+        if "scenario_id" in scenario_dict:
+            scenario_id = scenario_dict["scenario_id"]
+            scenario_id = EditableScenarioRepository.partial_update(scenario_dict, scenario_id)
+            scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id)
+        else:
+            scenario = EditableScenarioFactory.build_from_dict(**scenario_dict)
+            scenario = EditableScenarioRepository.save_scenario(scenario)
         flash("Scenario saved successfully!", category="success")
         return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario.scenario_id))
     else:

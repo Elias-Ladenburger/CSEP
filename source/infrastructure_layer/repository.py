@@ -67,4 +67,9 @@ class Repository:
             entity_id = partial_dict.pop("_entity_id", "")
         if entity_id == "":
             raise ValueError("No id found for this entity!")
-        entity = cls._get_entity_by_id(entity_id)
+        entity_id, entity_dict = cls._get_entity_by_id(entity_id)
+        for key in partial_dict:
+            if key in entity_dict:
+                entity_dict[key] = partial_dict[key]
+        return cls._update_entity(entity_dict, entity_id)
+

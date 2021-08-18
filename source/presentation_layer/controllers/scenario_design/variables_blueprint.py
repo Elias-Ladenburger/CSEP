@@ -45,7 +45,7 @@ def delete_variable(scenario_id):
 @variables_bp.route('<scenario_id>/variables/<var_name>/edit')
 def edit_variable(scenario_id, var_name):
     scenario = aux.get_single_scenario(scenario_id=scenario_id)
-    scenario_var = scenario.game_variables.get(var_name)
+    scenario_var = scenario.variables.get(var_name)
     return variables_form(scenario, title="Edit variable", variable=scenario_var)
 
 

@@ -60,63 +60,6 @@ function loadTab(url) {
     });
 }
 
-function renderNetwork(networkId, injectData, edgeData) {
-    // create a network
-    for (let i = 0; i < injectData.length; i++) {
-        let tmp_node = injectData[i];
-        if (tmp_node.hasOwnProperty("is_entry_node") && injectData[i]["is_entry_node"] === true) {
-            tmp_node["label"] += ":entry point";
-            tmp_node["color"] = 'orange';
-        } else if (tmp_node["label"] === "condition") {
-            tmp_node["color"] = "lightgreen";
-            tmp_node["size"] = 4;
-            tmp_node["label"] = "";
-            tmp_node["hidden"] = true;
-        }
-    }
-    let injects = new vis.DataSet(injectData);
-    let injectConnections = new vis.DataSet(edgeData);
-    let container = document.getElementById(networkId);
-
-    let data = {
-        nodes: injects,
-        edges: injectConnections,
-    };
-    let options = {
-        autoResize: false,
-        width: "80%",
-        height: getMapHeight() + "px",
-        clickToUse: false,
-        interaction: {
-            navigationButtons: true,
-            dragNodes: false,
-            dragView: true,
-        },
-        layout: {hierarchical: true},
-        physics: {
-            hierarchicalRepulsion: {
-                nodeDistance: 120,
-                avoidOverlap: 0.6
-            }
-
-        },
-        edges: {
-            arrows: {to: {enabled: true, type: "arrow"}},
-            smooth: {type: "curvedCW"}
-        },
-
-    };
-    $(window).on('resize', function () {
-        network.setOptions({
-            height: getMapHeight() + "px",
-        });
-    });
-
-    let network = new vis.Network(container, data, options);
-    network.stabilize();
-    return network;
-}
-
 function scenario_table_buttons() {
     return {
         btnAddScenario: {

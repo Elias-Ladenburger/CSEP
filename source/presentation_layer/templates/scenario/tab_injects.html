@@ -7,8 +7,7 @@
                 {% include 'injects_graph.html' %}
             </div>
             <div class="col-sm-5">
-                <button class="btn btn-secondary" onclick="network.stabilize()">Render Injects Graph</button>
-                <button class="btn btn-secondary" onclick="network.fit()">Toggle Conditions</button>
+                <button class="btn btn-secondary" onclick="network.fit()">Render Injects Graph</button>
                 <button class="btn btn-primary" onclick="showFormModal('#create-inject-form-modal',
                     '{{ url_for("injects.get_inject_modal", scenario_id=scenario.scenario_id) }}')">
                     New inject</button>

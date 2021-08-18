@@ -90,7 +90,6 @@ class InjectTransformer:
         edge_list = []
         edge_list.append({"from": tmp_id, "to": next_id, "label": "[default]"})
         if inject.has_choices:
-            roundness = 0.3
             for choice in inject.choices:
                 title = choice.label
                 outcome = choice.outcome
@@ -98,10 +97,7 @@ class InjectTransformer:
                     next_id = choice.outcome.next_inject + str(group_id)
                 if outcome.variable_changes:
                     title += " | ".join(choice.outcome.variable_changes)
-                edge_list.append({"from": tmp_id, "to": next_id, "label": choice.label,
-                                  "roundness": roundness,
-                                  "title": title})
-                roundness *= -1.5
+                edge_list.append({"from": tmp_id, "to": next_id, "label": choice.label, "title": title})
         return edge_list
 
     @classmethod

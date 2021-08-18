@@ -108,8 +108,7 @@ class ScenarioRepository(Repository):
         if scenario_id == "new":
             return factory.create_scenario(scenario_id="new")
         else:
-            scenario_id, scenario_data = cls._get_entity_by_id(
-                collection_name=cls.collection_name, entity_id=scenario_id)
+            scenario_id, scenario_data = cls._get_entity_by_id(entity_id=scenario_id)
             scenario = factory.build_from_dict(scenario_id=scenario_id, **scenario_data)
             return scenario
 
@@ -143,11 +142,11 @@ class ScenarioRepository(Repository):
         scenario_dict = scenario.dict()
         scenario_id = scenario_dict.pop("scenario_id", None)
         if not scenario.scenario_id or scenario.scenario_id == "":
-            scenario_id = cls._insert_entity(collection_name=cls.collection_name, entity=scenario_dict)
+            scenario_id = cls._insert_entity(entity=scenario_dict)
             scenario_dict.update({"scenario_id": scenario_id})
             scenario = cls.get_factory().build_from_dict(**scenario_dict)
             return scenario
-        cls._update_entity(collection_name=cls.collection_name, entity=scenario_dict,
+        cls._update_entity(entity=scenario_dict,
                            entity_id=scenario_id)
         return scenario
 
@@ -156,18 +155,18 @@ class ScenarioRepository(Repository):
         for story_dict in stories_as_dict:
             story_id = story_dict.pop("_id")
             story_dict["scenario_id"] = scenario_id
-            cls._update_entity(collection_name="stories", entity=story_dict,
+            cls._update_entity(entity=story_dict,
                                entity_id=story_id)
         return
 
     @classmethod
     def _insert_placeholder(cls, scenario_dict: dict):
         """Utility function. Inserts a placeholder into the database to generate a new ID."""
-        return cls._insert_entity(collection_name=cls.collection_name, entity=scenario_dict)
+        return cls._insert_entity(entity=scenario_dict)
 
     @classmethod
     def delete_by_id(cls, scenario_id):
-        cls._delete_one(cls.collection_name, scenario_id)
+        cls._delete_one(scenario_id)
 
 
 class ScenarioTransformer:

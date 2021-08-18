@@ -3,60 +3,68 @@ from infrastructure_layer.database import CustomDB
 
 class Repository:
     my_db = CustomDB
+    collection_name = ""
 
     @classmethod
-    def _get_entity_by_id(cls, collection_name: str, entity_id):
+    def _get_entity_by_id(cls, entity_id):
         """
-        :param collection_name: the name of the database collection or table from which the entity should be queried
         :param entity_id: the database id of the entity
         :return: a tuple of (entity_id: str, entity_data: dict)
         """
         id_criteria = {"_id": entity_id}
-        entity_id, entity = cls.get_one_by_criteria(collection_name=collection_name, criteria=id_criteria)
+        entity_id, entity = cls.get_one_by_criteria(criteria=id_criteria)
         return entity_id, entity
 
     @classmethod
-    def get_one_by_criteria(cls, collection_name: str, criteria: dict):
-        entity_id, entity = cls.my_db.get_one_by_criteria(collection_name, criteria)
+    def get_one_by_criteria(cls, criteria: dict):
+        """Finds an entity, given the specified criteria."""
+        entity_id, entity = cls.my_db.get_one_by_criteria(cls.collection_name, criteria)
         return entity_id, entity
 
     @classmethod
-    def get_many_by_criteria(cls, collection_name: str, criteria: dict, exact_match: bool = True):
+    def get_many_by_criteria(cls, criteria: dict, exact_match: bool = True):
         """
         Find all entities that have the exact key-value pairs provided in criteria.
 
-        :param collection_name: the name of the database collection or table from which the entity should be queried
         :param criteria: a dictionary of key-value pairs that an entity must possess.
         :param exact_match: if set to false, will also find entities that have a superset of the values.
         (i.e. if criteria is {"key": ["value"]}, this would also find an entity with {"key": ["value", "other value"]}
         :return: a tuple of (entity_id: str, entity_data: dict)
         """
-        resultset = cls.my_db.get_many(collection_name=collection_name, criteria=criteria, exact_match=exact_match)
+        resultset = cls.my_db.get_many(collection_name=cls.collection_name, criteria=criteria, exact_match=exact_match)
         return resultset
 
     @classmethod
-    def _get_all(cls, collection_name: str):
-        entity_cursor = cls.my_db.get_all(collection_name=collection_name)
+    def _get_all(cls):
+        entity_cursor = cls.my_db.get_all(collection_name=cls.collection_name)
         return entity_cursor
 
     @classmethod
-    def _insert_entity(cls, collection_name: str, entity: dict):
+    def _insert_entity(cls, entity: dict):
         """Insert a new entity to the database.
         :param collection_name: The name of the database collection to insert the entity into.
         :param entity: A dictionary object of the entity data.
         :returns: The ID with which this entity can be retrieved from the database."""
-        inserted_id = cls.my_db.insert_one(collection_name=collection_name, entity=entity)
+        inserted_id = cls.my_db.insert_one(collection_name=cls.collection_name, entity=entity)
         return inserted_id
 
     @classmethod
-    def _delete_one(cls, collection_name: str, entity_id: str):
+    def _delete_one(cls, entity_id: str):
         """Remove an existing entity from the database.
             :param collection_name: The name of the database collection to insert the entity into.
             :param entity: A dictionary object of the entity data.
             :returns: The ID with which this entity can be retrieved from the database."""
         delete_criteria = {"_id": entity_id}
-        return cls.my_db.delete_one(collection_name=collection_name, criteria=delete_criteria)
+        return cls.my_db.delete_one(collection_name=cls.collection_name, criteria=delete_criteria)
 
     @classmethod
-    def _update_entity(cls, collection_name: str, entity: dict, entity_id):
-        return cls.my_db.save_one(collection_name=collection_name, new_values=entity, entity_id=entity_id)
+    def _update_entity(cls, entity: dict, entity_id):
+        return cls.my_db.save_one(collection_name=cls.collection_name, new_values=entity, entity_id=entity_id)
+
+    @classmethod
+    def partial_update(cls, partial_dict: dict, entity_id: str = ""):
+        if entity_id == "":
+            entity_id = partial_dict.pop("_entity_id", "")
+        if entity_id == "":
+            raise ValueError("No id found for this entity!")
+        entity = cls._get_entity_by_id(entity_id)

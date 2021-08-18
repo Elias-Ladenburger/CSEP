@@ -15,9 +15,10 @@ from domain_layer.scenariodesign.scenarios import BaseScenarioVariable
 
 
 class GameState(Enum):
-    Open = 1
-    In_Progress = 2
-    Closed = 3
+    Open = "open"
+    In_Progress = "in progress"
+    Closed = "closed"
+    Finished = "finished"
 
 
 class GameStory(BaseStory):
@@ -64,17 +65,21 @@ class Game(AggregateRoot):
     _end_time: Optional[datetime] = PrivateAttr(None)
     _game_state: GameState = PrivateAttr(GameState.Open)
     _current_story_index: int = PrivateAttr(0)
+    _current_inject_slug: str = PrivateAttr("")
     _history: List[InjectHistory] = PrivateAttr([])
+    _type: str = "GAME"
     scenario: GameScenario
     game_variables: Dict[str, BaseScenarioVariable] = {}
 
-    def __init__(self, scenario: BaseScenario, **kwargs):
+    def __init__(self, scenario: GameScenario, **kwargs):
         super().__init__(scenario=scenario, **kwargs)
         self.game_variables = copy.deepcopy(self.scenario.variables)
+        self._entity_id = kwargs.get("game_id")
         self._start_time = kwargs.get("start_time", datetime.now())
         self._end_time = kwargs.get("end_time", None)
-        self._game_state = kwargs.get("game_state", GameState.Open)
+        self._game_state = GameState(kwargs.get("game_state", "open"))
         self._current_story_index = kwargs.get("current_story_index", 0)
+        self._current_inject_slug = kwargs.get("current_inject", "")
 
     @property
     def game_id(self):
@@ -100,9 +105,20 @@ class Game(AggregateRoot):
     def current_story(self):
         return self.scenario.stories[self._current_story_index]
 
+    @property
+    def current_inject(self):
+        inject = self.current_story.get_inject_by_slug(self._current_inject_slug) or self.current_story.entry_node
+        return inject
+
     def start_game(self):
+        """Begin the actual game and prepare to show the inject."""
         self._game_state = GameState.In_Progress
-        return self.scenario.stories[0].entry_node
+        self._current_story_index = 0
+        self._current_inject_slug = self.current_story.entry_node.slug
+
+    def close_game(self):
+        self._game_state = GameState.Closed
+        self._end_time = datetime.now()
 
     def set_game_variable(self, var: BaseScenarioVariable, new_value):
         self.game_variables[var.name].value = new_value
@@ -150,7 +166,7 @@ class Game(AggregateRoot):
         return self._evaluate_next_inject(inject_result.next_inject)
 
     def _add_inject_history(self, inject, solution):
-        history = {"inject_slug": inject.slug, "end_time": datetime.now(), "solution": solution}
+        history = InjectHistory(inject_slug=inject.slug, end_time=datetime.now(), solution=solution)
         self._history.append(history)
 
     def _evaluate_change(self, change: GameVariableChange):
@@ -165,13 +181,15 @@ class Game(AggregateRoot):
 
     def _evaluate_next_inject(self, inject: GameInject):
         if not inject:
-            return self._begin_next_story()
+            inject = self._begin_next_story()
         if inject.condition:
-            return inject.condition.evaluate_condition(self.game_variables)
-        else:
-            return inject
+            inject = inject.condition.evaluate(self.game_variables)
+        self._current_inject_slug = inject.slug
+        return self.current_inject
 
     def _begin_next_story(self):
+        """Begin the next story and return the first inject from that story.
+        :returns: the first inject of the next story if one exists, None otherwise."""
         self._current_story_index += 1
         if -1 < self._current_story_index < len(self.scenario.stories):
             return self.scenario.stories[self._current_story_index].entry_node
@@ -180,20 +198,22 @@ class Game(AggregateRoot):
             return None
 
     def end_game(self):
-        self._game_state = GameState.Closed
+        self._game_state = GameState.Finished
         self._end_time = datetime.now()
 
     def dict(self, **kwargs):
         kwargs["by_alias"] = True
         return_dict = super().dict(**kwargs)
-        return_dict.pop("scenario")
-        return_dict["scenario_id"] = self.scenario.scenario_id
         return_dict.update(
             {"start_time": self._start_time,
              "end_time": self._end_time,
-             "game_state": self._game_state,
+             "game_state": self._game_state.value,
              "current_story_index": self._current_story_index,
-             "history": self._history})
+             "current_inject": self._current_inject_slug,
+             "history": self._history,
+             "type": self._type,
+             "scenario_id": self.scenario.scenario_id})
+        return_dict.pop("scenario")
         return return_dict
 
     def __str__(self):
@@ -206,9 +226,10 @@ class Game(AggregateRoot):
 class GroupGame(Game):
     breakpoints: List[str] = []
     participants: List[GameParticipant] = []
+    _type: str = "GROUP_GAME"
 
-    def __init__(self, scenario: BaseScenario):
-        super().__init__(scenario)
+    def __init__(self, scenario: GameScenario, **kwargs):
+        super().__init__(scenario, **kwargs)
 
     def add_breakpoint(self, inject_slug: str):
         """

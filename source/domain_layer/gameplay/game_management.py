@@ -49,14 +49,14 @@ class GameRepository(Repository):
     @classmethod
     def save_game(cls, game: Game):
         if not game.game_id or game.game_id == "new":
-            game_id = cls._insert_entity(cls.collection_name, game.dict())
+            game_id = cls._insert_entity(game.dict())
         else:
-            game_id = cls._update_entity(cls.collection_name, game.dict(), game.game_id)
+            game_id = cls._update_entity(game.dict(), game.game_id)
         return game_id
 
     @classmethod
     def get_game_by_id(cls, game_id: str):
-        game_id, game_dict = cls._get_entity_by_id(cls.collection_name, entity_id=game_id)
+        game_id, game_dict = cls._get_entity_by_id(entity_id=game_id)
         scenario_id = game_dict.pop("scenario_id")
         scenario = ScenarioRepository.get_scenario_by_id(scenario_id)
         game_dict["scenario"] = scenario.dict()
@@ -72,8 +72,7 @@ class GameRepository(Repository):
         if not states:
             states = [GameState.Open, GameState.In_Progress]
         states = [state.value for state in states]
-        resultset = cls.get_many_by_criteria(collection_name=cls.collection_name,
-                                                       criteria={"game_state": {"$in": states}})
+        resultset = cls.get_many_by_criteria(criteria={"game_state": {"$in": states}})
         factory = cls.get_factory()
         for game_dict in resultset:
             game_id = str(game_dict.pop("_id"))

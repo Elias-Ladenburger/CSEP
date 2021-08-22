@@ -7,9 +7,9 @@ from pydantic import BaseModel, PrivateAttr
 
 from domain_layer.common._domain_objects import AggregateRoot
 from domain_layer.common.auxiliary import BaseVariableChange
-from domain_layer.common.injects import BaseChoiceInject
+from domain_layer.common.injects import BaseChoiceInject, InjectResult
 from domain_layer.common.scenarios import BaseScenario, BaseStory
-from domain_layer.gameplay.injects import GameInject
+from domain_layer.gameplay.injects import GameInject, GameVariableChange, GameInjectResult
 from domain_layer.gameplay.participants import GameParticipant
 from domain_layer.scenariodesign.scenarios import BaseScenarioVariable
 
@@ -44,21 +44,6 @@ class GameScenario(BaseScenario):
     stories: List[GameStory] = []
 
 
-class GameVariableChange(BaseVariableChange):
-    def calculate_new_value(self, old_value):
-        operator = self.get_operator(self.operator)
-        return operator(old_value, self._new_value)
-
-
-class InjectHistory(BaseModel):
-    inject_slug: str
-    timestamp: datetime = datetime.now()
-    solution: str
-
-    class Config:
-        allow_mutation = False
-
-
 class Game(AggregateRoot):
     """A scenario that is currently being played or has been played."""
     _start_time: Optional[datetime] = PrivateAttr(None)
@@ -66,7 +51,6 @@ class Game(AggregateRoot):
     _game_state: GameState = PrivateAttr(GameState.Open)
     _current_story_index: int = PrivateAttr(0)
     _current_inject_slug: str = PrivateAttr("")
-    _history: List[InjectHistory] = PrivateAttr([])
     _type: str = "GAME"
     scenario: GameScenario
     game_variables: Dict[str, BaseScenarioVariable] = {}
@@ -126,7 +110,7 @@ class Game(AggregateRoot):
     def get_visible_vars(self):
         visible_stats = {}
         for var_name in self.game_variables:
-            if self.game_variables[var_name].is_private:
+            if not self.game_variables[var_name].is_private:
                 visible_stats[var_name] = self.game_variables[var_name]
         return visible_stats
 
@@ -135,7 +119,9 @@ class Game(AggregateRoot):
 
     def get_inject(self, inject_candidate):
         """Get an inject object that comes closest to the inject candidate."""
-        if isinstance(inject_candidate, str):
+        if not inject_candidate:
+            return None
+        elif isinstance(inject_candidate, str):
             return self.get_inject_by_slug(inject_candidate)
         elif isinstance(inject_candidate, BaseChoiceInject):
             return inject_candidate
@@ -149,25 +135,14 @@ class Game(AggregateRoot):
             inject = self.scenario.get_inject_by_slug(inject_slug=inject_slug)
         return inject
 
-    def solve_inject(self, inject_candidate, solution):
-        """Evaluates a solution to a given inject and provides the next inject in response.
-        Side effects include appending the solution to the gameplay history
-        and ending the gameplay, if no more injects exist.
-
-        :param inject_candidate: The inject to be solved. Can be either the slug (as str)
-        of the inject or an instance of Inject itself.
-        :param solution: The solution to be passed. Implementation will vary, depending on inject type.
-        :return: The next inject if one exists. Otherwise returns 'None' and ends the gameplay."""
-        inject = self.get_inject(inject_candidate)
-        self._add_inject_history(inject, solution)
-        inject_result = self.current_story.solve_inject(inject.slug, solution)
+    def _evaluate_outcome(self, inject_result: GameInjectResult):
+        """Evaluate an InjectResult object, such that all effects on the game are resolved.
+        :param inject_result: the result to be evaluated.
+        :returns: the next inject in this game. Returns None, if this game is finished."""
         for var_change in inject_result.variable_changes:
             self._evaluate_change(var_change)
-        return self._evaluate_next_inject(inject_result.next_inject)
-
-    def _add_inject_history(self, inject, solution):
-        history = InjectHistory(inject_slug=inject.slug, end_time=datetime.now(), solution=solution)
-        self._history.append(history)
+        next_inject = self._evaluate_next_inject(inject_result.next_inject)
+        return next_inject
 
     def _evaluate_change(self, change: GameVariableChange):
         """Evaluate the conditions and variable changes of a given transition.
@@ -179,13 +154,16 @@ class Game(AggregateRoot):
         old_value = self.game_variables[var_name]
         self.game_variables[var_name].value = change.calculate_new_value(old_value)
 
-    def _evaluate_next_inject(self, inject: GameInject):
-        if not inject:
+    def _evaluate_next_inject(self, inject: Optional[GameInject]):
+        inject = self.get_inject(inject)
+        if inject is None:
             inject = self._begin_next_story()
-        if inject.condition:
+        if inject is None:
+            return inject
+        elif inject.condition:
             inject = inject.condition.evaluate(self.game_variables)
         self._current_inject_slug = inject.slug
-        return self.current_inject
+        return inject
 
     def _begin_next_story(self):
         """Begin the next story and return the first inject from that story.
@@ -210,7 +188,6 @@ class Game(AggregateRoot):
              "game_state": self._game_state.value,
              "current_story_index": self._current_story_index,
              "current_inject": self._current_inject_slug,
-             "history": self._history,
              "type": self._type,
              "scenario_id": self.scenario.scenario_id})
         return_dict.pop("scenario")
@@ -223,9 +200,25 @@ class Game(AggregateRoot):
         return return_str
 
 
+class SingleGame(Game):
+    def solve_inject(self, inject_slug, solution):
+        """Evaluates a solution to a given inject and provides the next inject in response.
+        Side effects include appending the solution to the gameplay history
+        and ending the gameplay, if no more injects exist.
+
+        :param inject_candidate: The inject to be solved. Can be either the slug (as str)
+        of the inject or an instance of Inject itself.
+        :param solution: The solution to be passed. Implementation will vary, depending on inject type.
+        :return: The next inject if one exists. Otherwise returns 'None' and ends the gameplay."""
+        inject = self.get_inject(inject_slug)
+        inject_result = self.current_story.solve_inject(inject.slug, solution)
+        return self._evaluate_outcome(inject_result)
+
+
 class GroupGame(Game):
     breakpoints: List[str] = []
-    participants: List[GameParticipant] = []
+    next_inject_allowed: bool = False
+    participants: Dict[str, GameParticipant] = {}
     _type: str = "GROUP_GAME"
 
     def __init__(self, scenario: GameScenario, **kwargs):
@@ -241,3 +234,53 @@ class GroupGame(Game):
 
     def remove_breakpoint(self, inject_slug: str):
         self.breakpoints.remove(inject_slug)
+
+    def add_participant(self, participant_hash):
+        if participant_hash not in self.participants:
+            participant = GameParticipant(game_id=self.game_id, participant_id=participant_hash)
+            self.participants[participant_hash] = participant
+        else:
+            pass
+
+    def solve_inject(self, participant_id, inject_slug, solution):
+        if participant_id not in self.participants:
+            self.add_participant(participant_id)
+        self.participants[participant_id].solve_inject(inject_slug, solution)
+
+    def allow_next_inject(self):
+        self.next_inject_allowed = True
+
+    def is_next_inject_allowed(self):
+        if self.next_inject_allowed:
+            return True
+        if self._current_inject_slug in self.breakpoints:
+            return False
+        for participant in self.participants:
+            if not self.participants[participant].has_solved(self._current_inject_slug):
+                return False
+        return True
+
+    def advance_story(self):
+        self.next_inject_allowed = False
+        inject_slug = self._current_inject_slug
+        if self.current_inject.has_choices:
+            solution = self._evaluate_solution(inject_slug)
+        else:
+            solution = "0"
+        outcome = self.current_story.solve_inject(inject_slug, solution)
+        next_inject = self._evaluate_outcome(outcome)
+        return next_inject
+
+    def _evaluate_solution(self, inject_slug: str):
+        solutions = {}
+        max_occurrence = 0
+        for participant_id, participant in self.participants.items():
+            if participant.has_solved(inject_slug):
+                solution = participant.get_solution(inject_slug)
+                number_of_occurrence = solutions.get(solution, 0) + 1
+                solutions[solution] = number_of_occurrence
+                if number_of_occurrence > max_occurrence:
+                    max_occurrence = number_of_occurrence
+        for solution in solutions:
+            if solutions[solution] == max_occurrence:
+                return solution

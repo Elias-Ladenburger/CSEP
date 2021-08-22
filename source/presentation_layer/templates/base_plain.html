@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta Information -->
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="author" content="Elias Kaspar Ladenburger">
+
+    <!-- Title and Favicon -->
+    <title>Cybersecurity Training for Leadership</title>
+
+    {% include 'styling.html' %}
+    {% include 'scripts.html' %}
+
+    {% block headings %}{% endblock %}
+</head>
+<body>
+
+{% block navigation %}{% endblock %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+{% block base_content %}
+{% endblock %}
+
+<footer class="quiet-footer">A research project by Elias Kaspar Ladenburger</footer>
+
+
+{% block custom_scripts %}
+{% endblock %}
+
+<script>
+    {% block scripts %}
+    {% endblock %}
+</script>
+</body>
+</html>

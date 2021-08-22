@@ -1,0 +1,23 @@
+{% extends 'base_game.html' %}
+{% block inject %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="text-left">
+                    <h3>Current Stats and Variables</h3>
+                    {% set game_vars = game.get_visible_vars() %}
+                    {% for game_var in game_vars %}
+                        <h5>{{ game_var }}: {{ game_vars[game_var].value }}</h5>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="cols- align-content-center align-middle">
+            <a href="{{ url_for('games.inject_page', game_id=game.game_id, inject_slug=inject_slug) }}"
+               class="btn btn-primary">Go back</a>
+        </div>
+    </div>
+
+{% endblock %}
+

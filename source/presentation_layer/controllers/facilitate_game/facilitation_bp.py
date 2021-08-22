@@ -40,7 +40,7 @@ def start_game(game_id):
     game = GameRepository.get_game_by_id(game_id)
     game.start_game()
     GameRepository.save_game(game)
-    return handle_facilitation(game)
+    return redirect(url_for('facilitation.facilitate_game', game_id=game.game_id))
 
 
 @facilitation_bp.route("/games/<game_id>/train")
@@ -56,7 +56,11 @@ def facilitate_game(game_id):
 
 
 def handle_facilitation(game):
-    return render_template("facilitation_main.html", game=game)
+    next_inject_slug = game.current_inject.next_inject
+    next_inject = None
+    if next_inject_slug != "":
+        next_inject = game.get_inject_by_slug(next_inject_slug)
+    return render_template("facilitation_main.html", game=game, next_inject=next_inject)
 
 
 @facilitation_bp.route("/games/<game_id>/close")

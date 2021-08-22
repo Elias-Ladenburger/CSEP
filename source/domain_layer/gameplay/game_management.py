@@ -61,8 +61,9 @@ class GameRepository(Repository):
         scenario = ScenarioRepository.get_scenario_by_id(scenario_id)
         game_dict["scenario"] = scenario.dict()
         game_dict["game_id"] = game_id
-        game = GameFactory.build_from_dict(**game_dict)
+        game = cls.get_factory().build_from_dict(**game_dict)
         return game
+
 
     @classmethod
     def get_games_by_state(cls, states: List[GameState] = None):
@@ -71,7 +72,8 @@ class GameRepository(Repository):
         """
         if not states:
             states = [GameState.Open, GameState.In_Progress]
-        states = [state.value for state in states]
+        if isinstance(states[0], GameState):
+            states = [state.value for state in states]
         resultset = cls.get_many_by_criteria(criteria={"game_state": {"$in": states}})
         factory = cls.get_factory()
         for game_dict in resultset:
@@ -81,3 +83,9 @@ class GameRepository(Repository):
             game_dict["game_id"] = game_id
             game = factory.build_from_dict(scenario=scenario, **game_dict)
             yield game
+
+
+class GroupGameRepository(GameRepository):
+    @classmethod
+    def get_factory(cls):
+        return GroupGameFactory()

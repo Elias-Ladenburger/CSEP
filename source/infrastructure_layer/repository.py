@@ -19,6 +19,8 @@ class Repository:
     def get_one_by_criteria(cls, criteria: dict):
         """Finds an entity, given the specified criteria."""
         entity_id, entity = cls.my_db.get_one_by_criteria(cls.collection_name, criteria)
+        if not entity:
+            raise ValueError("No entity found with criteria {}!".format(criteria))
         return entity_id, entity
 
     @classmethod

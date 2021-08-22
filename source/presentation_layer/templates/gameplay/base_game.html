@@ -1,0 +1,12 @@
+{% extends 'base_plain.html' %}
+{% block base_content %}
+
+<div class="container-fluid text-center">
+    <div class="row align-items-center justify-content-center">
+        <h5>{{game.name}}</h5>
+    </div>
+        {% block inject %}
+        {% endblock %}
+</div>
+
+{% endblock %}

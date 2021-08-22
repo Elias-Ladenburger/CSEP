@@ -1,89 +1,101 @@
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, redirect, url_for, request, flash
 
+from domain_layer.gameplay.game_management import GameRepository, GroupGameRepository
 from domain_layer.gameplay.mock_interface import MockGameProvider
-
-game_provider = MockGameProvider()
-game = game_provider.get_branching_game()
 
 game_gp = Blueprint('games', __name__,
                         template_folder='../../templates/gameplay', url_prefix="/games")
 
 
 @game_gp.route("/")
+def landing_page():
+    return redirect(url_for('games.multiplayer_overview'))
+
+
+@game_gp.route("/find")
 def find_game():
     game_id = request.args.get("game_id", -1)
     if game_id:
-        if int(game_id) > 0:
-            return redirect(url_for('games.game_start', game_id=game_id))
-    return games_page()
-
-
-@game_gp.route("/singleplayer/overview")
-def games_page():
-    return redirect(url_for('index.index'))
+        game = GameRepository.get_game_by_id(game_id)
+        if game:
+            return redirect(url_for('games.group_game', game_id=game_id))
+    flash("This game was not found!", "danger")
+    return redirect(url_for('games.multiplayer_overview'))
 
 
 @game_gp.route("/multiplayer/overview")
 def multiplayer_overview():
-    return render_template("group_overview.html")
-
-
-@game_gp.route("/<game_id>")
-def game_start(game_id):
-    template_name = "game_start.html"
-    first_inject = game.start_game()
-    return render_template(template_name, scenario=game.scenario, scenario_name=game.name,
-                           game_id=game_id, inject_slug=first_inject.slug)
+    games = GameRepository.get_games_by_state(["open"])
+    return render_template("group_overview.html", games=games)
 
 
 @game_gp.route("/<game_id>/injects/<inject_slug>/stats")
 def stats_page(game_id, inject_slug):
+    game = GroupGameRepository.get_game_by_id(game_id)
     template_name = "stats_page.html"
-    return render_template(template_name, scenario_name=game.name, game_id=game_id,
-                           inject_slug=inject_slug, game_variables=game.get_visible_vars())
+    return render_template(template_name, game=game, inject_slug=inject_slug)
 
 
 @game_gp.route("/<game_id>/end")
 def game_end(game_id):
+    game = GroupGameRepository.get_game_by_id(game_id)
     template_name = "game_end.html"
-    return render_template(template_name, scenario_name=game.name, game_id=game_id)
+    return render_template(template_name, game=game)
 
 
 @game_gp.route("/<game_id>/reflection")
 def game_reflection(game_id):
+    game = GroupGameRepository.get_game_by_id(game_id)
     template_name = "game_reflection.html"
     game.end_game()
-    return render_template(template_name, scenario_name=game.name, game_id=game_id)
+    GroupGameRepository.save_game(game)
+    return render_template(template_name, game=game)
 
 
 @game_gp.route("/<game_id>/injects/<inject_slug>/show")
 def inject_page(game_id, inject_slug):
+    game = GroupGameRepository.get_game_by_id(game_id)
     inject = game.get_inject_by_slug(inject_slug=inject_slug)
-    if inject.has_choices:
-        template_name = "choice_inject.html"
-    else:
-        template_name = "informative_inject.html"
-    return render_template(template_name, scenario_name=game.name, game_id=game_id,
-                           inject=inject)
+    template_name = "choice_inject.html"
+    return render_template(template_name, inject=inject, game=game)
 
 
 @game_gp.route("/<game_id>/injects/<inject_slug>/solution")
-def solution_page(game_id, inject_slug):
+def solve_inject(game_id, inject_slug):
+    game = GroupGameRepository.get_game_by_id(game_id)
     solution = request.args.get("solution", 0)
-    next_inject = game.solve_inject(inject_candidate=inject_slug, solution=solution)
-    if next_inject:
-        return inject_feedback(game_id=game_id, inject_slug=next_inject.slug)
+    game.solve_inject(participant_id="placeholder", inject_slug=inject_slug, solution=solution)
+    if game.is_next_inject_allowed():
+        next_inject = game.advance_story()
+        GameRepository.save_game(game)
+        if next_inject:
+            return redirect(url_for('games.group_game', game_id=game.game_id))
+        else:
+            return game_end(game_id)
     else:
-        return game_end(game_id)
+        return inject_feedback(game)
 
 
-@game_gp.route("/<game_id>/injects/<inject_slug>/feedback")
-def inject_feedback(game_id, inject_slug):
+def inject_feedback(game):
     template_name = "feedback_statistics.html"
-    return render_template(template_name, scenario_name=game.name,  game_id=game_id,
-                           next_inject_slug=inject_slug)
+    return render_template(template_name, game=game)
 
 
 @game_gp.route("/<game_id>/")
 def group_game(game_id):
-    pass
+    game = GameRepository.get_game_by_id(game_id)
+    if game.is_open:
+        template_name = "participant_lobby.html"
+    elif game.is_in_progress:
+        return play_game(game)
+    elif game.is_closed:
+        flash("This game is now closed!")
+        template_name = "game_end.html"
+    else:
+        flash("There was an error of some sort!", "failure")
+        return redirect(url_for('games.multiplayer_overview'))
+    return render_template(template_name, game_id=game_id, game=game)
+
+
+def play_game(game):
+    return render_template('choice_inject.html', game=game, inject=game.current_inject)

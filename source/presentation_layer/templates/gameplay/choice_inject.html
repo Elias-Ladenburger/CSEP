@@ -1,10 +1,11 @@
 {% extends 'base_inject.html' %}
+{% from '/helpers/_detail_helpers.html' import render_inject_for_participants %}
+
+
 {% block transition %}
 
  <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-{% for choice in inject.choices %}
-    <a href="{{url_for('games.inject_feedback', game_id=game_id, inject_slug=inject.slug)}}" class="btn btn-primary">{{choice.label}}</a>
-{% endfor %}
+    {{render_inject_for_participants(inject, game)}}
 
 {% endblock %}

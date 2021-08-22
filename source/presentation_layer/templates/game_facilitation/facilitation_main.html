@@ -6,6 +6,10 @@
 
     <div class="container-fluid bg-darkgrey-3 text-light">
         <h2 class="h2">Scenario: {{ game.name }}</h2>
+    {% set game_url = url_for('games.group_game', game_id=game.game_id, _external=True) %}
+        <a href="#" type="button" class="btn btn-light"
+                    onclick="copyToClipboard('{{ game_url }}')">{{ game_url }}<i class="far fa-copy"></i>
+        </a>
         <hr/>
         <div class="container-fluid bg-light">
             <div class="row bg-light text-body">
@@ -15,23 +19,26 @@
                         {% set var_id = var_name.replace(" ", "-") %}
                         <form>
                             <div class="form-group row">
-                                <label class="col-sm-4" for="{{ var_id }}">{{ var_name }}</label>
+                                <label class="col-sm-4" for="{{ var_id }}">{{ var_name }}{% if game_var.is_private %} (hidden){% endif %}</label>
                                 <input class="col-sm-5" id="{{ var_id }}" type="text" value="{{ game_var.value }}">
                             </div>
                         </form>
                     {% endfor %}
-                <hr/>
+                    <hr/>
                 </div>
                 <div class="col-sm-5">
                     <div class="row">
-                        <h4 class="h4">Current Inject</h4>
+                        <h4 class="h4">Current Inject</h4><br>
                         {{ inject_details(game.current_inject, True) }}
                     </div>
                     <hr/>
                     <div class="row">
-                        <h4 class="h4">Next Inject</h4>
-                        {% set next_inject = game.get_inject_by_slug(game.current_inject.next_inject) %}
+                        <h4 class="h4">Next Inject</h4><br>
+                        {% if not next_inject %}
+                            <h3 class="h3">End of Scenario</h3>
+                        {% else %}
                         {{ inject_details(next_inject, True) }}
+                        {% endif %}
                     </div>
                     <hr/>
                 </div>
@@ -41,10 +48,10 @@
                    class="btn btn-primary" title="Facilitate this Game">
                     <i class="fas fa-play"></i> Allow Next Inject
                 </a>
-                    <a href="{{ url_for('facilitation.close_game', game_id=game.game_id) }}"
-                       class="btn btn-danger" title="Abort this Game">
-                        <i class="fas fa-times-circle"></i> Abort Game
-                    </a>
+                <a href="{{ url_for('facilitation.close_game', game_id=game.game_id) }}"
+                   class="btn btn-danger" title="Abort this Game">
+                    <i class="fas fa-times-circle"></i> Abort Game
+                </a>
             </div>
         </div>
     </div>

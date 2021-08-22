@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% from '/helpers/_detail_helpers.html' import render_participants %}
+
+{# requires a Game object #}
+
+{% block main_content %}
+    {% set game_url = url_for('games.group_game', game_id=game.game_id, _external=True) %}
+    <div class="container-fluid bg-3 text-center text-white-50">
+        <h3 class="h3">{{ game.name }}</h3>
+        <p>{{ game.scenario.scenario_description }}</p>
+        <hr/>
+    </div>
+    <div class="container-fluid bg-white align-items-center justify-content-center text-center">
+            <h3 class="h3">Participants<i class="fas fa-info-circle"
+                                          data-toggle="tooltip"
+                                          title="These participants have already joined the lobby of your game!"></i>
+            </h3>
+
+    <hr/>
+    </div>
+
+
+{% endblock %}

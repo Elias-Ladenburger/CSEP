@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import string
 from typing import List, Optional
 from pydantic import BaseModel, PrivateAttr
 
@@ -13,7 +15,10 @@ class BaseInject(GraphNode):
     media_path: Optional[str] = ""
 
     def __init__(self, label: str, **keyword_args):
-        slug = keyword_args.pop("slug", label.replace(" ", "-").lower())
+        slug = keyword_args.pop("slug", False)
+        if not "slug":
+            slug = label.replace(" ", "-").lower()
+            slug = slug.translate(str.maketrans('', '', string.punctuation))
         super().__init__(label=label, slug=slug, **keyword_args)
 
     @property

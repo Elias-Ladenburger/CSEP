@@ -14,7 +14,7 @@ def source_inject(context, source_title):
 def target_inject(context, target_title):
     context.target_inject = BaseChoiceInject(label=target_title, text="This is the target inject")
     inject_choice = BaseInjectChoice(label="A choice")
-    context.source_inject.add_choice(choice)
+    context.source_inject.add_inject_choice(choice)
     return target_inject
 
 

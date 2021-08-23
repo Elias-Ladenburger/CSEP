@@ -78,10 +78,14 @@ class GameVariableChange(BaseVariableChange):
 
 class GameVariable(BaseScenarioVariable):
     def update_value(self, change: GameVariableChange):
-        if self.is_value_legal(change.value):
-            self._value = change.get_new_value(self._value)
+        new_value = change.get_new_value(self._value)
+        self.set_value(new_value)
+
+    def set_value(self, new_value: str):
+        if self.is_value_legal(new_value):
+            self._value = new_value
         else:
-            raise TypeError("The new value is not legal for this variable!")
+            raise ValueError("The new value is not legal for this variable!")
 
 
 class GameInjectResult(InjectResult):

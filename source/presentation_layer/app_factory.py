@@ -46,8 +46,9 @@ class AppFactory:
         from presentation_layer.controllers.scenario_design.variables_blueprint import variables_bp
         from presentation_layer.controllers.scenario_design.injects_blueprint import injects_bp
         from presentation_layer.controllers.facilitate_game.facilitation_bp import facilitation_bp
+        from presentation_layer.controllers.test._test_bp import _test_bp
         blueprints = [api_bp, game_gp, index_gp, scenario_bp,
-                      variables_bp, injects_bp, facilitation_bp]
+                      variables_bp, injects_bp, facilitation_bp, _test_bp]
         for bp in blueprints:
             new_app.register_blueprint(bp)
         return new_app

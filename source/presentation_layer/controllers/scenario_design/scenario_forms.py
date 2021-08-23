@@ -1,21 +1,27 @@
-import os
-from io import BytesIO
 from typing import List
 
-import flask
 from flask_wtf import FlaskForm
 from flask_wtf import file as wtfile
 from flask_wtf.file import FileAllowed
 from markupsafe import Markup
 from wtforms import StringField, FormField, TextAreaField, FieldList, SelectField, BooleanField, HiddenField
-from wtforms.validators import DataRequired, Optional
+from wtforms.validators import DataRequired, Optional, StopValidation
 from wtforms.widgets import HiddenInput
 
 from domain_layer.common.auxiliary import BaseScenarioVariable, DataType, LegalOperator
-from domain_layer.common.injects import BaseInjectChoice
+from domain_layer.common.injects import BaseInjectChoice, InjectResult
 from domain_layer.scenariodesign.scenarios import EditableScenario, BaseStory
 
 empty_pair = ("", "---")
+
+
+class IgnoreIfEmpty(Optional):
+
+    def __call__(self, form, field):
+        if field.data is None or field.data == "":
+            field.errors[:] = []
+            raise StopValidation()
+        super(IgnoreIfEmpty, self).__call__(form, field)
 
 
 class CustomForm(FlaskForm):
@@ -26,10 +32,10 @@ class CustomForm(FlaskForm):
             field.data = entity_dict.get(field_name)
 
 
-
 class CustomSelect(SelectField):
 
     def parse_choices(self, scenario, allow_empty=True):
+        """Prepare this field."""
         if not self.choices:
             self.choices = []
         if allow_empty:
@@ -38,6 +44,7 @@ class CustomSelect(SelectField):
 
 class InjectField(CustomSelect):
     def parse_choices(self, scenario, allow_empty=True):
+        """Prepare this field such that a user can select any one of the injects of this scenario."""
         super().parse_choices(scenario, allow_empty)
         choices = []
         injects = scenario.get_all_injects()
@@ -48,6 +55,7 @@ class InjectField(CustomSelect):
 
 class VariableField(CustomSelect):
     def parse_choices(self, scenario, allow_empty=True):
+        """Prepare this field such that a user can select any one of the variables of this scenario."""
         super().parse_choices(scenario, allow_empty)
         choices = [(var, var) for var in scenario.variables]
         self.choices += choices
@@ -88,13 +96,21 @@ class ScenarioCoreForm(CustomForm):
 
 class VariableChangeForm(CustomForm):
     variable_name = VariableField(Markup("I take this variable: <i class='fas fa-info-circle' "
-                                         "data-toggle='tooltip' title='Should this choice influence any variables?'></i>"))
+                                         "data-toggle='tooltip' title='Should this choice influence any variables?'></i>"),
+                                  validate_choice=False)
     value_operator = SelectField(Markup("And apply this operation <i class='fas fa-info-circle' "
                                         "data-toggle='tooltip' title='How should the variable be impacted?'></i>"),
-                                 choices=[(op, op) for op in LegalOperator.manipulation_operators()].append(empty_pair))
+                                 choices=LegalOperator.manipulation_operators(),
+                                 validate_choice=False)
 
     new_value = StringField(Markup("With this value <i class='fas fa-info-circle' "
-                                   "data-toggle='tooltip' title='How should the variable be impacted?'></i>"))
+                                   "data-toggle='tooltip' title='How should the variable be impacted?'></i>"),
+                            validators=[Optional()])
+
+    def __init__(self, scenario=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if scenario:
+            self.initialize(scenario)
 
     def initialize(self, scenario):
         self.variable_name.parse_choices(scenario, False)
@@ -113,7 +129,7 @@ class InjectChoiceForm(CustomForm):
     next_inject = InjectField(Markup("Alternative Inject <i class='fas fa-info-circle' "
                                      "data-toggle='tooltip' title='If this choice is taken, "
                                      "should participants be redirected to a different inject?'></i>"),
-                              validators=[Optional()])
+                              validate_choice=False)
 
     variable_changes = FieldList(FormField(VariableChangeForm), min_entries=0)
 
@@ -124,34 +140,22 @@ class InjectChoiceForm(CustomForm):
 
     def initialize(self, scenario, choice: BaseInjectChoice = None):
         self.next_inject.parse_choices(scenario)
-        self.next_inject.parse_choices(scenario)
-        new_entry = self.variable_changes.append_entry()
-        new_entry.form.initialize(scenario)
         if choice:
             self.populate(choice)
+            self.variable_changes.append_entry()
+        for entry in self.variable_changes.entries:
+            entry.initialize(scenario=scenario)
 
     def populate(self, choice):
         self.label.process_data(choice.label)
         if choice.outcome:
-            self.next_inject.process_data(choice.outcome.next_inject)
-
-
-class InjectChoicesForm(CustomForm):
-    choices = FieldList(FormField(InjectChoiceForm), min_entries=0, max_entries=4)
-
-    def __init__(self, scenario=None, inject=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if inject:
-            self.populate_choices(inject)
-        self.choices.append_entry()
-        if scenario:
-            for entry in self.choices.entries:
-                entry.initialize(scenario)
-
-    def populate_choices(self, inject):
-        for choice in inject.choices:
-            self.choices.append_entry({"label": choice.label, "next_inject": choice.outcome.next_inject,
-                                       "variable_changes": choice.outcome.variable_changes})
+            if choice.outcome.next_inject:
+                self.next_inject.process_data(choice.outcome.next_inject)
+            if choice.outcome.variable_changes:
+                for var_change in choice.outcome.variable_changes:
+                    self.variable_changes.append_entry({"variable_name": var_change.var.name,
+                                                        "value_operator": var_change.operator,
+                                                        "new_value": var_change.new_value})
 
 
 class InjectConditionForm(CustomForm):
@@ -195,21 +199,20 @@ class InjectForm(CustomForm):
 
     next_inject = InjectField(Markup("Next Inject <i class='fas fa-info-circle' "
                                      "data-toggle='tooltip' title='Which inject should follow this one per default?'></i>"),
-                              choices=[("", "---")],
-                              validators=[Optional()], default="")
+                              validators=[Optional()])
 
     preceded_by = InjectField(Markup("Preceding Inject <i class='fas fa-info-circle' "
                                      "data-toggle='tooltip' title='Should one of the existing injects point to this new inject per default?'></i>"),
-                              choices=[("", "---")],
-                              validators=[Optional()], default="")
+                              validators=[Optional()])
 
     is_entry_node = BooleanField(Markup("Is Entry Node <i class='fas fa-info-circle' "
                                         "data-toggle='tooltip' title='Should this inject be the first inject in the scenario?'></i>"),
                                  default=False)
+    choices = FieldList(FormField(InjectChoiceForm), min_entries=0, max_entries=5)
 
     def __init__(self, scenario=None, inject=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self.condition = InjectConditionForm()
+        super().__init__(*args, **kwargs)
         if scenario:
             self.initialize(scenario, inject)
 
@@ -221,6 +224,7 @@ class InjectForm(CustomForm):
             self.populate(scenario, inject)
 
     def populate(self, scenario, inject):
+        """Populate this form with the values of an existing inject."""
         self.next_inject.process_data(inject.next_inject)
         self.media_path.process_data(inject.media_path)
         self.slug.process_data(inject.slug)
@@ -230,6 +234,40 @@ class InjectForm(CustomForm):
             self.is_entry_node.process_data(True)
         if inject.condition:
             self.condition.populate_from_dict(inject.condition.dict())
+        self.populate_inject_choices(inject, scenario)
+
+    def populate_inject_choices(self, inject, scenario=None):
+        """Populate this form from existing inject choices."""
+        for choice in inject.choices:
+            self.add_inject_choice(scenario=scenario, choice=choice)
+        self.add_inject_choice(scenario=scenario)
+
+    def add_inject_choice(self, scenario, choice: BaseInjectChoice = None):
+        new_entry = self.choices.append_entry()
+        new_entry.initialize(scenario=scenario, choice=choice)
+
+    def validate(self, extra_validators=None):
+        for idx, choice_entry in enumerate(self.choices.entries):
+            if choice_entry.data["label"] == "":
+                self.choices.entries.pop(idx)
+            else:
+                for idx2, var_change in enumerate(choice_entry.variable_changes.entries):
+                    if not var_change.variable_name.validate(form=self):
+                        choice_entry.variable_changes.entries.pop(idx2)
+        return super().validate(extra_validators=extra_validators)
+
+    def get_inject_choices(self):
+        """Get a list of InjectChoices from a filled form."""
+        choices = []
+        for choice in self.choices.entries:
+            if choice.data["label"] != "":
+                next_inject = choice.data["next_inject"]
+                var_changes = []  # choice.data.get("variable_changes", [])
+                outcome = InjectResult(next_inject=next_inject, variable_changes=var_changes)
+                new_choice = BaseInjectChoice(
+                    label=choice.data["label"], outcome=outcome)
+                choices.append(new_choice.dict())
+        return choices
 
 
 class ScenarioVariableForm(CustomForm):

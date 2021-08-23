@@ -18,10 +18,11 @@ class InjectTransformer:
 
     @classmethod
     def transform_injects_to_visjs_dict(cls, injects: List[BaseChoiceInject],
-                                        group_id: int = 0, entry_node: str=""):
+                                        group_id: int = 0, entry_node: str = ""):
         """
         :param injects: a list of injects to be transformed
-        :param group_id:
+        :param group_id: The id of this group.
+        :param entry_node: The slug of the entry node of this story.
         :returns: a dictionary that represents the data structure used by vis.DataSet
         """
         inject_list = []
@@ -81,7 +82,6 @@ class InjectTransformer:
             tmp_edges.append(tmp_result_edge)
         return tmp_nodes, tmp_edges
 
-
     @classmethod
     def _transform_edges(cls, inject, tmp_id, group_id):
         next_id = inject.next_inject
@@ -94,7 +94,9 @@ class InjectTransformer:
                 title = choice.label
                 outcome = choice.outcome
                 if outcome.next_inject:
-                    next_id = choice.outcome.next_inject + str(group_id)
+                    next_id = choice.outcome.next_inject
+                    if group_id > 0:
+                        next_id += str(group_id)
                 if outcome.variable_changes:
                     title += " | ".join(choice.outcome.variable_changes)
                 edge_list.append({"from": tmp_id, "to": next_id, "label": choice.label, "title": title})

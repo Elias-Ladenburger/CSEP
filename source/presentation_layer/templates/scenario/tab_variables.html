@@ -41,8 +41,9 @@
                         {% else %}<span><i class="fas fa-check-square"></i></span>{% endif %}</td>
                         <td>
 
-                            <button onclick="showFormModal('#variable-form-modal', '{{ url_for("variables.edit_variable",
-                            scenario_id=scenario.scenario_id, var_name=var_name) }}')"
+                            <button onclick="showFormModal('#variable-form-modal',
+                                    '{{ url_for("variables.edit_variable",
+                                    scenario_id=scenario.scenario_id, var_name=var_name) }}')"
                                     class="btn btn-primary" title="Edit this variable">
                                 <i class="fas fa-edit"></i>
                             </button>

@@ -84,10 +84,15 @@ class BaseScenario(AggregateRoot):
         self._entity_id = scenario_id
         var_dict = keyword_args.get("variables", {})
         if var_dict:
+            self._variables = self._prepare_variables_from_dict(var_dict)
+
+    @classmethod
+    def _prepare_variables_from_dict(cls, var_dict: dict):
+        if var_dict:
             for var_name, scenario_var in var_dict.items():
                 if not isinstance(scenario_var, BaseScenarioVariable):
                     var_dict[var_name] = BaseScenarioVariable(**scenario_var)
-                self._variables = var_dict
+        return var_dict
 
     @property
     def scenario_id(self):

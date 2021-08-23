@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, flash, url_for
+from flask import Blueprint, render_template, redirect, flash, url_for, request
 
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository
 from presentation_layer.controllers.scenario_design import auxiliary as aux
@@ -18,7 +18,7 @@ def edit_variables(scenario_id):
 
 @variables_bp.route("/<scenario_id>/variables/add", methods=["POST"])
 def save_variable(scenario_id):
-    raw_form = flask.request.form
+    raw_form = request.form
     variable_form = ScenarioVariableForm(raw_form)
     if variable_form.validate():
         variable_dict = variable_form.data
@@ -26,20 +26,20 @@ def save_variable(scenario_id):
         variable = BaseScenarioVariable(**variable_dict)
         scenario = EditableScenarioRepository.save_variable(scenario_id=scenario_id, variable=variable)
         flash("Save successful!", category="success")
-        return redirect(flask.request.referrer + "#variables")
+        return redirect(request.referrer + "#" + variables_bp.name)
     else:
         flash("Something went wrong!", category="failure")
-        redirect(flask.request.referrer + "#variables")
-    return redirect(flask.request.referrer)
+        redirect(request.referrer + "#" + variables_bp.name)
+    return redirect(request.referrer)
 
 
 @variables_bp.route("/<scenario_id>/variables/delete", methods=["DELETE"])
 def delete_variable(scenario_id):
-    scenario_var = flask.request.form.get("variable_name", "")
+    scenario_var = request.form.get("variable_name", "")
     scenario = aux.get_single_scenario(scenario_id=scenario_id)
     scenario.remove_variable(scenario_var)
     EditableScenarioRepository.save_scenario(scenario)
-    return redirect(url_for('variables.edit_variables', scenario_id=scenario_id)+"#variables")
+    return redirect(url_for('variables.edit_variables', scenario_id=scenario_id) + "#" + variables_bp.name)
 
 
 @variables_bp.route('<scenario_id>/variables/<var_name>/edit')

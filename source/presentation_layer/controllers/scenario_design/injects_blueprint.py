@@ -8,38 +8,10 @@ from werkzeug.utils import secure_filename
 from domain_layer.scenariodesign.injects import EditableInject
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository
 from presentation_layer.controllers.scenario_design import auxiliary as aux
-from presentation_layer.controllers.scenario_design.scenario_forms import InjectForm, InjectChoicesForm
+from presentation_layer.controllers.scenario_design.scenario_forms import InjectForm
 
 injects_bp = Blueprint('injects', __name__,
                        template_folder='../../templates/scenario', url_prefix="/scenarios")
-
-
-@injects_bp.route("<scenario_id>/injects/forms_test", methods=["GET", "POST"])
-def test_inject_form(scenario_id):
-    scenario = aux.get_single_scenario(scenario_id)
-    choices_form = InjectChoicesForm(scenario)
-    if choices_form.validate_on_submit():
-        for choice in choices_form.choices.entries:
-            entry_message = (
-                f'POST // wtform id: [{choice.content.id}] '
-                f' //  entry_type_id id: [{choice.entry_type_id.data}]'
-                f' //  content.data: [{choice.content.data}]'
-                f' //  label: [{choice.content.label.text}]'
-            )
-            print(str(entry_message))
-
-        return redirect(url_for('injects.test_inject_form', scenario_id=scenario_id))
-    elif request.method == 'GET':
-        inject_slug = request.args.get("inject-slug", False)
-        if inject_slug:
-            scenario = aux.get_single_scenario(scenario_id)
-            inject = scenario.get_inject_by_slug(inject_slug)
-            for choice in inject.choices:
-                choices_form.choices.append_entry(choice.dict())
-    return render_template('/forms/form_test.html', form=choices_form,
-                           url=url_for('injects.test_inject_form', scenario_id=scenario_id))
-
-
 
 
 @injects_bp.route("<scenario_id>/injects/modal")
@@ -71,9 +43,8 @@ def get_inject_form(scenario_id):
         inject = False
         title = "Add inject"
     inject_form = InjectForm(scenario, inject)
-    choice_forms = InjectChoicesForm(scenario, inject)
     return render_template("/forms/inject_form.html", scenario=scenario,
-                           inject=inject, title=title, inject_form=inject_form, choice_forms=choice_forms)
+                           inject=inject, title=title, inject_form=inject_form)
 
 
 @injects_bp.route("/<scenario_id>/injects/add", methods=["POST"])
@@ -106,14 +77,13 @@ def save_inject(scenario_id):
         scenario.update_inject(inject, 0, new_entry_node)
         EditableScenarioRepository.save_scenario(scenario)
         flash("Successfully updated the inject!", category="success")
-    return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario_id) + "#stories")
+    return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario_id) + "#" + injects_bp.name)
 
 
 def process_inject_form(scenario, form_data):
     inject_form = InjectForm(scenario=scenario,
                              formdata=form_data)
-    choices_form = InjectChoicesForm(scenario, formdata=form_data)
-    if inject_form.validate_on_submit():
+    if inject_form.validate():
         inject_dict = inject_form.data
         if inject_form.media_path.data:
             filename = secure_filename(inject_form.media_path.data.filename)
@@ -123,12 +93,7 @@ def process_inject_form(scenario, form_data):
             inject_dict["media_path"] = filename
         if inject_form.condition.variable_name.data:
             inject_dict["condition"] = inject_form.condition.data
-        if choices_form.validate():
-            choices_dict = choices_form.data
-            inject_dict["choices"] = []
-            for choice in choices_dict:
-                if choice.label:
-                    inject_dict["choices"].append(choice)
+        inject_dict["choices"] = inject_form.get_inject_choices()
         return inject_dict
     else:
         print(inject_form.errors)
@@ -140,4 +105,4 @@ def delete_inject(scenario_id, inject_slug):
     scenario = aux.get_single_scenario(scenario_id)
     scenario.remove_inject(inject_slug)
     EditableScenarioRepository.save_scenario(scenario)
-    return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario_id)+'#stories')
+    return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario_id)+ "#" + injects_bp.name)

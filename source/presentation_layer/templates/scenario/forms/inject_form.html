@@ -63,6 +63,7 @@
             </div>
             <div class="tab-pane fade" id="inject-condition" role="tabpanel"
                  aria-labelledby="inject-condition-tab">
+                {{ inject_form.condition.csrf_token }}
                 {{ render_field(inject_form.condition.variable_name) }}
                 {{ render_field(inject_form.condition.comparison_operator) }}
                 {{ render_field(inject_form.condition.variable_threshold) }}
@@ -71,7 +72,7 @@
 
             <div class="tab-pane fade" id="inject-choices" role="tabpanel" aria-labelledby="variables-tab">
                 {% if inject %}
-                    {% for choice in choice_forms.choices %}
+                    {% for choice in inject_form.choices %}
                         {{ render_subform(choice) }}
                     {% endfor %}
                 {% endif %}

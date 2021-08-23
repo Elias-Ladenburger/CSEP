@@ -4,13 +4,14 @@
  <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
-<div class="container-fluid bg-white text-black-50">
+<div class="container bg-white text-black-50">
     {% block transition %}
     {% endblock %}
 </div>
-    <div class="row justify-content-end">
+    <div class="row">
         <div class="col-10"></div>
-        <a href="{{url_for('games.stats_page', game_id=game.game_id, inject_slug=inject.slug)}}" class="btn btn-primary btn-outline-dark">Stats</a>
+        <a href="{{url_for('games.stats_page', game_id=game.game_id, inject_slug=inject.slug)}}"
+           class="btn btn-primary"><i class="fas fa-chart-line"></i>KPIs</a>
     </div>
 
 {% endblock %}

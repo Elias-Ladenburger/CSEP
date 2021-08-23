@@ -1,59 +1,100 @@
 {% extends '/game_facilitation/facilitation_main_base.html' %}
 {% from '/helpers/_detail_helpers.html' import inject_details %}
 
+{% block headings %}
+{{ super() }}
+    <script src="{{ url_for('static', filename='js/custom_charts.js') }}"></script>
+{% endblock %}
+
+
 {% block content %}
     {% set inject = game.scenario.stories[0].entry_node %}
 
     <div class="container-fluid bg-darkgrey-3 text-light">
         <h2 class="h2">Scenario: {{ game.name }}</h2>
-    {% set game_url = url_for('games.group_game', game_id=game.game_id, _external=True) %}
+        {% set game_url = url_for('games.group_game', game_id=game.game_id, _external=True) %}
         <a href="#" type="button" class="btn btn-light"
-                    onclick="copyToClipboard('{{ game_url }}')">{{ game_url }}<i class="far fa-copy"></i>
+           onclick="copyToClipboard('{{ game_url }}')">{{ game_url }}<i class="far fa-copy"></i>
         </a>
         <hr/>
         <div class="container-fluid bg-light">
-            <div class="row bg-light text-body">
+            <div class="row bg-light text-body ml-md-0">
                 <div class="col-sm-5">
-                    <h3 class="h3">Variables</h3>
-                    {% for var_name, game_var in game.game_variables.items() %}
-                        {% set var_id = var_name.replace(" ", "-") %}
-                        <form>
-                            <div class="form-group row">
-                                <label class="col-sm-4" for="{{ var_id }}">{{ var_name }}{% if game_var.is_private %} (hidden){% endif %}</label>
-                                <input class="col-sm-5" id="{{ var_id }}" type="text" value="{{ game_var.value }}">
+                    <div class="row">
+                        {% if game.game_variables|length > 0 %}
+                            <div class="col-auto">
+                                <h3 class="h3">Variables</h3>
+                                {% for var_name, game_var in game.game_variables.items() %}
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            {% set var_id = var_name.replace(" ", "-").lower().replace("?","") %}
+                                            <form action="{{ url_for('facilitation.set_variables', game_id=game.game_id) }}"
+                                                  method="post" class="form">
+                                                <label class="col-form-label" for="{{ var_id }}">
+                                                    {{ var_name }}{% if game_var.is_private %}
+                                                        (hidden){% endif %}</label>
+                                                <div class="form-inline form-group">
+                                                    <input class="form-control" id="{{ var_id }}" name="{{ var_name }}"
+                                                           type="text"
+                                                           value="{{ game_var.value }}">
+                                                    <button class="btn btn-primary" type="submit">Update</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
-                        </form>
-                    {% endfor %}
-                    <hr/>
-                </div>
-                <div class="col-sm-5">
-                    <div class="row">
-                        <h4 class="h4">Current Inject</h4><br>
-                        {{ inject_details(game.current_inject, True) }}
-                    </div>
-                    <hr/>
-                    <div class="row">
-                        <h4 class="h4">Next Inject</h4><br>
-                        {% if not next_inject %}
-                            <h3 class="h3">End of Scenario</h3>
-                        {% else %}
-                        {{ inject_details(next_inject, True) }}
                         {% endif %}
                     </div>
                     <hr/>
+                    <div class="row">
+                        <script>
+                            window.onload = function () {
+                                renderAnswerChart("injectFeedbackChart", [
+                                        {y: 5, label: "Answer 1"},
+                                        {y: 5, label: "Answer 2"},
+                                        {y: 3, label: "Answer 3"},
+                                        {y: 4, label: "No answer yet"}
+                                    ],
+                                    "pie")
+                            }
+                        </script>
+                        <div id="injectFeedbackChart" style="height: 370px; width: 100%;"></div>
+                        <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+                    </div>
+                </div>
+                <div class="col-sm-5">
+                    <div class="row ml-md-0">
+                        <h4 class="h4">Current Inject</h4>
+                        <div class="container">
+                            {{ inject_details(game.current_inject, True, game=game) }}
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="row ml-md-0">
+                        <h4 class="h4">Next Inject</h4><br>
+                        <div class="container">
+                            {% if not next_inject %}
+                                <h3 class="h3">End of Scenario</h3>
+                            {% else %}
+                                {{ inject_details(inject=next_inject, facilitation_view=True, game=game) }}
+                            {% endif %}
+                            <div>
+                            </div>
+                            <hr/>
+                        </div>
+                    </div>
+                    <div class="row bg-light align-items-center justify-content-center">
+                        <a href="{{ url_for('facilitation.allow_next', game_id=game.game_id) }}"
+                           class="btn btn-primary" title="Facilitate this Game">
+                            <i class="fas fa-play"></i> Allow Next Inject
+                        </a>
+                        <a href="{{ url_for('facilitation.close_game', game_id=game.game_id) }}"
+                           class="btn btn-danger" title="Abort this Game">
+                            <i class="fas fa-times-circle"></i> Abort Game
+                        </a>
+                    </div>
                 </div>
             </div>
-            <div class="row bg-light align-items-center justify-content-center">
-                <a href="{{ url_for('facilitation.start_game', game_id=game.game_id) }}"
-                   class="btn btn-primary" title="Facilitate this Game">
-                    <i class="fas fa-play"></i> Allow Next Inject
-                </a>
-                <a href="{{ url_for('facilitation.close_game', game_id=game.game_id) }}"
-                   class="btn btn-danger" title="Abort this Game">
-                    <i class="fas fa-times-circle"></i> Abort Game
-                </a>
-            </div>
-        </div>
-    </div>
 
 {% endblock %}

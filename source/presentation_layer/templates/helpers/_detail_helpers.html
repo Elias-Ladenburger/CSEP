@@ -1,40 +1,52 @@
-{% macro inject_details(inject, facilitation_view=False, edit_view=False) %}
+{% macro inject_details(inject, facilitation_view=False, edit_view=False, game=None) %}
 
-        {% if edit_view %}{% set facilitation_view = True %}{% endif %}
-        <div class="card text-body" id="injectCard">
-            {% if inject.media_path %}
-                <img class="card-img-top"
-                     src="{{ url_for('static', filename='assets/uploads/'+inject.media_path) }}"
-                     alt="Card image cap">
-            {% endif %}
+    {% if edit_view %}{% set facilitation_view = True %}{% endif %}
+    <div class="card text-body" id="injectCard">
+        {% if inject.media_path %}
+            <img class="card-img-top"
+                 src="{{ url_for('static', filename='assets/uploads/'+inject.media_path) }}"
+                 alt="Card image cap">
+        {% endif %}
 
-            <div class="card-body">
-                {% if facilitation_view and inject.condition %}
-                    <p class="bg-blue-3 rounded">Condition: IF (<span
-                            class="badge badge-primary">{{ inject.condition.variable_name }}</span> {{ inject.condition.comparison_operator }}
-                        <span class="badge badge-primary">{{ inject.condition.variable_threshold }}</span>) then go to
-                        inject <span class="badge badge-primary">{{ inject.condition.alternative_inject }}</span>
-                    </p>{% endif %}
-                <h5 class="card-title" id="injectName">{{ inject.label }}</h5>
-                <p class="card-text" id="injectText">{{ inject.text }}</p>
-                {% if facilitation_view %}{{ render_choices_for_trainer(inject) }}{% else %}
-                    {{ render_choices_for_participant(inject) }}{% endif %}
-            </div>
+        <div class="card-body">
+            {% if facilitation_view and inject.condition %}
+                <p class="bg-blue-3 rounded">Condition: IF (<span
+                        class="badge badge-primary">{{ inject.condition.variable_name }}</span> {{ inject.condition.comparison_operator }}
+                    <span class="badge badge-primary">{{ inject.condition.variable_threshold }}</span>) then go to
+                    inject <span class="badge badge-primary">{{ inject.condition.alternative_inject }}</span>
+                </p>{% endif %}
+            <h5 class="card-title" id="injectName">{{ inject.label }}</h5>
+            <p class="card-text" id="injectText">{{ inject.text }}</p>
+            {% if facilitation_view %}{{ render_choices_for_trainer(inject, game=game) }}{% else %}
+                {{ render_choices_for_participant(inject) }}{% endif %}
         </div>
+    </div>
 {% endmacro %}
 
-{% macro render_choices_for_trainer(inject) %}
+{% macro render_choices_for_trainer(inject, game=None) %}
     {% if inject.has_choices %}
         <ul class="text-body">
             {% for choice in inject.choices %}
                 <li class="text">{{ choice.label }}<br>
-                    <p class="small">
-                        {% if facilitation_view and choice.outcome.next_inject %}
-                            {{ choice.outcome.next_inject }}{% endif %}</p>
+                    {% if choice.outcome.next_inject %}
+                        {% set next_inject = choice.outcome.next_inject %}
+                        <p class="small">
+                            Leads to inject: {{ render_inject_link(inject_slug=next_inject, game=game) }}</p>
+                    {% endif %}
                 </li>
             {% endfor %}
         </ul>
     {% endif %}
+{% endmacro %}
+
+{% macro render_inject_link(inject_slug, game=None) %}
+{% if game %}
+    {% set inject = game.get_inject_by_slug(inject_slug) %}
+    <a class="btn-link" data-toggle="modal" data-target="#inject-modal-{{ inject.slug }}">{{ inject.label }}</a>
+    {{ render_inject_modal(inject) }}
+{% else %}
+    {{ inject_slug }}
+{% endif %}
 {% endmacro %}
 
 {% macro render_inject_for_participants(inject, game) %}
@@ -49,12 +61,19 @@
             <h5 class="card-title" id="injectName">{{ inject.label }}</h5>
             <p class="card-text" id="injectText">{{ inject.text }}</p>
             {% if inject.has_choices %}
-                {% for choice in inject.choices %}
-                    <a class="btn btn-primary"
-                       href="{{ url_for('games.solve_inject', inject_slug=inject.slug, solution=loop.index - 1, game_id=game.game_id) }}">{{ choice.label }}</a>
-                {% endfor %}
+                <div class="container">
+                    <div class="row">
+                        {% for choice in inject.choices %}
+                            <div class="col-sm">
+                                <li><a class="btn btn-choice"
+                                       href="{{ url_for('games.solve_inject', inject_slug=inject.slug, solution=loop.index - 1, game_id=game.game_id) }}">{{ choice.label }}</a>
+                                </li>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
             {% else %}
-                <a class="btn btn-primary"
+                <a class="btn btn-choice"
                    href="{{ url_for('games.solve_inject', inject_slug=inject.slug, solution=0, game_id=game.game_id) }}">Continue</a>
             {% endif %}
         </div>
@@ -68,4 +87,25 @@
             <div class="row"><p>{{ participant }}</p></div>
         {% endfor %}
     {% endif %}
+{% endmacro %}
+
+{% macro render_inject_modal(inject) %}
+    <div class="modal fade" id="inject-modal-{{ inject.slug }}" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="inject-title-{{ inject.slug }}">{{ inject.title }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{ inject_details(inject, facilitation_view=True) }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endmacro %}

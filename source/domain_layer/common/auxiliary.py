@@ -42,7 +42,7 @@ class BaseScenarioVariable(BaseModel):
             return isinstance(value, float) or isinstance(value, int)
         elif self.datatype == DataType.BOOL:
             if isinstance(value, str):
-                return value == "True" or value == "true"
+                return value.lower() in ["true", "yes", "false", "no"]
             return isinstance(value, bool)
         return False
 

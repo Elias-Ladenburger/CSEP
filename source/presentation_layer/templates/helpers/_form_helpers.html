@@ -50,7 +50,15 @@ Arguments:
             {{ subform.csrf_token() }}
         {% endif %}
         {% for field in subform %}
+            {% if field.type == "FormField" %}
+                {{ render_subform(field) }}
+            {% elif field.type == "FieldList" %}
+                {% for subfield in field %}
+                    {{ render_subform(field) }}
+                {% endfor %}
+            {% else %}
             {{ render_field(field, class="form_control") }}
+            {% endif %}
         {% endfor %}
         <a class="remove" href="#">Remove</a>
     </div>

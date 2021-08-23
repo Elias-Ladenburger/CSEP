@@ -2,12 +2,13 @@
 
 <!-- Navbar -->
 {% block navigation %}
-{% include "navigation.html" %}
+    {% include "navigation.html" %}
 {% endblock %}
 
 {% block base_content %}
 
-{% block main_content %}
-{% endblock %}
-
+    <main>
+        {% block main_content %}
+        {% endblock %}
+    </main>
 {% endblock %}

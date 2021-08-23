@@ -6,12 +6,10 @@ from typing import Optional, List, Dict
 from pydantic import BaseModel, PrivateAttr
 
 from domain_layer.common._domain_objects import AggregateRoot
-from domain_layer.common.auxiliary import BaseVariableChange
-from domain_layer.common.injects import BaseChoiceInject, InjectResult
+from domain_layer.common.injects import BaseChoiceInject
 from domain_layer.common.scenarios import BaseScenario, BaseStory
-from domain_layer.gameplay.injects import GameInject, GameVariableChange, GameInjectResult
+from domain_layer.gameplay.injects import GameInject, GameVariableChange, GameInjectResult, GameVariable
 from domain_layer.gameplay.participants import GameParticipant
-from domain_layer.scenariodesign.scenarios import BaseScenarioVariable
 
 
 class GameState(Enum):
@@ -42,6 +40,15 @@ class GameStory(BaseStory):
 
 class GameScenario(BaseScenario):
     stories: List[GameStory] = []
+    _variables: Dict[str, GameVariable] = {}
+
+    @classmethod
+    def _prepare_variables_from_dict(cls, var_dict: dict):
+        if var_dict:
+            for var_name, scenario_var in var_dict.items():
+                if not isinstance(scenario_var, GameVariable):
+                    var_dict[var_name] = GameVariable(**scenario_var)
+        return var_dict
 
 
 class Game(AggregateRoot):
@@ -53,11 +60,10 @@ class Game(AggregateRoot):
     _current_inject_slug: str = PrivateAttr("")
     _type: str = "GAME"
     scenario: GameScenario
-    game_variables: Dict[str, BaseScenarioVariable] = {}
+    game_variables: Dict[str, GameVariable] = {}
 
     def __init__(self, scenario: GameScenario, **kwargs):
         super().__init__(scenario=scenario, **kwargs)
-        self.game_variables = copy.deepcopy(self.scenario.variables)
         self._entity_id = kwargs.get("game_id")
         self._start_time = kwargs.get("start_time", datetime.now())
         self._end_time = kwargs.get("end_time", None)
@@ -82,6 +88,10 @@ class Game(AggregateRoot):
         return self._game_state == GameState.In_Progress
 
     @property
+    def is_closed(self):
+        return self._game_state in [GameState.Closed, GameState.Finished]
+
+    @property
     def end_time(self):
         return self._end_time
 
@@ -99,13 +109,16 @@ class Game(AggregateRoot):
         self._game_state = GameState.In_Progress
         self._current_story_index = 0
         self._current_inject_slug = self.current_story.entry_node.slug
+        self.game_variables = copy.deepcopy(self.scenario.variables)
 
     def close_game(self):
         self._game_state = GameState.Closed
         self._end_time = datetime.now()
 
-    def set_game_variable(self, var: BaseScenarioVariable, new_value):
-        self.game_variables[var.name].value = new_value
+    def set_game_variable(self, var_name: str, new_value):
+        var = self.game_variables.get(var_name, None)
+        if var:
+            self.game_variables[var.name].set_value(new_value)
 
     def get_visible_vars(self):
         visible_stats = {}

@@ -2,7 +2,7 @@
 {% from '/helpers/_detail_helpers.html' import inject_details %}
 
 {% block headings %}
-{{ super() }}
+    {{ super() }}
     <script src="{{ url_for('static', filename='js/custom_charts.js') }}"></script>
 {% endblock %}
 
@@ -18,6 +18,17 @@
         </a>
         <hr/>
         <div class="container-fluid bg-light">
+            <div class="row bg-light align-items-center justify-content-center">
+                <a href="{{ url_for('facilitation.allow_next', game_id=game.game_id) }}"
+                   class="btn btn-primary" title="Facilitate this Game">
+                    <i class="fas fa-play"></i> Allow Next Inject
+                </a>
+                <a href="{{ url_for('facilitation.close_game', game_id=game.game_id) }}"
+                   class="btn btn-danger" title="Abort this Game">
+                    <i class="fas fa-times-circle"></i> Abort Game
+                </a>
+            </div>
+        <hr/>
             <div class="row bg-light text-body ml-md-0">
                 <div class="col-sm-5">
                     <div class="row">
@@ -50,18 +61,14 @@
                     <div class="row">
                         <script>
                             window.onload = function () {
-                                renderAnswerChart("injectFeedbackChart", [
-                                        {y: 5, label: "Answer 1"},
-                                        {y: 5, label: "Answer 2"},
-                                        {y: 3, label: "Answer 3"},
-                                        {y: 4, label: "No answer yet"}
-                                    ],
-                                    "pie")
+                                renderAnswerChart("injectFeedbackChart", {{ chartdata|tojson }}, "pie")
                             }
                         </script>
                         <div id="injectFeedbackChart" style="height: 370px; width: 100%;"></div>
                         <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
                     </div>
+                    <hr/>
                 </div>
                 <div class="col-sm-5">
                     <div class="row ml-md-0">
@@ -83,16 +90,6 @@
                             </div>
                             <hr/>
                         </div>
-                    </div>
-                    <div class="row bg-light align-items-center justify-content-center">
-                        <a href="{{ url_for('facilitation.allow_next', game_id=game.game_id) }}"
-                           class="btn btn-primary" title="Facilitate this Game">
-                            <i class="fas fa-play"></i> Allow Next Inject
-                        </a>
-                        <a href="{{ url_for('facilitation.close_game', game_id=game.game_id) }}"
-                           class="btn btn-danger" title="Abort this Game">
-                            <i class="fas fa-times-circle"></i> Abort Game
-                        </a>
                     </div>
                 </div>
             </div>

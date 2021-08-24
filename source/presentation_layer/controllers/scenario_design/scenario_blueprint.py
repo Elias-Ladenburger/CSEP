@@ -1,7 +1,7 @@
 import flask
 from flask import Blueprint, render_template, redirect, flash, url_for
 
-from application_layer.M2MTransformationService import InjectTransformer
+from application_layer.m2m_transformation import InjectTransformer
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository, EditableScenarioFactory
 from presentation_layer.controllers.scenario_design.scenario_forms import *
 

@@ -252,13 +252,18 @@ class GroupGame(Game):
         if participant_hash not in self.participants:
             participant = GameParticipant(game_id=self.game_id, participant_id=participant_hash)
             self.participants[participant_hash] = participant
-        else:
-            pass
+
+    def number_of_participants(self):
+        return len(self.participants)
 
     def solve_inject(self, participant_id, inject_slug, solution):
         if participant_id not in self.participants:
             self.add_participant(participant_id)
         self.participants[participant_id].solve_inject(inject_slug, solution)
+
+    def has_participant_solved(self, participant_hash: str):
+        participant = self.participants[participant_hash]
+        return participant.has_solved(self._current_inject_slug)
 
     def allow_next_inject(self):
         self.next_inject_allowed = True
@@ -282,18 +287,30 @@ class GroupGame(Game):
             solution = "0"
         outcome = self.current_story.solve_inject(inject_slug, solution)
         next_inject = self._evaluate_outcome(outcome)
+        self._current_inject_slug = next_inject.slug
         return next_inject
 
     def _evaluate_solution(self, inject_slug: str):
-        solutions = {}
+        solution_occurrences = self.solution_occurrence(inject_slug)
         max_occurrence = 0
+        most_popular = ""
+        for solution in solution_occurrences:
+            if solution_occurrences[solution] > max_occurrence:
+                max_occurrence = solution_occurrences[solution]
+                most_popular = solution
+        return most_popular
+
+    def solution_occurrence(self, inject_slug: str):
+        """Evaluate how often each solution has occurred."""
+        inject = self.get_inject(inject_slug)
+        solution_occurrences = {}
         for participant_id, participant in self.participants.items():
-            if participant.has_solved(inject_slug):
-                solution = participant.get_solution(inject_slug)
-                number_of_occurrence = solutions.get(solution, 0) + 1
-                solutions[solution] = number_of_occurrence
-                if number_of_occurrence > max_occurrence:
-                    max_occurrence = number_of_occurrence
-        for solution in solutions:
-            if solutions[solution] == max_occurrence:
-                return solution
+            if participant.has_solved(inject.slug):
+                solution = participant.get_solution(inject.slug)
+                if inject.has_choices:
+                    solution = str(inject.choices[int(solution)])
+            else:
+                solution = "no solution"
+            number_of_occurrences = solution_occurrences.get(solution, 0) + 1
+            solution_occurrences[solution] = number_of_occurrences
+        return solution_occurrences

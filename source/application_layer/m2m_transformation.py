@@ -3,13 +3,11 @@ from typing import List
 
 from domain_layer.common.injects import BaseChoiceInject
 from domain_layer.common.scenarios import BaseStory
+from domain_layer.gameplay.games import GroupGame
 
 
 class InjectTransformer:
     """This class transforms the inject from the domain layer to other datastructures."""
-
-    def transform_inject_to_visjs(self, inject: BaseChoiceInject):
-        pass
 
     @classmethod
     def transform_inject_to_visjs(cls, injects: List[BaseChoiceInject]):
@@ -62,7 +60,7 @@ class InjectTransformer:
         if group_id > 0:
             tmp_id += str(group_id)
         x = 200 * group_id
-        y = level*-200
+        y = level * -200
         tmp_inject = dict(id=tmp_id, label=inject.label, text=inject.text, group=group_id,
                           fixed={"x": True, "y": True}, x=x, y=y, level=level, slug=inject.slug)
         if inject.slug == entry_node:
@@ -71,7 +69,7 @@ class InjectTransformer:
         if inject.next_inject:
             tmp_edges = cls._transform_edges(inject, tmp_id, group_id)
         if inject.condition:
-            condition_id = tmp_id+"_condition"
+            condition_id = tmp_id + "_condition"
             condition_title = str(inject.condition)
             tmp_condition = dict(id=condition_id, label="condition", title=condition_title, group=group_id,
                                  level=level)
@@ -106,3 +104,18 @@ class InjectTransformer:
     def transform_injects_to_visjs(cls, injects):
         injects, edges = cls.transform_injects_to_visjs_dict(injects)
         return json.dumps(injects), json.dumps(edges)
+
+
+class SolutionTransformer:
+    @classmethod
+    def transform_solution_to_chart(cls, game: GroupGame, inject_slug: str):
+        return_data = []  # [{"y": 5, "label": "Answer 1"}, {"y": 5, "label": "Answer 2"}]
+        solution_occurrences = game.solution_occurrence(inject_slug)
+        inject = game.get_inject(inject_slug)
+
+        for solution in solution_occurrences:
+            occurrence = solution_occurrences[solution]
+            if isinstance(solution, int) or solution.isnumeric():
+                solution = "Continue"
+            return_data.append({"y": occurrence, "label": solution})
+        return return_data

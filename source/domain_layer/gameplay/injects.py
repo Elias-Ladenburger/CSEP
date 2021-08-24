@@ -21,15 +21,14 @@ class GameInject(BaseChoiceInject):
         """
         if self.has_choices:
             solution = self._parse_solution(solution)
-            outcome = self.choices[solution].outcome
+            outcome = solution.outcome
             if not outcome.next_inject:
                 outcome = InjectResult(next_inject=self.next_inject, variable_changes=outcome.variable_changes)
         else:
             outcome = InjectResult(next_inject=self.next_inject, variable_changes=[])
         return outcome
 
-    @staticmethod
-    def _parse_solution(solution):
+    def _parse_solution(self, solution):
         """
         Takes the solution that a user has provided for an inject.
         :param solution: the solution provided by the user.
@@ -37,14 +36,17 @@ class GameInject(BaseChoiceInject):
         :return: an index for a transition
         """
         if isinstance(solution, int):
-            return solution
+            return self.choices[solution]
         elif isinstance(solution, str):
-            if solution == "":
-                solution = "0"
             if solution.isnumeric():
-                return int(solution)
+                return self.choices[int(solution)]
+            else:
+                for choice in self.choices:
+                    if solution == str(choice):
+                        return choice
+                raise ValueError("Solution {} not found for inject {}".format(solution, self.label))
         else:
-            raise TypeError("Solution for choice injects must be of type int!")
+            raise TypeError("Solution for choice injects must be of type int or str!")
 
 
 class GameInjectCondition(BaseInjectCondition):

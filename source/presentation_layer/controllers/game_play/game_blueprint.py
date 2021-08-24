@@ -1,7 +1,12 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+import random
+import string
 
-from domain_layer.gameplay.game_management import GameRepository, GroupGameRepository
-from domain_layer.gameplay.mock_interface import MockGameProvider
+import flask
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session
+
+from application_layer import m2m_transformation
+from application_layer.m2m_transformation import SolutionTransformer
+from domain_layer.gameplay.game_management import GroupGameRepository
 
 game_gp = Blueprint('games', __name__,
                         template_folder='../../templates/gameplay', url_prefix="/games")
@@ -30,51 +35,14 @@ def multiplayer_overview():
     return render_template("group_overview.html", games=games)
 
 
-@game_gp.route("/<game_id>/reflection")
-def game_reflection(game_id):
-    game = game_repo.get_game_by_id(game_id)
-    template_name = "game_reflection.html"
-    game.end_game()
-    game_repo.save_game(game)
-    return render_template(template_name, game=game)
-
-
-@game_gp.route("/<game_id>/injects/<inject_slug>/show")
-def inject_page(game_id, inject_slug):
-    game = game_repo.get_game_by_id(game_id)
-    inject = game.get_inject_by_slug(inject_slug=inject_slug)
-    template_name = "choice_inject.html"
-    return render_template(template_name, inject=inject, game=game)
-
-
-@game_gp.route("/<game_id>/injects/<inject_slug>/solution")
-def solve_inject(game_id, inject_slug):
-    game = game_repo.get_game_by_id(game_id)
-    solution = request.args.get("solution", 0)
-    game.solve_inject(participant_id="placeholder", inject_slug=inject_slug, solution=solution)
-    if game.is_next_inject_allowed():
-        next_inject = game.advance_story()
-        game_repo.save_game(game)
-        if next_inject:
-            return redirect(url_for('games.group_game', game_id=game.game_id))
-        else:
-            return game_end(game_id)
-    else:
-        return inject_feedback(game)
-
-
-def inject_feedback(game):
-    template_name = "feedback_statistics.html"
-    return render_template(template_name, game=game)
-
-
 @game_gp.route("/<game_id>/")
 def group_game(game_id):
     game = game_repo.get_game_by_id(game_id)
+    participant_hash = get_game_participant(game)
     if game.is_open:
         template_name = "participant_lobby.html"
     elif game.is_in_progress:
-        return play_game(game)
+        return play_game(game, participant_hash)
     elif game.is_closed:
         flash("This game is now closed!")
         template_name = "game_end.html"
@@ -84,8 +52,53 @@ def group_game(game_id):
     return render_template(template_name, game_id=game_id, game=game)
 
 
-def play_game(game):
-    return render_template('choice_inject.html', game=game, inject=game.current_inject)
+def play_game(game, participant_hash):
+    current_inject = game.current_inject
+    if game.has_participant_solved(participant_hash):
+        flash("You have already solved this inject. Please wait a few moments until the next inject becomes active.", "success")
+        return redirect(url_for('games.inject_feedback', game_id=game.game_id))
+    return render_template('choice_inject.html', game=game, inject=current_inject)
+
+
+@game_gp.route("/<game_id>/feedback")
+def inject_feedback(game_id):
+    game = game_repo.get_game_by_id(game_id)
+    return inject_feedback(game)
+
+
+def inject_feedback(game):
+    chartdata = SolutionTransformer.transform_solution_to_chart(game, game.current_inject.slug)
+    return render_template("feedback_statistics.html", game=game, inject=game.current_inject, chartdata=chartdata)
+
+
+@game_gp.route("/<game_id>/reflection")
+def game_reflection(game_id):
+    game = game_repo.get_game_by_id(game_id)
+    template_name = "game_reflection.html"
+    game.end_game()
+    game_repo.save_game(game)
+    return render_template(template_name, game=game)
+
+
+@game_gp.route("/<game_id>/injects/<inject_slug>/solution")
+def solve_inject(game_id, inject_slug):
+    game = game_repo.get_game_by_id(game_id)
+    solution = request.args.get("solution", 0)
+    participant_hash = session.get('participant_hash', False)
+    if not participant_hash:
+        participant_hash = generate_sid()
+        session["participant_hash"] = participant_hash
+    game.solve_inject(participant_id=participant_hash, inject_slug=inject_slug, solution=solution)
+    game_repo.save_game(game)
+    if game.is_next_inject_allowed():
+        next_inject = game.advance_story()
+        game_repo.save_game(game)
+        if next_inject:
+            return redirect(url_for('games.group_game', game_id=game.game_id))
+        else:
+            return game_end(game_id)
+    else:
+        return inject_feedback(game)
 
 
 @game_gp.route("/<game_id>/injects/<inject_slug>/stats")
@@ -100,3 +113,21 @@ def game_end(game_id):
     game = game_repo.get_game_by_id(game_id)
     template_name = "game_end.html"
     return render_template(template_name, game=game)
+
+
+def get_game_participant(game):
+    if "participant_hash" not in session:
+        participant_hash = generate_sid()
+        session["participant_hash"] = participant_hash
+    participant_hash = session["participant_hash"]
+
+    if participant_hash not in game.participants:
+        game.add_participant(participant_hash)
+        game_repo.save_game(game)
+    return participant_hash
+
+
+def generate_sid():
+    letters = string.ascii_lowercase
+    random_string = ''.join(random.choice(letters) for i in range(10))
+    return random_string

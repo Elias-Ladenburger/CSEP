@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 
+from application_layer import m2m_transformation
+from application_layer.m2m_transformation import SolutionTransformer
 from domain_layer.common.scenario_management import ScenarioRepository
 from domain_layer.gameplay.game_management import GroupGameFactory, GameRepository, GroupGameRepository
 
@@ -60,13 +62,15 @@ def handle_facilitation(game):
     next_inject = None
     if next_inject_slug != "":
         next_inject = game.get_inject_by_slug(next_inject_slug)
-    return render_template("facilitation_main.html", game=game, next_inject=next_inject)
+    chartdata = SolutionTransformer.transform_solution_to_chart(game, game.current_inject)
+    return render_template("facilitation_main.html", game=game, next_inject=next_inject, chartdata=chartdata)
 
 
 @facilitation_bp.route("/games/<game_id>/allownext")
 def allow_next(game_id):
     game = game_repo.get_game_by_id(game_id)
     game.allow_next_inject()
+    game.advance_story()
     game_repo.save_game(game)
     return redirect(url_for("facilitation.facilitate_game", game_id=game_id))
 

@@ -1,7 +1,7 @@
 import json
 from unittest import TestCase
 
-from application_layer.M2MTransformationService import InjectTransformer
+from application_layer.m2m_transformation import InjectTransformer
 from domain_layer.gameplay.mock_interface import MockScenarioBuilder
 
 

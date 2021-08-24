@@ -66,7 +66,7 @@ class GameRepository(Repository):
 
 
     @classmethod
-    def get_games_by_state(cls, states: List[GameState] = None):
+    def get_games_by_state(cls, states = None):
         """Yield an iterator over all open games.
         :param states: a list of GameState objects or one of ["open", "closed", "in_progress"]
         """

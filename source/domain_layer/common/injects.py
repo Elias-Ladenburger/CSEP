@@ -82,6 +82,9 @@ class BaseInjectChoice(BaseModel):
         return_dict = super().dict(**kwargs)
         return return_dict
 
+    def __str__(self):
+        return self.label
+
 
 class BaseChoiceInject(BaseInject):
     choices: Optional[List[BaseInjectChoice]] = []

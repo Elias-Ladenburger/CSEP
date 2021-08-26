@@ -1,22 +1,47 @@
 {% extends 'base.html' %}
 {% block main_content %}
 
- <!-- Primary Page Layout
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <!-- Primary Page Layout
+     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
-<div class="container-fluid bg-2 text-center text-black-50">
-    <div class="card-deck">
-        {% for scenario in scenarios %}
-           <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">{{ scenario.title}}</h5>
-                <p class="card-text">{{ scenario.description}}</p>
-                <a href="#" class="btn btn-primary">View scenario</a>
-              </div>
+    <div class="container-fluid bg-2 text-center">
+        <h4>Welcome to the prototype platform for</h4>
+        <h3 class="h3"><strong>Strategic Cybersecurity Awareness Games</strong>!
+        </h3>
+        <hr class="border-white"/>
+        <div class="row text-black-50">
+            <div class="col-sm">
+                <div class="card-deck">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">Facilitate a Group Game</div>
+                            <div class="card-text">Be a trainer for a group of participants in a group game.</div>
+                            <a class="btn btn-primary" href="{{ url_for('facilitation.show_overview') }}">Take me there</a>
+                        </div>
+                    </div>
+                    <hr class="border-white"/>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">Participate in a Group Game</div>
+                            <div class="card-text">Be one of a group of participants who play one of our learning
+                                scenarios.
+                            </div>
+                            <a class="btn btn-primary" href="{{ url_for('games.multiplayer_overview') }}">Take me there</a>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">Develop a learning scenario</div>
+                            <div class="card-text">Create new and edit existing learning scenarios, so that they can be played later.</div>
+                            <a class="btn btn-primary" href="{{ url_for('scenarios.show_scenarios') }}">Take me there</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-        {% endfor %}
+        </div>
+        <hr class="border-white"/>
+
     </div>
-</div>
 
 
 {% endblock %}

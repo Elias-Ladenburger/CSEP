@@ -121,7 +121,7 @@ This project has been put into an almost usable state. However, a few bugs and i
   - It is currently not possible to add a "variable change" to a choice
     (_There are two obstacles here: one is that the subform for variable changes has the same two issues as the choices form mentioned above._
   _The other issue is that the form currently does not actually connect to the "Variable Change" object - here some (minor) code changes may still be necessary_).
-
+- Similarly, it is not yet able to delete InjectConditions with the corresponding button. Instead, the field 'If I take this variable' must be cleared (or set to '---').
 ### Known Change-Requests
 There are also some known change requests that I have so far not been able to implement.
 These include:

@@ -1,4 +1,4 @@
-{% extends '/game_facilitation/facilitation_main_base.html' %}
+{% extends '/facilitation/facilitation_main_base.html' %}
 {% from '/helpers/_detail_helpers.html' import inject_details %}
 
 {% block headings %}
@@ -65,7 +65,7 @@
                     <div class="row">
                         <script>
                             window.onload = function () {
-                                renderAnswerChart("injectFeedbackChart", {{ chartdata|tojson }}, "column")
+                                renderAnswerChart("injectFeedbackChart", {{ chartdata|tojson }}, "pie")
                             }
                         </script>
                         <div id="injectFeedbackChart" style="height: 370px; width: 100%;"></div>

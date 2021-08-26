@@ -75,7 +75,8 @@
                         aria-expanded="false" aria-controls="conditionForm">
                     {% if inject.condition %}Edit Condition{% else %}Add Condition{% endif %}
                 </button>
-                <div class="tab-pane fade" id="inject-choices" role="tabpanel" aria-labelledby="variables-tab">
+            </div>
+                <div class="tab-pane fade" id="inject-choices" role="tabpanel" aria-labelledby="inject-choices-tab">
                     {% if inject %}
                         {% for choice in inject_form.choices %}
                             {{ render_subform(choice) }}

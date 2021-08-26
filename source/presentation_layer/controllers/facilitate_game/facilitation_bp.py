@@ -6,7 +6,7 @@ from domain_layer.common.scenario_management import ScenarioRepository
 from domain_layer.gameplay.game_management import GroupGameFactory, GameRepository, GroupGameRepository
 
 facilitation_bp = Blueprint('facilitation', __name__,
-                            template_folder='../../templates/game_facilitation', url_prefix="/trainers")
+                            template_folder='../../templates/facilitation', url_prefix="/trainers")
 game_repo = GroupGameRepository
 
 @facilitation_bp.route("/", strict_slashes=False)

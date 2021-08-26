@@ -88,8 +88,15 @@ Here's how to setup the project in PyCharm (as of 2021):
 
 ### Setup and Configuration
 
-The configuration for this platform can be found in [source > config.yml](/source/config.yml). 
+For development, a local MongoDB instance has been used. As of now, this project does not feature
+a script to automatically install and setup such an instance, this would have to be done manually.
+To do so, download MongoDB server from [mongodb.com](mongodb.com). 
+Then, add the collections "scenarios" and "games". 
+
+Finally, update the configuration for this platform. 
+This can be found in [source > config.yml](/source/config.yml). 
 Make sure to update the database connections, server name and other relevant information in this file, before actual deployment.
+
 
 ### Running the program
 #### Starting the server

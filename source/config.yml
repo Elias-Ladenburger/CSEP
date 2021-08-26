@@ -13,15 +13,15 @@ DATABASE:
 FLASK:
   ENV: development
   DEBUG: True
-  MAIL_SERVER: smtp.univie.ac.at
+  MAIL_SERVER: smtp.ait.ac.at
   MAIL_PORT: 465
-  MAIL_USERNAME: ladenburge19@univie.ac.at
+  MAIL_USERNAME: elias.ladenburger@ait.ac.at
   MAIL_PASSWORD: "Hahahaha, hidden."
-  MAIL_DEFAULT_SENDER: "'Cybersecurity Scenario Education Platform' <csep@univie.ac.at>"
+  MAIL_DEFAULT_SENDER: "'SCAG Platform' <scag-platform@ait.ac.at>"
   MAIL_USE_SSL: true
-  MAIL_USE_TLS: false
+  MAIL_USE_TLS: true
 
-  USER_APP_NAME: "CSEP app"
+  USER_APP_NAME: "SCAG platform"
   USER_ENABLE_EMAIL: "False"
   USER_ENABLE_USERNAME: "True"
   USER_REQUIRE_RETYPE_PASSWORD: "False"

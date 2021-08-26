@@ -1,10 +1,8 @@
 import random
 import string
 
-import flask
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 
-from application_layer import m2m_transformation
 from application_layer.m2m_transformation import SolutionTransformer
 from domain_layer.gameplay.game_management import GroupGameRepository
 
@@ -12,6 +10,7 @@ game_gp = Blueprint('games', __name__,
                         template_folder='../../templates/gameplay', url_prefix="/games")
 
 game_repo = GroupGameRepository
+
 
 @game_gp.route("/")
 def landing_page():
@@ -42,6 +41,9 @@ def group_game(game_id):
     if game.is_open:
         template_name = "participant_lobby.html"
     elif game.is_in_progress:
+        if game.is_next_inject_allowed():
+            game.advance_story()
+            game_repo.save_game(game)
         return play_game(game, participant_hash)
     elif game.is_closed:
         flash("This game is now closed!")
@@ -54,6 +56,8 @@ def group_game(game_id):
 
 def play_game(game, participant_hash):
     current_inject = game.current_inject
+    if game.is_closed:
+        return redirect(url_for('games.group_game', game_id=game.game_id))
     if game.has_participant_solved(participant_hash):
         flash("You have already solved this inject. Please wait a few moments until the next inject becomes active.", "success")
         return redirect(url_for('games.inject_feedback', game_id=game.game_id))
@@ -63,11 +67,11 @@ def play_game(game, participant_hash):
 @game_gp.route("/<game_id>/feedback")
 def inject_feedback(game_id):
     game = game_repo.get_game_by_id(game_id)
-    return inject_feedback(game)
+    return show_feedback(game)
 
 
-def inject_feedback(game):
-    chartdata = SolutionTransformer.transform_solution_to_chart(game, game.current_inject.slug)
+def show_feedback(game):
+    chartdata = SolutionTransformer.transform_solution_to_canvasjs(game, game.current_inject.slug)
     return render_template("feedback_statistics.html", game=game, inject=game.current_inject, chartdata=chartdata)
 
 
@@ -90,15 +94,7 @@ def solve_inject(game_id, inject_slug):
         session["participant_hash"] = participant_hash
     game.solve_inject(participant_id=participant_hash, inject_slug=inject_slug, solution=solution)
     game_repo.save_game(game)
-    if game.is_next_inject_allowed():
-        next_inject = game.advance_story()
-        game_repo.save_game(game)
-        if next_inject:
-            return redirect(url_for('games.group_game', game_id=game.game_id))
-        else:
-            return game_end(game_id)
-    else:
-        return inject_feedback(game)
+    return redirect(url_for('games.inject_feedback', game_id=game.game_id))
 
 
 @game_gp.route("/<game_id>/injects/<inject_slug>/stats")

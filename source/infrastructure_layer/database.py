@@ -7,7 +7,8 @@ class CustomDB:
     """
     A custom class for accessing a database.
     Currently wraps around the pymongo.MongoClient to provide convenience accessors.
-    Legal MongoDB-query expressions can be found in the documentation: https://docs.mongodb.com/manual/reference/operator/query/
+    Legal MongoDB-query expressions can be found in the documentation:
+    https://docs.mongodb.com/manual/reference/operator/query/
    """
     collections = dict(
         scenarios="scenarios",

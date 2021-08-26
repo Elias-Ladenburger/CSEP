@@ -1,13 +1,16 @@
-from typing import Optional, List, Dict
+from typing import List, Dict
 
 from domain_layer.common.auxiliary import BaseScenarioVariable
 from domain_layer.common.injects import BaseInject
-from domain_layer.common.scenarios import BaseStory, BaseScenario, DetailedScenario
+from domain_layer.common.scenarios import BaseStory, DetailedScenario
 from domain_layer.scenariodesign.injects import EditableInject
 
 
 class EditableStory(BaseStory):
-    """A Story is a collection of injects within a scenario design"""
+    """
+    A class that provides method so that it may be modified.
+
+    A Story is a collection of injects within a scenario design."""
     injects: Dict[str, EditableInject] = {}
 
     class Config:
@@ -17,6 +20,7 @@ class EditableStory(BaseStory):
         super().__init__(title=title, entry_node=entry_node, **kwargs)
 
     def set_entry_node(self, new_entry_node_slug):
+        """Change the entry node of this story, but only if this story contains an inject with the given slug."""
         if new_entry_node_slug in self.injects:
             self._entry_node = new_entry_node_slug
 
@@ -84,6 +88,7 @@ class EditableStory(BaseStory):
 
 
 class EditableScenario(DetailedScenario):
+    """A scenario that provides methods so that it can be modified."""
     stories: List[EditableStory] = []
 
     def add_story(self, story: EditableStory):
@@ -121,6 +126,7 @@ class EditableScenario(DetailedScenario):
         self.stories[story_index].remove_inject(inject)
 
     def get_all_injects(self):
+        """Convenience accessor to all injects in all stories in this scenario."""
         injects = []
         for story in self.stories:
             injects += [*story.injects.values()]
@@ -168,6 +174,6 @@ class EditableScenario(DetailedScenario):
         return counter
 
     def set_id(self, scenario_id: str):
-        if self._id and self._id != "new":
+        if self._entity_id and self._entity_id != "new":
             raise ValueError("Cannot reassign id of a scenario object!")
         self._id = scenario_id

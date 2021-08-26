@@ -7,14 +7,22 @@ from infrastructure_layer.repository import Repository
 
 
 class GameFactory:
+    """Creates instances of Games."""
     @classmethod
     def create_game(cls, scenario: BaseScenario):
+        """Create a new game to play an existing scenario.
+        :param scenario: the scenario to be played.
+        :returns: a new Game for this scenario."""
         scenario = GameScenario(**scenario.dict())
         game = Game(scenario=scenario)
         return game
 
     @classmethod
     def build_from_dict(cls, scenario: BaseScenario, **game_dict):
+        """Re-create a game from a dictionary.
+        :param scenario: The scenario which is being played.
+        :param game_dict: a collection of keywords that describe the game so far.
+        :returns: the Game."""
         if isinstance(scenario, BaseScenario):
             scenario = scenario.dict()
         scenario = GameScenario(**scenario)
@@ -23,8 +31,13 @@ class GameFactory:
 
 
 class GroupGameFactory(GameFactory):
+    """Creates instances of GroupGames."""
     @classmethod
     def build_from_dict(cls, scenario: BaseScenario, **game_dict):
+        """Re-create a GroupGame from a dictionary.
+        :param scenario: The scenario which is being played.
+        :param game_dict: a collection of keywords that describe the game so far.
+        :returns: the GroupGame."""
         if isinstance(scenario, BaseScenario):
             scenario = scenario.dict()
         scenario = GameScenario(**scenario)
@@ -33,6 +46,9 @@ class GroupGameFactory(GameFactory):
 
     @classmethod
     def create_game(cls, scenario: BaseScenario):
+        """Create a new GroupGame to play an existing scenario.
+        :param scenario: the scenario to be played.
+        :returns: a new GroupGame for this scenario."""
         if isinstance(scenario, BaseScenario):
             scenario = scenario.dict()
         scenario = GameScenario(**scenario)
@@ -40,6 +56,7 @@ class GroupGameFactory(GameFactory):
 
 
 class GameRepository(Repository):
+    """Provides methods for accessing and persisting games."""
     collection_name = "games"
 
     @classmethod
@@ -48,6 +65,7 @@ class GameRepository(Repository):
 
     @classmethod
     def save_game(cls, game: Game):
+        """Persist a given game."""
         if not game.game_id or game.game_id == "new":
             game_id = cls._insert_entity(game.dict())
         else:
@@ -56,6 +74,8 @@ class GameRepository(Repository):
 
     @classmethod
     def get_game_by_id(cls, game_id: str):
+        """Retrieve a game.
+        :param game_id: The known id of the game."""
         game_id, game_dict = cls._get_entity_by_id(entity_id=game_id)
         scenario_id = game_dict.pop("scenario_id")
         scenario = ScenarioRepository.get_scenario_by_id(scenario_id)
@@ -64,9 +84,8 @@ class GameRepository(Repository):
         game = cls.get_factory().build_from_dict(**game_dict)
         return game
 
-
     @classmethod
-    def get_games_by_state(cls, states = None):
+    def get_games_by_state(cls, states=None):
         """Yield an iterator over all open games.
         :param states: a list of GameState objects or one of ["open", "closed", "in_progress"]
         """
@@ -86,6 +105,7 @@ class GameRepository(Repository):
 
 
 class GroupGameRepository(GameRepository):
+    """Provides methods for accessing and persising GroupGames."""
     @classmethod
     def get_factory(cls):
         return GroupGameFactory()

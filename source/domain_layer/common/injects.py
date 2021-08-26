@@ -2,39 +2,20 @@ from __future__ import annotations
 
 import string
 from typing import List, Optional
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel
 
-from domain_layer.common.auxiliary import BaseScenarioVariable, LegalOperator, BaseVariableChange
+from domain_layer.common.auxiliary import BaseVariableChange
 from domain_layer.scenariodesign.graphs import GraphNode
 
 
-class BaseInject(GraphNode):
-    """An inject in a story."""
-    text: str
-    slug: str
-    media_path: Optional[str] = ""
-
-    def __init__(self, label: str, **keyword_args):
-        slug = keyword_args.pop("slug", False)
-        if not "slug":
-            slug = label.replace(" ", "-").lower()
-            slug = slug.translate(str.maketrans('', '', string.punctuation))
-        super().__init__(label=label, slug=slug, **keyword_args)
-
-    @property
-    def title(self):
-        return self.label
-
-    def __str__(self):
-        return_str = str(self.slug) + "\n" + str(self.label) + "\n"
-        return_str += self.text
-        return return_str
+"""This scenario contains the inject class hierarchy, as well as Value-object classes that are inject-specific."""
 
 
 class BaseInjectCondition(BaseModel):
     """
-    Base object for inject choices.
-    A choice may have a condition which, if met, leads to another inject or a different outcome.
+    Base object for inject conditions.
+    A condition may belong to an inject and is evaluated before the inject is show.
+    If the condition evaluates to true, it may lead to another inject instead.
     """
     variable_name: str
     comparison_operator: str
@@ -50,6 +31,31 @@ class BaseInjectCondition(BaseModel):
         return_str = "If (" + str(self.variable_name) + " " + str(self.comparison_operator)
         return_str += " " + str(self.variable_threshold) + ") "
         return_str += "then go to inject " + str(self.alternative_inject)
+        return return_str
+
+
+class BaseInject(GraphNode):
+    """An inject in a story."""
+    text: str
+    slug: str
+    condition: Optional[BaseInjectCondition] = None
+    media_path: Optional[str] = ""
+
+    def __init__(self, label: str, **keyword_args):
+        slug = keyword_args.pop("slug", False)
+        if not slug:
+            slug = label.replace(" ", "-").lower()
+            slug = slug.translate(str.maketrans('', '', string.punctuation))
+        self.update_forward_refs()
+        super().__init__(label=label, slug=slug, **keyword_args)
+
+    @property
+    def title(self) -> str:
+        return self.label
+
+    def __str__(self) -> str:
+        return_str = str(self.slug) + "\n" + str(self.label) + "\n"
+        return_str += self.text
         return return_str
 
 
@@ -87,13 +93,12 @@ class BaseInjectChoice(BaseModel):
 
 
 class BaseChoiceInject(BaseInject):
+    """A specific inject that must be solved by selecting one of a number of choices."""
     choices: Optional[List[BaseInjectChoice]] = []
-    condition: Optional[BaseInjectCondition] = None
     next_inject: Optional[str] = ""
 
     def __init__(self, label: str, text: str,  **kwargs):
         super().__init__(label=label, text=text, **kwargs)
-        self.update_forward_refs()
 
     @property
     def has_choices(self):

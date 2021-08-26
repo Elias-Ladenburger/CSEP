@@ -62,6 +62,8 @@ class BaseStory(BaseModel):
         return story_dict
 
     def _parse_injects(self, injects):
+        """Catchall-function (and thereby potentially an anti-pattern: perhaps refactor later on)!
+        Convert raw data of various formats into a dict of BaseChoiceInjects."""
         if isinstance(injects, list):
             if isinstance(injects[0], BaseChoiceInject):
                 return {inject.slug: inject for inject in injects}
@@ -88,6 +90,7 @@ class BaseScenario(AggregateRoot):
 
     @classmethod
     def _prepare_variables_from_dict(cls, var_dict: dict):
+        """Convert a dictionary of raw data into a dict of {variable_name: BaseScenarioVariable}."""
         if var_dict:
             for var_name, scenario_var in var_dict.items():
                 if not isinstance(scenario_var, BaseScenarioVariable):

@@ -1,16 +1,12 @@
-import os
 from unittest import TestCase
 
 from werkzeug.datastructures import FileStorage
 
 from domain_layer.common.auxiliary import BaseScenarioVariable
 from domain_layer.gameplay.mock_interface import MockScenarioBuilder
-from presentation_layer import app_factory
-from presentation_layer.controllers.scenario_design.scenario_forms import ScenarioForm, ScenarioVariableForm, \
-    InjectForm, InjectChoicesForm
+from presentation_layer.controllers.scenario_design.scenario_forms import ScenarioForm, ScenarioVariableForm, InjectForm
 
 from presentation_layer.app_factory import AppFactory
-
 
 
 class ScenarioPersistenceTest(TestCase):
@@ -60,9 +56,9 @@ class ScenarioPersistenceTest(TestCase):
 
     def test_set_choices(self):
         with self.app.test_request_context():
-            choices_form = InjectChoicesForm()
+            choices_form = InjectForm().choices
             for choice in self.scenario.stories[0].entry_node.choices:
-                choices_field = choices_form.choices.append_entry(data=choice.dict())
+                choices_field = choices_form.append_entry(data=choice.dict())
                 print(choices_field)
                 print(choices_field.data)
 

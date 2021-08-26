@@ -2,8 +2,7 @@
 import flask
 from flask import Blueprint, jsonify
 
-
-from domain_layer.common.scenario_management import ScenarioTransformer
+from application_layer.m2m_transformation import ScenarioTransformer
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository, EditableScenarioFactory
 from domain_layer.scenariodesign.scenarios import EditableStory
 from presentation_layer.controllers.scenario_design import auxiliary as aux

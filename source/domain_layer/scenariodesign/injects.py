@@ -7,6 +7,7 @@ from domain_layer.common.injects import BaseChoiceInject, BaseInjectChoice, Base
 
 
 class EditableInject(BaseChoiceInject):
+    """An inject that provides methods so that it can be edited."""
     @property
     def title(self):
         return self.label
@@ -21,6 +22,7 @@ class EditableInject(BaseChoiceInject):
 
 
 class InjectCondition(BaseInjectCondition):
+    """An inject condition that can be edited."""
     variable_name: str
     comparison_operator: str
     variable_threshold: str
@@ -28,11 +30,15 @@ class InjectCondition(BaseInjectCondition):
 
 
 class InjectChoice(BaseInjectChoice):
+    """An inject choice that can be edited."""
     def set_target_inject(self, inject: BaseChoiceInject):
+        """Set the target of this choice."""
         self.outcome.next_inject = inject.slug
 
     def add_effect(self, var_change: BaseVariableChange):
+        """Add an effect to this choice."""
         self.outcome.variable_changes.append(var_change)
 
     def remove_effect(self, var_change: BaseVariableChange):
+        """Remove an effect from this choice."""
         self.outcome.variable_changes.remove(var_change)

@@ -92,6 +92,20 @@ function removeImage(imageId = '#inject_image') {
     $('remove_image').checked = true;
 }
 
+function resetForm(formId){
+    let resetForm = document.getElementById(formId);
+    let formElements = resetForm.elements;
+    for(let i = 0; i<formElements.length;i++){
+        let currentElement = formElements[i];
+        if(currentElement.type === "text"){
+            currentElement.value = "";
+        }
+        if(currentElement.tag === "select"){
+            currentElement.value = "---";
+        }
+    }
+}
+
 function variableTableButtons() {
     return {
         btnAdd: {

@@ -46,3 +46,5 @@ typing-extensions==3.10.0.0
 update==0.0.1
 Werkzeug==2.0.1
 WTForms==2.3.3
+
+waitress~=2.0.0

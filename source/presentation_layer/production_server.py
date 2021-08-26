@@ -1,5 +1,3 @@
-from waitress import server
-
 from waitress import serve
 
 from presentation_layer.app_factory import AppFactory

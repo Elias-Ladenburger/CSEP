@@ -9,17 +9,6 @@ class GraphElement(BaseModel):
     """Any element within a graph"""
     label: str
 
-    """
-    def __hash__(self):
-        return self._hash
-
-    def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            if self._hash == other._hash:
-                return True
-        return False
-    """
-
     def __repr__(self):
         return self.label
 

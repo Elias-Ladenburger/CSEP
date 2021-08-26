@@ -11,7 +11,6 @@
             <div class="col-sm">
                 <h3 class="h3">{{ inject.label }}</h3>
                 <p>{{ inject.text }}</p>
-                <a href="{{ url_for('games.group_game', game_id=game.game_id) }}" class="btn btn-choice">Continue</a>
                 <div class="row">
                     <script>
                         window.onload = function () {
@@ -20,8 +19,8 @@
                     </script>
                     <div id="injectFeedbackChart" style="height: 370px; width: 100%;"></div>
                     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-
                 </div>
+                <a href="{{ url_for('games.group_game', game_id=game.game_id) }}" class="btn btn-choice">Continue</a>
             </div>
         </div>
     </div>

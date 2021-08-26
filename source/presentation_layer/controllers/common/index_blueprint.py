@@ -1,12 +1,15 @@
 from flask import Blueprint, render_template, url_for, redirect
 
+from domain_layer.common.scenario_management import ScenarioRepository
+
 index_gp = Blueprint('index', __name__,
                      template_folder='../../templates', url_prefix="/")
 
 
 @index_gp.route("/")
 def index():
-    return render_template("index.html")
+    scenarios = ScenarioRepository.get_all_scenarios()
+    return render_template("index.html", scenarios=scenarios)
 
 
 @index_gp.route("/login")

@@ -109,7 +109,8 @@ Tests are located in the [source > tests](/source/tests) subdirectory. They can 
 
     python -m unittest
     
-## Known Bugs
+## Future Work
+### Known Bugs
 
 This project has been put into an almost usable state. However, a few bugs and inconveniences remain:
 - The form for **inject choices** is still very cumbersome and unintuitive to use:
@@ -118,20 +119,33 @@ This project has been put into an almost usable state. However, a few bugs and i
   - To delete a choice, the "label" of the choice must be cleared
     (_can likely be solved with a simple Javascript function that automatically removes fields, if the choice is to be deleted_).
   - It is currently not possible to add a "variable change" to a choice
-    (__).
-_the first two of these issues can likely be solved with simple Javascript. I just haven't gotten round to implementing the code yet._
-- asdw  
+    (_There are two obstacles here: one is that the subform for variable changes has the same two issues as the choices form mentioned above._
+  _The other issue is that the form currently does not actually connect to the "Variable Change" object - here some (minor) code changes may still be necessary_).
+
+### Known Change-Requests
+There are also some known change requests that I have so far not been able to implement.
+These include:
+- Allowing the trainer of a game to change the type of diagram that is shown to participants after each inject.
+- Allowing the trainer of a game to set _breakpoints_ at specific injects, beyond which participants are not allowed to advance, until the trainer allows so.
+- Allowing participants to change a previously given answer.
+- Allowing different types of inject (such as text input or multi-select).
 
 ## Licenses
 
-|       Module |        License |
-|   ---------- |        ------- |
-| JQuery       |   MIT          |
-| Bootstrap    |   MIT          |
-| QRious       |   GPL 3        |
-| CanvasJS.com |   Unclear (may need to be switched out)  |
+For fast prototyping, this project has used available (open-source) code, without much regard for licensing.
+If this project is to be deployed in productive use, some or all of the modules listed below may need to be exchanged 
+for software that allows propietary distribution.
+
+All licenses can be found at [licenses](/licenses).
+
+|       Module  |        License |
+|   ----------  |        ------- |
+| JQuery        | MIT            |
+| Bootstrap     | MIT            |
+| QRious        | GPL 3          |
+| CanvasJS.com  | Unclear (may need to be switched out)  |
 | VisJS network | Apache (or MIT, dual licensed) |
-| Flask        |       Flask License  |
-| Pydantic     |   MIT          |
-| MongoDB      |   SSPL (Server Side Public License) |
-| Waitress Server  | ZPL (Zope Public License) |
+| Flask         | Flask License  |
+| Pydantic      | MIT            |
+| MongoDB       |   SSPL (Server Side Public License) |
+| Waitress Server | ZPL (Zope Public License) |

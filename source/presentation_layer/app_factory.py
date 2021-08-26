@@ -1,9 +1,9 @@
-from enum import Enum
 
 from flask import Flask
 from flask_wtf import CSRFProtect
 
 from globalconfig import config
+
 
 def not_found():
     return "Not found", 404
@@ -17,8 +17,6 @@ def bad_request():
     return "Bad Request", 400
 
 
-
-jinja_helpers = []
 http_errors = {404: not_found, 403: not_allowed, 400: bad_request}
 
 
@@ -31,7 +29,6 @@ class AppFactory:
         new_app = Flask(__name__)
         new_app.config.update(config.get_flask_config())
         new_app = cls._register_blueprints(new_app)
-        new_app = cls._register_jinja_helpers(new_app)
 
         new_app.url_map.strict_slashes = False
 
@@ -65,9 +62,3 @@ class AppFactory:
         csrf.init_app(new_app)
         return new_app
 
-    @classmethod
-    def _register_jinja_helpers(cls, new_app):
-        helpers = list(jinja_helpers)
-        for helper in helpers:
-            new_app.jinja_env.globals[helper.__name__] = helper
-        return new_app

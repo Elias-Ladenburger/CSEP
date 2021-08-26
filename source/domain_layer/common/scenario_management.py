@@ -8,6 +8,7 @@ from infrastructure_layer.repository import Repository
 
 
 class ScenarioFactory:
+    """Creates scenario instances."""
     @staticmethod
     def create_scenario(title="new scenario", description="This is a new scenario", **kwargs):
         """
@@ -45,12 +46,14 @@ class ScenarioFactory:
 
     @classmethod
     def _build_scenario(cls, title, scenario_description, scenario_id,
-                        stories, variables, **scenario_data):
+                        stories, variables, **scenario_data) -> BaseScenario:
+        """Builds the scenario from the raw data."""
         return BaseScenario(title=title, scenario_description=scenario_description,
                             scenario_id=scenario_id, stories=stories, variables=variables, **scenario_data)
 
     @classmethod
-    def _build_stories_from_dict(cls, stories_data):
+    def _build_stories_from_dict(cls, stories_data) -> List[BaseStory]:
+        """Builds the stories required for a scenario from the raw data."""
         stories = []
         for story_data in stories_data:
             story = cls._build_story_from_dict(story_data)
@@ -59,6 +62,7 @@ class ScenarioFactory:
 
     @classmethod
     def _build_story_from_dict(cls, story_data):
+        """Builds a single story from raw data. """
         injects_data = story_data.pop("injects", {})
         entry_slug = story_data.pop("entry_node", "")
         injects = {}
@@ -72,19 +76,25 @@ class ScenarioFactory:
 
     @classmethod
     def _build_story(cls, entry_slug, injects, **story_data):
+        """Creates the actual story entity.
+        This method will be likely be overridden by subdomain-specific child factory-classes."""
         return BaseStory(**story_data, entry_node=entry_slug, injects=injects)
 
     @classmethod
     def _build_inject_from_dict(cls, **inject_data):
+        """Builds a single inject from raw data."""
         inject = cls._build_inject(**inject_data)
         return inject
 
     @classmethod
     def _build_inject(cls, inject_data):
+        """Creates the actual entity for the inject.
+        This method will be likely be overridden by subdomain-specific child factory-classes."""
         return BaseChoiceInject(**inject_data)
 
     @classmethod
     def _build_vars_from_dict(cls, scenario_vars):
+        """Builds a single scenario variable from raw data."""
         new_vars = {}
         for var_name in scenario_vars:
             new_vars[var_name] = cls._build_variable(**scenario_vars[var_name])
@@ -92,18 +102,26 @@ class ScenarioFactory:
 
     @classmethod
     def _build_variable(cls, **var_data):
+        """Creates the actual entity for the scenario variable.
+        This method will be likely be overridden by subdomain-specific child factory-classes."""
         return BaseScenarioVariable(**var_data)
 
 
 class ScenarioRepository(Repository):
+    """Provides methods for accessing and persisting scenarios."""
     collection_name = "scenarios"
 
     @classmethod
     def get_factory(cls):
+        """Get the right factory for creating domain-specific instances."""
         return ScenarioFactory
 
     @classmethod
     def get_scenario_by_id(cls, scenario_id: str):
+        """
+        :param scenario_id: the ID of the scenario to return. 'new' if a new scenario or placeholder should be created.
+        :returns: The scenario instance.
+        """
         factory = cls.get_factory()
         if scenario_id == "new":
             return factory.create_scenario(scenario_id="new")
@@ -111,12 +129,6 @@ class ScenarioRepository(Repository):
             scenario_id, scenario_data = cls._get_entity_by_id(entity_id=scenario_id)
             scenario = factory.build_from_dict(scenario_id=scenario_id, **scenario_data)
             return scenario
-
-    @classmethod
-    def update_stories(cls, scenario_id: str, new_stories: List[BaseStory]):
-        scenario = cls.get_scenario_by_id(scenario_id=scenario_id)
-        scenario.stories = new_stories
-        cls.save_scenario(scenario)
 
     @classmethod
     def get_all_scenarios(cls):
@@ -151,51 +163,11 @@ class ScenarioRepository(Repository):
         return scenario
 
     @classmethod
-    def _update_stories(cls, stories_as_dict: dict, scenario_id):
-        for story_dict in stories_as_dict:
-            story_id = story_dict.pop("_id")
-            story_dict["scenario_id"] = scenario_id
-            cls._update_entity(entity=story_dict,
-                               entity_id=story_id)
-        return
-
-    @classmethod
     def _insert_placeholder(cls, scenario_dict: dict):
         """Utility function. Inserts a placeholder into the database to generate a new ID."""
         return cls._insert_entity(entity=scenario_dict)
 
     @classmethod
     def delete_by_id(cls, scenario_id):
+        """Delete a scenario that has the given ID."""
         cls._delete_one(scenario_id)
-
-
-class ScenarioTransformer:
-    @staticmethod
-    def scenario_as_json(scenario: BaseScenario):
-        scenario_dict = scenario.dict()
-        return json.dumps(scenario_dict)
-
-    @staticmethod
-    def scenario_as_dict(scenario: BaseScenario):
-        return scenario.dict()
-
-    @staticmethod
-    def scenarios_as_json(scenarios: List[BaseScenario]):
-        scenario_list = []
-        for scenario in scenarios:
-            scenario_list.append(ScenarioTransformer.scenario_as_dict(scenario))
-        scenario_dict = {"scenarios": scenario_list}
-        return json.dumps(scenario_dict)
-
-    @staticmethod
-    def scenarios_as_dict(scenarios: List[BaseScenario]):
-        scenario_list = ScenarioTransformer.scenarios_as_json_list(scenarios)
-        scenarios_dict = {"scenarios": scenario_list}
-        return scenarios_dict
-
-    @staticmethod
-    def scenarios_as_json_list(scenarios: List[BaseScenario]):
-        scenario_list = []
-        for scenario in scenarios:
-            scenario_list.append(ScenarioTransformer.scenario_as_dict(scenario))
-        return scenario_list

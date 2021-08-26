@@ -1,12 +1,11 @@
 import copy
 from datetime import datetime
 from enum import Enum
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 
-from pydantic import BaseModel, PrivateAttr
+from pydantic import PrivateAttr
 
 from domain_layer.common._domain_objects import AggregateRoot
-from domain_layer.common.injects import BaseChoiceInject
 from domain_layer.common.scenarios import BaseScenario, BaseStory
 from domain_layer.gameplay.injects import GameInject, GameVariableChange, GameInjectResult, GameVariable
 from domain_layer.gameplay.participants import GameParticipant
@@ -15,7 +14,7 @@ from domain_layer.gameplay.participants import GameParticipant
 class GameState(Enum):
     Open = "open"
     In_Progress = "in progress"
-    Closed = "closed"
+    Aborted = "aborted"
     Finished = "finished"
 
 
@@ -77,32 +76,42 @@ class Game(AggregateRoot):
 
     @property
     def name(self):
+        """:return: the title of the scenario that is currently being played."""
         return self.scenario.title
 
     @property
     def is_open(self):
+        """determine whether this game is currently open."""
         return self._game_state == GameState.Open
 
     @property
     def is_in_progress(self):
+        """determine whether this game is currently in progress."""
         return self._game_state == GameState.In_Progress
 
     @property
     def is_closed(self):
-        return self._game_state in [GameState.Closed, GameState.Finished]
+        """determine whether this game is already closed."""
+        return self._game_state in [GameState.Aborted, GameState.Finished]
 
     @property
     def end_time(self):
+        """:return: the timestamp when this game was closed. None if it is not yet closed."""
         return self._end_time
 
     @property
     def current_story(self):
+        """:return: the story that is currently being played. None if the game is not yet open or already closed."""
+        if self._current_story_index > len(self.scenario.stories)-1:
+            return None
         return self.scenario.stories[self._current_story_index]
 
     @property
     def current_inject(self):
-        inject = self.current_story.get_inject_by_slug(self._current_inject_slug) or self.current_story.entry_node
-        return inject
+        if self.current_story:
+            inject = self.current_story.get_inject_by_slug(self._current_inject_slug) or self.current_story.entry_node
+            return inject
+        return None
 
     def start_game(self):
         """Begin the actual game and prepare to show the inject."""
@@ -111,16 +120,19 @@ class Game(AggregateRoot):
         self._current_inject_slug = self.current_story.entry_node.slug
         self.game_variables = copy.deepcopy(self.scenario.variables)
 
-    def close_game(self):
-        self._game_state = GameState.Closed
+    def abort_game(self):
+        """Prematurely end this game."""
+        self._game_state = GameState.Aborted
         self._end_time = datetime.now()
 
     def set_game_variable(self, var_name: str, new_value):
+        """Set the value of one this game's variables to a new value."""
         var = self.game_variables.get(var_name, None)
         if var:
             self.game_variables[var.name].set_value(new_value)
 
     def get_visible_vars(self):
+        """:return: all Game Variables that are visible to participants."""
         visible_stats = {}
         for var_name in self.game_variables:
             if not self.game_variables[var_name].is_private:
@@ -128,6 +140,7 @@ class Game(AggregateRoot):
         return visible_stats
 
     def get_all_vars(self):
+        """:return: all Game Variables, even those that are hidden to participants."""
         return self.game_variables
 
     def get_inject(self, inject_candidate):
@@ -136,7 +149,7 @@ class Game(AggregateRoot):
             return None
         elif isinstance(inject_candidate, str):
             return self.get_inject_by_slug(inject_candidate)
-        elif isinstance(inject_candidate, BaseChoiceInject):
+        elif isinstance(inject_candidate, GameInject):
             return inject_candidate
         else:
             raise TypeError("the parameter must be of type 'str' or 'Inject'!")
@@ -154,7 +167,7 @@ class Game(AggregateRoot):
         :returns: the next inject in this game. Returns None, if this game is finished."""
         for var_change in inject_result.variable_changes:
             self._evaluate_change(var_change)
-        next_inject = self._evaluate_next_inject(inject_result.next_inject)
+        next_inject = self._determine_next_inject(inject_result.next_inject)
         return next_inject
 
     def _evaluate_change(self, change: GameVariableChange):
@@ -167,14 +180,16 @@ class Game(AggregateRoot):
         old_value = self.game_variables[var_name]
         self.game_variables[var_name].value = change.calculate_new_value(old_value)
 
-    def _evaluate_next_inject(self, inject: Optional[GameInject]):
+    def _determine_next_inject(self, inject: Optional[GameInject]) -> Union[GameInject, None]:
+        """Evaluate which inject to show next.
+        :return: the next inject if one exists, None otherwise."""
         inject = self.get_inject(inject)
-        if inject is None:
+        if not inject:
             inject = self._begin_next_story()
-        if inject is None:
+        if not inject:
             return inject
-        elif inject.condition:
-            inject = inject.condition.evaluate(self.game_variables)
+        elif inject.condition and inject.condition.evaluate(self.game_variables):
+            inject = self.get_inject(inject.condition.alternative_inject)
         self._current_inject_slug = inject.slug
         return inject
 
@@ -189,6 +204,9 @@ class Game(AggregateRoot):
             return None
 
     def end_game(self):
+        """
+        Finish this game. It can now no longer be played.
+        """
         self._game_state = GameState.Finished
         self._end_time = datetime.now()
 
@@ -214,6 +232,7 @@ class Game(AggregateRoot):
 
 
 class SingleGame(Game):
+    """A game played by a single person."""
     def solve_inject(self, inject_slug, solution):
         """Evaluates a solution to a given inject and provides the next inject in response.
         Side effects include appending the solution to the gameplay history
@@ -225,10 +244,13 @@ class SingleGame(Game):
         :return: The next inject if one exists. Otherwise returns 'None' and ends the gameplay."""
         inject = self.get_inject(inject_slug)
         inject_result = self.current_story.solve_inject(inject.slug, solution)
-        return self._evaluate_outcome(inject_result)
+        next_inject = self._evaluate_outcome(inject_result)
+        return next_inject
 
 
 class GroupGame(Game):
+    """A Game that can be played collaboratively
+    (by a group of participants who all share the same variables and injects)."""
     breakpoints: List[str] = []
     next_inject_allowed: bool = False
     participants: Dict[str, GameParticipant] = {}
@@ -246,29 +268,36 @@ class GroupGame(Game):
         self.breakpoints.append(inject_slug)
 
     def remove_breakpoint(self, inject_slug: str):
+        """Remove a breakpoint for a given inject."""
         self.breakpoints.remove(inject_slug)
 
     def add_participant(self, participant_hash):
+        """Add another participant to this game."""
         if participant_hash not in self.participants:
-            participant = GameParticipant(game_id=self.game_id, participant_id=participant_hash)
+            participant = GameParticipant(participant_id=participant_hash)
             self.participants[participant_hash] = participant
 
     def number_of_participants(self):
+        """:return: how many active participants this game currently has."""
         return len(self.participants)
 
     def solve_inject(self, participant_id, inject_slug, solution):
+        """Have a single participant submit their solution to an inject."""
         if participant_id not in self.participants:
             self.add_participant(participant_id)
         self.participants[participant_id].solve_inject(inject_slug, solution)
 
     def has_participant_solved(self, participant_hash: str):
+        """Check whether a participant has solved the current inject."""
         participant = self.participants[participant_hash]
         return participant.has_solved(self._current_inject_slug)
 
     def allow_next_inject(self):
+        """Allow advancement of the game, even if this were not possible otherwise."""
         self.next_inject_allowed = True
 
     def is_next_inject_allowed(self):
+        """Check whether participants should be able to see and solve the next inject."""
         if self.next_inject_allowed:
             return True
         if self._current_inject_slug in self.breakpoints:
@@ -279,18 +308,23 @@ class GroupGame(Game):
         return True
 
     def advance_story(self):
+        """Returns the next inject in the story."""
         self.next_inject_allowed = False
-        inject_slug = self._current_inject_slug
+        solution = "0"
         if self.current_inject.has_choices:
-            solution = self._evaluate_solution(inject_slug)
-        else:
-            solution = "0"
-        outcome = self.current_story.solve_inject(inject_slug, solution)
+            solution = self._determine_groups_solution(self._current_inject_slug)
+        outcome = self.current_story.solve_inject(self._current_inject_slug, solution)
         next_inject = self._evaluate_outcome(outcome)
-        self._current_inject_slug = next_inject.slug
-        return next_inject
+        if next_inject:
+            self._current_inject_slug = next_inject.slug
+            return next_inject
+        else:
+            self.end_game()
+            return next_inject
 
-    def _evaluate_solution(self, inject_slug: str):
+    def _determine_groups_solution(self, inject_slug: str):
+        """Count how often each solution to an inject has been submitted.
+        :return: the most popular solution."""
         solution_occurrences = self.solution_occurrence(inject_slug)
         max_occurrence = 0
         most_popular = ""

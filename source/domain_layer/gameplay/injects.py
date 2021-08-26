@@ -7,6 +7,7 @@ from domain_layer.common.injects import BaseChoiceInject, InjectResult, BaseInje
 
 
 class GameInject(BaseChoiceInject):
+    """An inject that must be solved during a game."""
     condition: GameInjectCondition = None
 
     def __init__(self, **kwargs):
@@ -19,13 +20,13 @@ class GameInject(BaseChoiceInject):
 
         :returns: an InjectResult object that contains a reference to the next inject and a list of effects.
         """
+        outcome = InjectResult(next_inject=self.next_inject, variable_changes=[])
         if self.has_choices:
             solution = self._parse_solution(solution)
-            outcome = solution.outcome
-            if not outcome.next_inject:
-                outcome = InjectResult(next_inject=self.next_inject, variable_changes=outcome.variable_changes)
-        else:
-            outcome = InjectResult(next_inject=self.next_inject, variable_changes=[])
+            if solution:
+                outcome = solution.outcome
+                if not outcome.next_inject:
+                    outcome = InjectResult(next_inject=self.next_inject, variable_changes=outcome.variable_changes)
         return outcome
 
     def _parse_solution(self, solution):
@@ -44,13 +45,22 @@ class GameInject(BaseChoiceInject):
                 for choice in self.choices:
                     if solution == str(choice):
                         return choice
-                raise ValueError("Solution {} not found for inject {}".format(solution, self.label))
+                # raise ValueError("Solution {} not found for inject {}".format(solution, self.label))
+                return False
         else:
             raise TypeError("Solution for choice injects must be of type int or str!")
 
 
 class GameInjectCondition(BaseInjectCondition):
-    def evaluate(self, game_variables: Dict[str, BaseScenarioVariable]):
+    """
+    A condition may belong to an inject and is evaluated before the inject is shown.
+    If the condition evaluates to true, it may lead to another inject instead.
+    """
+    def evaluate(self, game_variables: Dict[str, BaseScenarioVariable]) -> bool:
+        """Check whether this condition is met with the current variables.
+
+        :return: True if this condition is met.
+        """
         if self.variable_name not in game_variables:
             raise ValueError("This variable is not in the gameplay's variables. Cannot evaluate condition!")
         else:
@@ -63,6 +73,12 @@ class GameVariableChange(BaseVariableChange):
     """Represents a change of a GameVariable"""
 
     def calculate_new_value(self, old_value):
+        """
+        Apply the operator and new value to the old value in the form of
+        `{old_value} {operator} {new_value}`.
+
+        :return: the result of this operation.
+        """
         operator = self.get_operator(self.operator)
         return operator(old_value, self._new_value)
 
@@ -79,11 +95,16 @@ class GameVariableChange(BaseVariableChange):
 
 
 class GameVariable(BaseScenarioVariable):
+    """A variable that simulates the environment of a scenario."""
     def update_value(self, change: GameVariableChange):
+        """Apply a change operation to alter the value of this GameVariable."""
         new_value = change.get_new_value(self._value)
         self.set_value(new_value)
 
     def set_value(self, new_value: str):
+        """Set the value of this variable to the new value.
+
+        :raise ValueError: If a value is not legal for this type of variable."""
         if self.is_value_legal(new_value):
             self._value = new_value
         else:
@@ -91,5 +112,7 @@ class GameVariable(BaseScenarioVariable):
 
 
 class GameInjectResult(InjectResult):
+    """The outcome of solving an inject.
+    Provides the next inject as well as a list of effects that may change the scenario."""
     next_inject: Optional[str] = ""
     variable_changes: List[GameVariableChange] = []

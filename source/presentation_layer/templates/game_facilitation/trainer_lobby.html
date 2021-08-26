@@ -2,6 +2,9 @@
 
 {# requires a Game object #}
 
+{% block headings %}{{ super() }}
+    <script src="{{ url_for( 'static', filename='js/libs/qrious.min.js') }}"></script>{% endblock %}
+
 {% block main_content %}
     {% set game_url = url_for('games.group_game', game_id=game.game_id, _external=True) %}
     <div class="container-fluid bg-3 text-center text-white-50">
@@ -9,24 +12,12 @@
         <p>{{ game.scenario.scenario_description }}</p>
         <div class="row align-items-center justify-content-center">
             <div class="container-fluid bg-white text-black-50">
-                <h4 class="h4">Game URL</h4>
-                <p>Please copy this link and share this with the participants of your training!</p>
-                <div class="input-group mb-3">
-                    <label id="url-label" for="url-input" class="sr-only">Game URL
-                    </label>
-                    <input type="text" class="form-control" id="url-input" value="{{ game_url }}" disabled>
-                    <div class="input-group-append">
-                        <button type="button" class="input-group-text btn btn-primary"
-                                onclick="copyToClipboard('{{ game_url }}')"><i class="far fa-copy"></i></button>
-                    </div>
-                </div>
-                <hr/>
                 <div class="row align-items-center justify-content-center">
                     <a href="{{ url_for('facilitation.start_game', game_id=game.game_id) }}"
                        class="btn btn-primary" title="Facilitate this Game">
                         <i class="fas fa-play"></i> Start Game
                     </a>
-                    <a href="{{ url_for('facilitation.close_game', game_id=game.game_id) }}"
+                    <a href="{{ url_for('facilitation.abort_game', game_id=game.game_id) }}"
                        class="btn btn-danger" title="Abort this Game">
                         <i class="fas fa-times-circle"></i> Abort Game
                     </a>
@@ -34,9 +25,26 @@
                 <hr/>
                 <h3 class="h3">Participants</h3>
                 <p>{{ game.number_of_participants() }} participants have joined your game so far!</p>
+                <hr/>
+                <h4 class="h4">Game URL</h4>
+                <p>Please copy this link and share this with the participants of your training!</p>
+
+                <canvas id="qrcode-gameurl"></canvas>
+                <br>
+                <a href="#" type="button" class="btn btn-light"
+                   onclick="copyToClipboard('{{ game_url }}')">{{ game_url }}<i class="far fa-copy"></i>
+                </a>
+                <hr/>
             </div>
         </div>
     </div>
 
+    <script type="text/javascript">
+        new QRious({
+            element: document.getElementById("qrcode-gameurl"),
+            value: '{{game_url}}',
+            size: window.innerHeight / 2
+        })
+    </script>
 
 {% endblock %}

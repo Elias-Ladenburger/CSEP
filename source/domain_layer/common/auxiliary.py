@@ -7,6 +7,9 @@ from typing import Any
 from pydantic import BaseModel, PrivateAttr
 
 
+"""This module contains classes that are used by both injects and scenarios."""
+
+
 class DataType(Enum):
     TEXT = "textual"
     NUMBER = "numeric"
@@ -34,8 +37,11 @@ class BaseScenarioVariable(BaseModel):
             self._value = new_value
 
     def is_value_legal(self, value):
+        """
+        Validate whether this variable can hold a given value.
+        """
         if self.datatype == DataType.TEXT:
-            return isinstance(value, str)
+            return True  # isinstance(value, str)
         elif self.datatype == DataType.NUMBER:
             if isinstance(value, str):
                 return value.isnumeric()
@@ -58,6 +64,7 @@ class BaseScenarioVariable(BaseModel):
 
 
 class LegalOperator:
+    """A collection class for easy access to legal operators."""
     _manipulation_operators = {'/': operator.truediv,
                                '*': operator.mul,
                                '+': operator.add,
@@ -69,9 +76,7 @@ class LegalOperator:
                              '>': operator.gt,
                              '>=': operator.ge,
                              '<=': operator.le,
-                             '==': operator.eq,
-                             '=': operator.eq,
-                             'set': operator}
+                             '==': operator.eq}
 
     @classmethod
     def comparison_operators(cls):
@@ -91,7 +96,8 @@ class LegalOperator:
 
     @classmethod
     def get_operator(cls, operator_string: str):
-        legal_operators = cls._comparison_operators.update(cls._manipulation_operators)
+        legal_operators = cls._comparison_operators
+        legal_operators.update(cls._manipulation_operators)
         return cls._get_operator_from_dict(operator_string=operator_string, legal_operators=legal_operators)
 
     @classmethod

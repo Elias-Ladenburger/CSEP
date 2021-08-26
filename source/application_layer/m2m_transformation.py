@@ -2,15 +2,19 @@ import json
 from typing import List
 
 from domain_layer.common.injects import BaseChoiceInject
-from domain_layer.common.scenarios import BaseStory
+from domain_layer.common.scenarios import BaseStory, BaseScenario
 from domain_layer.gameplay.games import GroupGame
 
 
 class InjectTransformer:
-    """This class transforms the inject from the domain layer to other datastructures."""
+    """This class transforms domain-layer injects to other datastructures."""
 
     @classmethod
     def transform_inject_to_visjs(cls, injects: List[BaseChoiceInject]):
+        """Transform a number of injects to JSON, so that they can be used as input for the VISJS-network
+         Javascript library.
+        :param injects: the injects to be transformed.
+        :return: a tuple of nodes and edges in JSON-format."""
         injects, edges = cls.transform_injects_to_visjs_dict(injects)
         return json.dumps(injects), json.dumps(edges)
 
@@ -18,6 +22,8 @@ class InjectTransformer:
     def transform_injects_to_visjs_dict(cls, injects: List[BaseChoiceInject],
                                         group_id: int = 0, entry_node: str = ""):
         """
+        Transform a number of injects to JSON, so that they can be used as input for the VISJS-network Javascript library.
+        Highlights the entry node in a different color and groups injects according to group_id.
         :param injects: a list of injects to be transformed
         :param group_id: The id of this group.
         :param entry_node: The slug of the entry node of this story.
@@ -61,8 +67,7 @@ class InjectTransformer:
             tmp_id += str(group_id)
         x = 200 * group_id
         y = level * -200
-        tmp_inject = dict(id=tmp_id, label=inject.label, text=inject.text, group=group_id,
-                          fixed={"x": True, "y": True}, x=x, y=y, level=level, slug=inject.slug)
+        tmp_inject = dict(id=tmp_id, label=inject.label, text=inject.text, group=group_id, level=level, slug=inject.slug)
         if inject.slug == entry_node:
             tmp_inject["is_entry_node"] = True
         tmp_nodes.append(tmp_inject)
@@ -106,9 +111,53 @@ class InjectTransformer:
         return json.dumps(injects), json.dumps(edges)
 
 
+class ScenarioTransformer:
+    """Transform scenarios to frontend-friendly formats."""
+    @staticmethod
+    def scenario_as_json(scenario: BaseScenario):
+        """Transform a given scenario to JSON."""
+        scenario_dict = scenario.dict()
+        return json.dumps(scenario_dict)
+
+    @staticmethod
+    def scenario_as_dict(scenario: BaseScenario):
+        """Transform a given scenario to dict."""
+        return scenario.dict()
+
+    @staticmethod
+    def scenarios_as_json(scenarios: List[BaseScenario]):
+        """Transform a number of scenarios to JSON."""
+        scenario_list = []
+        for scenario in scenarios:
+            scenario_list.append(ScenarioTransformer.scenario_as_dict(scenario))
+        scenario_dict = {"scenarios": scenario_list}
+        return json.dumps(scenario_dict)
+
+    @staticmethod
+    def scenarios_as_dict(scenarios: List[BaseScenario]):
+        """Transform a number of scenarios to a list of dicts."""
+        scenario_list = ScenarioTransformer.scenarios_as_json_list(scenarios)
+        scenarios_dict = {"scenarios": scenario_list}
+        return scenarios_dict
+
+    @staticmethod
+    def scenarios_as_json_list(scenarios: List[BaseScenario]):
+        """Transform a number of scenarios to a list of JSONs."""
+        scenario_list = []
+        for scenario in scenarios:
+            scenario_list.append(ScenarioTransformer.scenario_as_dict(scenario))
+        return scenario_list
+
+
 class SolutionTransformer:
+    """A collection-class that can transform the solutions to a game inject
+    into a format that can be understood by frontend-libraries."""
+
     @classmethod
-    def transform_solution_to_chart(cls, game: GroupGame, inject_slug: str):
+    def transform_solution_to_canvasjs(cls, game: GroupGame, inject_slug: str):
+        """
+        :returns: a list of dictionaries of the format [{"y": number_of_solutions, "label": solution_label}, ...]
+        """
         return_data = []  # [{"y": 5, "label": "Answer 1"}, {"y": 5, "label": "Answer 2"}]
         solution_occurrences = game.solution_occurrence(inject_slug)
         inject = game.get_inject(inject_slug)

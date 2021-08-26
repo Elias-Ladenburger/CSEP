@@ -17,8 +17,8 @@ function renderNetwork(networkId, injectData, edgeData) {
         height: getMapHeight() + "px",
         clickToUse: false,
         interaction: {
-            navigationButtons: true,
-            dragNodes: false,
+            navigationButtons: false,
+            dragNodes: true,
             dragView: true,
         },
         layout: {hierarchical: true},

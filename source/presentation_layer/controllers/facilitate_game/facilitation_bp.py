@@ -45,7 +45,7 @@ def start_game(game_id):
     return redirect(url_for('facilitation.facilitate_game', game_id=game.game_id))
 
 
-@facilitation_bp.route("/games/<game_id>/train")
+@facilitation_bp.route("/games/<game_id>")
 def facilitate_game(game_id):
     game = game_repo.get_game_by_id(game_id)
     if game.is_in_progress:
@@ -62,7 +62,7 @@ def handle_facilitation(game):
     next_inject = None
     if next_inject_slug != "":
         next_inject = game.get_inject_by_slug(next_inject_slug)
-    chartdata = SolutionTransformer.transform_solution_to_chart(game, game.current_inject)
+    chartdata = SolutionTransformer.transform_solution_to_canvasjs(game, game.current_inject)
     return render_template("facilitation_main.html", game=game, next_inject=next_inject, chartdata=chartdata)
 
 
@@ -75,11 +75,12 @@ def allow_next(game_id):
     return redirect(url_for("facilitation.facilitate_game", game_id=game_id))
 
 
-@facilitation_bp.route("/games/<game_id>/close")
-def close_game(game_id):
+@facilitation_bp.route("/games/<game_id>/abort")
+def abort_game(game_id):
     game = GameRepository.get_game_by_id(game_id)
-    game.close_game()
-    game = GameRepository.save_game(game)
+    game.abort_game()
+    GameRepository.save_game(game)
+    flash("Aborted Game '{game}'".format(game=game.name), "failure")
     return redirect(url_for("facilitation.show_overview"))
 
 

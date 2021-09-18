@@ -44,7 +44,7 @@ class MockPlayer:
         elif answer == "q":
             exit()
         elif answer.isnumeric():
-            return self._game.solve_inject(inject=inject_slug, solution=answer)
+            return self._game.solve_inject(inject_candidate=inject_slug, solution=answer)
         else:
             exit()
         print()

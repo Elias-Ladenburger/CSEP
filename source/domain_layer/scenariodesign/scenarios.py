@@ -49,6 +49,8 @@ class EditableStory(BaseStory):
         self.update_inject(inject, make_entry_node)
         if preceded_by_inject and preceded_by_inject in self.injects:
             self.injects[preceded_by_inject].next_inject = inject.slug
+        if not self.entry_node:
+            self._entry_node = slug
 
     def update_inject(self, inject: EditableInject, make_entry_node=False):
         """Updates a single inject in the story."""
@@ -109,6 +111,9 @@ class EditableScenario(DetailedScenario):
         :param make_entry_node: A boolean, whether to make this inject the new entry node of the story.
         :param story_index: the story to which to add this inject. Will append a new story if index is -1.
         """
+        if not (-1 < story_index < len(self.stories)):
+            story_index = len(self.stories)
+            self.stories.append(EditableStory(title="new Story", entry_node=""))
         self.stories[story_index].add_inject(inject, preceded_by_inject=preceded_by_inject,
                                              make_entry_node=make_entry_node)
 

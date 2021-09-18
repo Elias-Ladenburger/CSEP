@@ -47,7 +47,7 @@ def save_scenario():
     scenario_form = ScenarioCoreForm(raw_form)
     if scenario_form.validate():
         scenario_dict = scenario_form.data
-        if "scenario_id" in scenario_dict:
+        if "scenario_id" in scenario_dict and scenario_dict["scenario_id"]:
             scenario_id = scenario_dict["scenario_id"]
             scenario_id = EditableScenarioRepository.partial_update(scenario_dict, scenario_id)
             scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id)

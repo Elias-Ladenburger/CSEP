@@ -7,7 +7,7 @@
 
 {% block main_content %}
     {% set game_url = url_for('games.group_game', game_id=game.game_id, _external=True) %}
-    <div class="container-fluid bg-3 text-center text-white-50">
+    <div class="container-fluid bg-2 text-center text-white-50">
         <h3 class="h3">{{ game.name }}</h3>
         <p>{{ game.scenario.scenario_description }}</p>
         <div class="row align-items-center justify-content-center">

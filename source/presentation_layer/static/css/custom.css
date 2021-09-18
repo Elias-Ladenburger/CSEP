@@ -4,17 +4,19 @@
     --failure: #721c24;
     --bootstrap-blue: #007bff;
     --blue-uno: #5386e4ff;
-    --blue-space-cadet: #273469ff;
-    --blue-space-cadet-2: #1e2749ff;
-    --light-blue: #53a6e4ff;
-    --accent: #7d437fff;
+    --blue-space-cadet: #092944;
+    --blue-space-cadet-2: #36A7C1;
+    --light-blue: #81ADBE;
+    --accent: #E0EFE9;
+    --primary: #092944;
+    --secondary: #81ADBE;
 }
 
 
 body {
     font: 20px Montserrat, sans-serif;
     line-height: 1.8;
-    color: var(--blue-space-cadet-2);
+    color: var(--primary);
 }
 
 h1, h2, h3, h4, h5 {
@@ -130,7 +132,7 @@ p {
 
 .btn-primary:hover {
     color: var(--white);
-    background-color: var(--blue-space-cadet-2);
+    background-color: var(--blue-uno);
 }
 
 .btn-choice {

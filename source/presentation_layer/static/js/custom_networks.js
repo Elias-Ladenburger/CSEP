@@ -6,7 +6,7 @@ function renderNetwork(networkId, injectData, edgeData) {
     let injects = new vis.DataSet(nodeData);
     let injectConnections = new vis.DataSet(connectionData);
     let container = document.getElementById(networkId);
-    debugger;
+
     let data = {
         nodes: injects,
         edges: injectConnections,
@@ -30,6 +30,7 @@ function renderNetwork(networkId, injectData, edgeData) {
 
         },
     };
+
     $(window).on('resize', function () {
         network.setOptions({
             height: getMapHeight() + "px",
@@ -37,7 +38,7 @@ function renderNetwork(networkId, injectData, edgeData) {
     });
 
     let network = new vis.Network(container, data, options);
-    network.stabilize();
+    //network.stabilize();
     return network;
 }
 

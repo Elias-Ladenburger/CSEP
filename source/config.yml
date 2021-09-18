@@ -2,13 +2,13 @@
 DATABASE:
   DEV:
     DB_NAME: csep-dev
-    DB_HOST: "mongodb://127.0.0.1:27017"
+    DB_HOST: "mongodb://localhost:27017"
   PROD:
     DB_NAME: csep-prod
-    DB_HOST: "mongodb://127.0.0.1:27017"
+    DB_HOST: "mongodb+srv://db_admin:eyo7mHN6YjrFJOzZ@univie-ladenburger.fygpi.mongodb.net/test"
   TEST:
     DB_NAME: csep-test
-    DB_HOST: "mongodb://127.0.0.1:27017"
+    DB_HOST: "mongodb://localhost:27017"
 
 FLASK:
   ENV: development

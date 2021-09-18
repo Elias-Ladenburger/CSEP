@@ -50,12 +50,13 @@ class InjectTransformer:
         all_injects = []
         all_edges = []
         for story in stories:
-            injects = [*story.injects.values()]
-            new_injects, new_edges = \
-                cls.transform_injects_to_visjs_dict(injects, group_id=story_index, entry_node=story.entry_node.slug)
-            story_index += 1
-            all_injects += [*new_injects]
-            all_edges += [*new_edges]
+            if story.entry_node:
+                injects = [*story.injects.values()]
+                new_injects, new_edges = \
+                    cls.transform_injects_to_visjs_dict(injects, group_id=story_index, entry_node=story.entry_node.slug)
+                story_index += 1
+                all_injects += [*new_injects]
+                all_edges += [*new_edges]
         return all_injects, all_edges
 
     @classmethod

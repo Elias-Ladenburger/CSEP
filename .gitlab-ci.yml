@@ -1,0 +1,30 @@
+default:
+  image: ubuntu
+  before_script:
+    - sudo apt-get update
+    - sudo apt-get install python3 python3.8-venv pip
+    - python -m venv .venv
+    - source.venv\Scripts\activate
+
+build-job:
+  stage: build
+  script:
+    - echo "Hello, $GITLAB_USER_LOGIN!"
+    - echo "Installing requirements..."
+    - pip install -r requirements.txt
+
+test-job1:
+  stage: test
+  script:
+    - echo "This job tests something"
+    - python3 -m unittest source/tests
+
+deploy-dev:
+  stage: deploy
+  script:
+    - echo "The code is now deployed"
+
+deploy-prod:
+  stage: deploy
+  script:
+    - echo "The code is now deployed on prod!"

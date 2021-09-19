@@ -20,7 +20,7 @@ test-job1:
   stage: test
   script:
     - echo "This job tests something"
-    - python3 -m unittest source/tests
+    - python3 -m unittest discover
 
 deploy-dev:
   stage: deploy

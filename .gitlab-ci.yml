@@ -1,10 +1,15 @@
-default:
-  image: ubuntu
-  before_script:
-    - apt-get update
-    - apt-get install -y python3 python3.8-venv pip
-    - python3 -m venv .venv
-    - source.venv\Scripts\activate
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Django.gitlab-ci.yml
+
+# Official framework image. Look for the different tagged releases at:
+# https://hub.docker.com/r/library/python
+image: python:latest
+services:
+  - mongodb:latest
+
+before_script:
+  - python -V  # Print out python version for debugging
+  - pip install -r requirements.txt
 
 build-job:
   stage: build

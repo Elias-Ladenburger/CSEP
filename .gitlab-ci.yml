@@ -3,10 +3,13 @@
 
 # Official framework image. Look for the different tagged releases at:
 # https://hub.docker.com/r/library/python
-image: python:latest
+image: python:3.8
 
 before_script:
   - python -V  # Print out python version for debugging
+  - virtualenv venv
+  - source venv/bin/activate
+  - export PYTHONPATH=$(pwd)
   - pip install -r requirements.txt
 
 build-job:
@@ -16,11 +19,11 @@ build-job:
     - echo "Installing requirements..."
     - pip install -r requirements.txt
 
-test-job1:
+test-job:
   stage: test
   script:
     - echo "This job tests something"
-    - python3 -m unittest source/tests
+    - python3 -m unittest discover
 
 deploy-dev:
   stage: deploy
@@ -30,4 +33,5 @@ deploy-dev:
 deploy-prod:
   stage: deploy
   script:
+    -
     - echo "The code is now deployed on prod!"

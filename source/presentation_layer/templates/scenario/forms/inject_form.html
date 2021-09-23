@@ -1,17 +1,6 @@
 {% extends '/forms/base_form.html' %}
 
 {% block form_body %}
-    <!--{% if inject %}
-        {% set url = url_for('injects.save_inject', scenario_id=scenario.scenario_id) %}
-        {% if inject.condition %}
-            {{ inject_form.condition.variable_name.process_data(inject.condition.variable_name) }}
-            {{ inject_form.condition.comparison_operator.process_data(inject.condition.comparison_operator) }}
-            {{ inject_form.condition.variable_threshold.process_data(inject.condition.variable_threshold) }}
-            {{ inject_form.condition.alternative_inject.process_data(inject.condition.alternative_inject) }}
-        {% endif %}
-        {% else %}
-        {% set url = url_for('injects.add_inject', scenario_id=scenario.scenario_id) %}
-    {% endif %}-->
 
     <ul class="nav nav-tabs mx-auto" id="injectTabs" role="tablist">
         <li class="nav-item">
@@ -38,57 +27,32 @@
             </a>
         </li>
     </ul>
-
-    <form action="{{ url }}" method="POST"
-          class="form" enctype="multipart/form-data" id="injectForm">
-        {{ inject_form.csrf_token }}
-        {{ inject_form.slug }}
-
-        <div class="tab-content" id="injectTabContent">
-            <div class="tab-pane fade show active" id="inject-core" role="tabpanel" aria-labelledby="core-tab">
-                {{ render_field(inject_form.label, class="form-control") }}
-                {{ render_field(inject_form.text, class="form-control") }}
-                {{ render_field(inject_form.next_inject, class="form-control") }}
-                {{ render_field(inject_form.is_entry_node) }}
-                {% if inject and inject.media_path %}
-                    <!--{% set inject_url = url_for('static', filename='assets/uploads/'+inject.media_path) %}-->
-                    <img id="inject_image" class="card-img-top"
-                         src="{{ inject_url }}"
-                         alt="Card image cap">
-                    <button type="button" class="btn btn-danger" onclick="removeImage('#inject_image')">Remove Image
-                    </button>
-                    <!--{{ render_field(inject_form.remove_image) }}-->
-                {% endif %}
-                {{ render_field(inject_form.media_path, class="form-control-file") }}
-            </div>
-            <div class="tab-pane fade" id="inject-condition" role="tabpanel"
-                 aria-labelledby="inject-condition-tab">
-                <div class="collapse" id="conditionForm">
-                    {{ inject_form.condition.csrf_token }}
-                    {{ render_field(inject_form.condition.variable_name) }}
-                    {{ render_field(inject_form.condition.comparison_operator) }}
-                    {{ render_field(inject_form.condition.variable_threshold) }}
-                    {{ render_field(inject_form.condition.alternative_inject) }}
-                    <button class="btn btn-danger" type="button" onclick="resetForm('conditionForm')">Delete Condition</button>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="tab-content" id="injectTabContent">
+                <div class="tab-pane fade show active" id="inject-core" role="tabpanel" aria-labelledby="core-tab">
+                    <div class="embed-responsive embed-responsive-21by9">
+                        <iframe class="embed-responsive-item"
+                                src="{{ url_for('injects.inject_core_form', scenario_id=scenario.scenario_id, inject_slug=inject.slug) }}"></iframe>
+                    </div>
                 </div>
-                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#conditionForm"
-                        aria-expanded="false" aria-controls="conditionForm">
-                    {% if inject.condition %}Edit Condition{% else %}Add Condition{% endif %}
-                </button>
-            </div>
+                <div class="tab-pane fade" id="inject-condition" role="tabpanel"
+                     aria-labelledby="inject-condition-tab">
+                    <div class="embed-responsive embed-responsive-21by9">
+                        <iframe class="embed-responsive-item"
+                                src="{{ url_for('injects.inject_condition_form', scenario_id=scenario.scenario_id, inject_slug=inject.slug) }}"></iframe>
+                    </div>
+                </div>
                 <div class="tab-pane fade" id="inject-choices" role="tabpanel" aria-labelledby="inject-choices-tab">
-                    {% if inject %}
-                        {% for choice in inject_form.choices %}
-                            {{ render_subform(choice) }}
-                        {% endfor %}
-                    {% endif %}
+                    <div class="embed-responsive embed-responsive-21by9">
+                        <iframe class="embed-responsive-item"
+                                src="{{ url_for('injects.inject_choices_form', scenario_id=scenario.scenario_id, inject_slug=inject.slug) }}"></iframe>
+                    </div>
                 </div>
             </div>
-            <hr/>
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i>Save Inject
-            </button>
-    </form>
+        </div>
+    </div>
+    <hr/>
 
 
 {% endblock %}

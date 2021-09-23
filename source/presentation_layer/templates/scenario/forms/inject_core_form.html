@@ -1,0 +1,29 @@
+{% extends '/forms/base_form.html' %}
+
+{% block form_body %}
+    <form action="{{ url }}" method="POST"
+          class="form" enctype="multipart/form-data" id="injectForm">
+        {{ inject_form.csrf_token }}
+        {{ inject_form.slug }}
+        {{ render_field(inject_form.label, class="form-control") }}
+        {{ render_field(inject_form.text, class="form-control") }}
+        {{ render_field(inject_form.next_inject, class="form-control") }}
+        {{ render_field(inject_form.is_entry_node) }}
+        {% if inject and inject.media_path %}
+            <!--{% set inject_url = url_for('static', filename='assets/uploads/'+inject.media_path) %}-->
+            <img id="inject_image" class="card-img-top"
+                 src="{{ inject_url }}"
+                 alt="Card image cap">
+            <button type="button" class="btn btn-danger" onclick="removeImage('#inject_image')">Remove Image
+            </button>
+            <!--{{ render_field(inject_form.remove_image) }}-->
+        {% endif %}
+        {{ render_field(inject_form.media_path, class="form-control-file") }}
+
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i>Save
+        </button>
+    </form>
+
+
+{% endblock %}

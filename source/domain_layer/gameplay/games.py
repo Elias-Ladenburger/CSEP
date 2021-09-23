@@ -177,8 +177,9 @@ class Game(AggregateRoot):
         :return: The Inject which this transition points to.
         """
         var_name = change.var.name
-        old_value = self.game_variables[var_name]
-        self.game_variables[var_name].value = change.calculate_new_value(old_value)
+        old_value = self.game_variables[var_name].value
+        new_value = change.get_new_value(old_value)
+        self.game_variables[var_name].set_value(new_value)
 
     def _determine_next_inject(self, inject: Optional[GameInject]) -> Union[GameInject, None]:
         """Evaluate which inject to show next.

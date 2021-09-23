@@ -1,9 +1,16 @@
 {% from 'helpers/_form_helpers.html' import render_field, render_subform %}
-{% block form_body %}
+{% extends 'base_plain.html' %}
 
+{% block base_content %}
+    {% block form_body %}
+
+    {% endblock form_body %}
+{% endblock %}
+
+{% block custom_scripts %}
     <script>
-    window.onload(function () {
-        $('[data-toggle="tooltip"]').tooltip();
-    })
+        window.onload(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        })
     </script>
-{% endblock form_body %}
+{% endblock %}

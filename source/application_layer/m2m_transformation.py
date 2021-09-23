@@ -1,9 +1,11 @@
 import json
 from typing import List
 
-from domain_layer.common.injects import BaseChoiceInject
+from domain_layer.common.auxiliary import BaseVariableChange
+from domain_layer.common.injects import BaseChoiceInject, InjectResult
 from domain_layer.common.scenarios import BaseStory, BaseScenario
 from domain_layer.gameplay.games import GroupGame
+from domain_layer.scenariodesign.injects import InjectChoice
 
 
 class InjectTransformer:
@@ -101,8 +103,6 @@ class InjectTransformer:
                     next_id = choice.outcome.next_inject
                     if group_id > 0:
                         next_id += str(group_id)
-                if outcome.variable_changes:
-                    title += " | ".join(choice.outcome.variable_changes)
                 edge_list.append({"from": tmp_id, "to": next_id, "label": choice.label, "title": title})
         return edge_list
 
@@ -169,3 +169,44 @@ class SolutionTransformer:
                 solution = "Continue"
             return_data.append({"y": occurrence, "label": solution})
         return return_data
+
+
+class VarChangeTransformer():
+    @classmethod
+    def transform_var_change_form(cls, var_changes_raw, scenario: BaseScenario):
+        """Transform data in the form of {variable_name: str, variable_operator: str, new_value: str}
+        to a VariableChange object"""
+        var_change_objects = []
+        for var_change_data in var_changes_raw:
+            var_name = var_change_data.get("variable_name")
+            operator = var_change_data.get("value_operator")
+            new_val = var_change_data.get("new_value")
+            var = scenario.variables.get(var_name)
+            if not var:
+                raise ValueError("This scenario does not have a variable called {}!".format(var_name))
+            else:
+                var_change = BaseVariableChange(var=var, operator=operator, new_value=new_val)
+                var_change_objects.append(var_change)
+        return var_change_objects
+
+
+class InjectChoiceTransformer:
+    @classmethod
+    def transform_choices_data(cls, choices_raw_data):
+        choices = []
+        for choice_data in choices_raw_data:
+            choice = cls.transform_choice_data(choice_data)
+            choices.append(choice)
+        return choices
+
+    @classmethod
+    def transform_choice_data(cls, choice_raw_data, scenario):
+        label = choice_raw_data.get("choice_label")
+        next_inject = choice_raw_data.get("next_inject")
+        variable_changes = VarChangeTransformer.transform_var_change_form(choice_raw_data.get("variable_changes"),
+                                                                          scenario=scenario)
+
+        outcome = InjectResult(next_inject=next_inject,
+                               variable_changes=variable_changes)
+        inject_choice = InjectChoice(label=label, outcome=outcome)
+        return inject_choice

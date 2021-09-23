@@ -3,6 +3,7 @@ from flask import Flask
 from flask_wtf import CSRFProtect
 
 from globalconfig import config
+from flask_bootstrap import Bootstrap
 
 
 def not_found():
@@ -31,6 +32,7 @@ class AppFactory:
         new_app = cls._register_blueprints(new_app)
 
         new_app.url_map.strict_slashes = False
+        Bootstrap(new_app)
 
         return new_app
 

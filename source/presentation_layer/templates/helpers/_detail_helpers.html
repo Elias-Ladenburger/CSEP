@@ -10,7 +10,7 @@
 
         <div class="card-body">
             {% if facilitation_view and inject.condition %}
-                <p class="bg-blue-3 rounded">Condition: IF (<span
+                <p class="bg-2 rounded">Condition: IF (<span
                         class="badge badge-primary">{{ inject.condition.variable_name }}</span> {{ inject.condition.comparison_operator }}
                     <span class="badge badge-primary">{{ inject.condition.variable_threshold }}</span>) then go to
                     inject <span class="badge badge-primary">{{ inject.condition.alternative_inject }}</span>
@@ -33,6 +33,13 @@
                         <p class="small">
                             Leads to inject: {{ render_inject_link(inject_slug=next_inject, game=game) }}</p>
                     {% endif %}
+                    {% if choice.outcome.variable_changes %}
+                        <p class="small">Variable Changes:
+                        {% for var_change in choice.outcome.variable_changes %}
+                            <span class="badge badge-primary">{{ var_change.var.name }} {{ var_change.operator }} {{ var_change.new_value }}</span>
+                        {% endfor %}
+                        </p>
+                    {% endif %}
                 </li>
             {% endfor %}
         </ul>
@@ -40,13 +47,13 @@
 {% endmacro %}
 
 {% macro render_inject_link(inject_slug, game=None) %}
-{% if game %}
-    {% set inject = game.get_inject_by_slug(inject_slug) %}
-    <a class="btn-link" data-toggle="modal" data-target="#inject-modal-{{ inject.slug }}">{{ inject.label }}</a>
-    {{ render_inject_modal(inject) }}
-{% else %}
-    {{ inject_slug }}
-{% endif %}
+    {% if game %}
+        {% set inject = game.get_inject_by_slug(inject_slug) %}
+        <a class="btn-link" data-toggle="modal" data-target="#inject-modal-{{ inject.slug }}">{{ inject.label }}</a>
+        {{ render_inject_modal(inject) }}
+    {% else %}
+        {{ inject_slug }}
+    {% endif %}
 {% endmacro %}
 
 {% macro render_inject_for_participants(inject, game) %}

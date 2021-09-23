@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
 {% from 'helpers/_form_helpers.html' import render_field, render_subform %}
 
+
 {% block main_content %}
+
     <form action="{{ url }}" method="POST"
           class="form" enctype="multipart/form-data">
         {% for field in form %}
             {% if field.type == "FieldList" %}
-        {{ field.label }}
+                {{ field.label }}
                 {% for subfield in field %}
                     {{ render_subform(subfield) }}
                 {% endfor %}
@@ -16,4 +19,5 @@
         {% endfor %}
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+
 {% endblock %}

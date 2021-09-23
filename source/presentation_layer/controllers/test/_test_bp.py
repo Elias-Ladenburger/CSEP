@@ -9,29 +9,32 @@ _test_bp = Blueprint('tests', __name__,
 
 
 @_test_bp.route("<scenario_id>/forms_test", methods=["GET", "POST"])
-def test_inject_form(scenario_id):
+def create_new_inject(scenario_id):
+    return redirect(url_for("tests.test_inject_form", scenario_id=scenario_id, inject_slug="new"))
+
+
+@_test_bp.route("<scenario_id>/forms_test/<inject_slug>", methods=["GET", "POST"])
+def test_inject_form(scenario_id, inject_slug):
     scenario = get_single_scenario(scenario_id)
     inject_form = InjectForm(scenario)
-    if request.method == 'GET':
-        inject_slug = request.args.get("inject-slug", False)
-        if inject_slug:
+    if request.method == "GET":
+        if inject_slug != "new":
             scenario = get_single_scenario(scenario_id)
             inject = scenario.get_inject_by_slug(inject_slug)
             inject_form = InjectForm(scenario, inject)
             for choice in inject.choices:
                 inject_form.choices.append_entry(choice.dict())
-        inject_form.choices.append_entry()
     elif inject_form.validate_on_submit():
         for choice in inject_form.choices.entries:
             new_choice = BaseInjectChoice(label=choice.data["label"],
                                           outcome=InjectResult(next_inject=choice.data["next_inject"],
                                                                variable_changes=choice.data["variable_changes"]))
             print(new_choice.json())
-        return redirect(url_for('tests.test_inject_form', scenario_id=scenario_id))
+        inject_form.choices.append_entry()
     else:
         print(inject_form.errors)
     return render_template('/forms/form_test.html', form=inject_form,
-                           url=url_for('tests.test_inject_form', scenario_id=scenario_id))
+                           url=url_for('tests.test_inject_form', scenario_id=scenario_id, inject_slug=inject_slug))
 
 
 def get_single_scenario(scenario_id):

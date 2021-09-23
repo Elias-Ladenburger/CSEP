@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import operator
 from enum import Enum
-from typing import Any
 
 from pydantic import BaseModel, PrivateAttr
 
@@ -10,10 +9,38 @@ from pydantic import BaseModel, PrivateAttr
 """This module contains classes that are used by both injects and scenarios."""
 
 
-class DataType(Enum):
-    TEXT = "textual"
-    NUMBER = "numeric"
-    BOOL = "boolean"
+def convert_to_number(value_candidate):
+    if isinstance(value_candidate, str):
+        if value_candidate.isdigit():
+            return int(value_candidate)
+        elif value_candidate.isnumeric():
+            return float(value_candidate)
+    elif isinstance(value_candidate, int) or isinstance(value_candidate, float):
+        return value_candidate
+    raise ValueError("{} should be either an integer or a float!".format(value_candidate))
+
+
+def convert_to_boolean(value_candidate):
+    if isinstance(value_candidate, str):
+        if value_candidate.lower() in ["true", "yes"]:
+            return True
+        elif value_candidate.lower() in ["false", "no"]:
+            return False
+    elif isinstance(value_candidate, bool):
+        return value_candidate
+    raise ValueError("{} should be a boolean!".format(value_candidate))
+
+
+class DataType(str, Enum):
+    def __new__(cls, value, parse_function):
+        datatype = str.__new__(cls, value)
+        datatype._value_ = value
+        datatype.parse_value = parse_function
+        return datatype
+
+    TEXT = ("textual", lambda x: x)
+    NUMBER = ("numeric", convert_to_number)
+    BOOL = ("boolean", convert_to_boolean)
 
 
 class BaseScenarioVariable(BaseModel):
@@ -33,24 +60,20 @@ class BaseScenarioVariable(BaseModel):
 
     @value.setter
     def value(self, new_value):
-        if self.is_value_legal(new_value):
-            self._value = new_value
+        self._value = self.datatype.parse_value(new_value)
 
     def is_value_legal(self, value):
         """
         Validate whether this variable can hold a given value.
         """
-        if self.datatype == DataType.TEXT:
-            return True  # isinstance(value, str)
-        elif self.datatype == DataType.NUMBER:
-            if isinstance(value, str):
-                return value.isnumeric()
-            return isinstance(value, float) or isinstance(value, int)
-        elif self.datatype == DataType.BOOL:
-            if isinstance(value, str):
-                return value.lower() in ["true", "yes", "false", "no"]
-            return isinstance(value, bool)
-        return False
+        try:
+            self.datatype.parse_value(value)
+            return True
+        except ValueError as ve:
+            return False
+
+    def legal_value(self, value_candidate):
+        return self.datatype.parse_value(value_candidate)
 
     def __eq__(self, other):
         if isinstance(other, BaseScenarioVariable):
@@ -65,18 +88,18 @@ class BaseScenarioVariable(BaseModel):
 
 class LegalOperator:
     """A collection class for easy access to legal operators."""
-    _manipulation_operators = {'/': operator.truediv,
-                               '*': operator.mul,
-                               '+': operator.add,
-                               '-': operator.sub,
-                               '=': operator.eq,
-                               'set': operator}
+    _manipulation_operators = {"/": operator.truediv,
+                               "*": operator.mul,
+                               "+": operator.add,
+                               "-": operator.sub,
+                               "=": "set",
+                               "set": "set"}
 
-    _comparison_operators = {'<': operator.lt,
-                             '>': operator.gt,
-                             '>=': operator.ge,
-                             '<=': operator.le,
-                             '==': operator.eq}
+    _comparison_operators = {"<": operator.lt,
+                             ">": operator.gt,
+                             ">=": operator.ge,
+                             "<=": operator.le,
+                             "==": operator.eq}
 
     @classmethod
     def comparison_operators(cls):
@@ -103,7 +126,8 @@ class LegalOperator:
     @classmethod
     def _get_operator_from_dict(cls, operator_string: str, legal_operators: dict):
         if operator_string in legal_operators:
-            return legal_operators[operator_string]
+            return_operator = legal_operators[operator_string]
+            return return_operator
         else:
             raise ValueError("Invalid string for this type of operator. "
                              "Expected one of " + ",".join(legal_operators.keys()) + "!")
@@ -112,16 +136,18 @@ class LegalOperator:
 class BaseVariableChange(BaseModel):
     """Represents a change of the value of a game's variables."""
     var: BaseScenarioVariable
-    _new_value: Any
+    _new_value: str = PrivateAttr("")
     operator: str
 
-    def __init__(self, var: BaseScenarioVariable, new_value, value_operator: str, **keyword_args):
+    def __init__(self, var: BaseScenarioVariable, new_value, operator: str, **keyword_args):
         """
         :param var: the ScenarioVariable that will be changed.
         :param new_value: the new value of the ScenarioVariable.
         :param value_operator: the operation to change the value. Can be one of '+', '-', '/', '*' and 'set'.
         """
-        super().__init__(var=var, new_value=new_value, value_operator=value_operator, **keyword_args)
+        if isinstance(var, dict):
+            var = BaseScenarioVariable(**var)
+        super().__init__(var=var, new_value=new_value, operator=operator, **keyword_args)
         self._new_value = self._parse_new_value(var, new_value)
 
     @property
@@ -131,13 +157,18 @@ class BaseVariableChange(BaseModel):
     @staticmethod
     def _parse_new_value(var, new_value):
         if var.is_value_legal(new_value):
-            return new_value
+            return var.legal_value(new_value)
         else:
-            raise ValueError("This variable cannot have a value of this type!")
+            raise ValueError("The variable {} must have a value of type {}!".format(var.name, var.datatype.value))
 
     @classmethod
     def get_operator(cls, operator_string: str):
-        LegalOperator.get_manipulation_operator(operator_string)
+        return LegalOperator.get_manipulation_operator(operator_string)
+
+    def dict(self, **kwargs):
+        return_dict = super().dict(**kwargs)
+        return_dict["new_value"] = self.new_value
+        return return_dict
 
     def __str__(self):
         return_str = str(self.var)

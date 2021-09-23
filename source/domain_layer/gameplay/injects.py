@@ -20,13 +20,14 @@ class GameInject(BaseChoiceInject):
 
         :returns: an InjectResult object that contains a reference to the next inject and a list of effects.
         """
-        outcome = InjectResult(next_inject=self.next_inject, variable_changes=[])
+        outcome = GameInjectResult(next_inject=self.next_inject, variable_changes=[])
         if self.has_choices:
             solution = self._parse_solution(solution)
             if solution:
                 outcome = solution.outcome
                 if not outcome.next_inject:
-                    outcome = InjectResult(next_inject=self.next_inject, variable_changes=outcome.variable_changes)
+                    variable_changes = [GameVariableChange(**var_change.dict()) for var_change in outcome.variable_changes]
+                    outcome = GameInjectResult(next_inject=self.next_inject, variable_changes=variable_changes)
         return outcome
 
     def _parse_solution(self, solution):
@@ -72,7 +73,7 @@ class GameInjectCondition(BaseInjectCondition):
 class GameVariableChange(BaseVariableChange):
     """Represents a change of a GameVariable"""
 
-    def calculate_new_value(self, old_value):
+    def _calculate_new_value(self, old_value):
         """
         Apply the operator and new value to the old value in the form of
         `{old_value} {operator} {new_value}`.
@@ -80,18 +81,24 @@ class GameVariableChange(BaseVariableChange):
         :return: the result of this operation.
         """
         operator = self.get_operator(self.operator)
-        return operator(old_value, self._new_value)
+        try:
+            old_value = self.var.legal_value(old_value)
+            new_value = self.var.legal_value(self._new_value)
+            result = operator(old_value, new_value)
+            return result
+        except TypeError as te:
+            print(te)
+
 
     def get_new_value(self, old_value):
         """
         :param old_value: The current value of the variable.
         :return: The new value of the variable.
         """
-        if self.operator == "set":
+        if self.operator == "set" or self.operator == "=":
             return self._new_value
         else:
-            operator_method = LegalOperator.get_manipulation_operator(self.operator)
-            return operator_method(old_value, self._new_value)
+            return self._calculate_new_value(old_value)
 
 
 class GameVariable(BaseScenarioVariable):
@@ -108,7 +115,7 @@ class GameVariable(BaseScenarioVariable):
         if self.is_value_legal(new_value):
             self._value = new_value
         else:
-            raise ValueError("The new value is not legal for this variable!")
+            raise ValueError("The value '{}' is not legal for the variable {}!".format(new_value, self.name))
 
 
 class GameInjectResult(InjectResult):

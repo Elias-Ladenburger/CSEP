@@ -1,14 +1,16 @@
 import os
 
-import flask
 from flask import Blueprint, flash, redirect, render_template, request, make_response, url_for
 from werkzeug.datastructures import CombinedMultiDict
 from werkzeug.utils import secure_filename
 
-from domain_layer.scenariodesign.injects import EditableInject
+from application_layer.m2m_transformation import InjectChoiceTransformer
+from domain_layer.common.injects import InjectResult
+from domain_layer.scenariodesign.injects import EditableInject, InjectCondition, InjectChoice
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository
 from presentation_layer.controllers.scenario_design import auxiliary as aux
-from presentation_layer.controllers.scenario_design.scenario_forms import InjectForm
+from presentation_layer.controllers.scenario_design.scenario_forms import InjectForm, InjectConditionForm, \
+    InjectChoicesForm
 
 injects_bp = Blueprint('injects', __name__,
                        template_folder='../../templates/scenario', url_prefix="/scenarios")
@@ -71,13 +73,42 @@ def save_inject(scenario_id):
         flash("Something went wrong!", category="failure")
     else:
         new_entry_node = inject_dict.pop("is_entry_node", False)
-        if not inject_dict["media_path"] and not inject_dict.get("remove_inject", False):
+        remove_image = inject_dict.get("remove_image", False)
+        if not inject_dict["media_path"] and not remove_image:
             inject_dict["media_path"] = scenario.get_inject_by_slug(inject_dict["slug"]).media_path
         inject = EditableInject(**inject_dict)
         scenario.update_inject(inject, 0, new_entry_node)
         EditableScenarioRepository.save_scenario(scenario)
         flash("Successfully updated the inject!", category="success")
     return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario_id) + "#" + injects_bp.name)
+
+
+@injects_bp.route("/<scenario_id>/injects/<inject_slug>/core", methods=["GET", "POST"])
+def inject_core_form(scenario_id, inject_slug):
+    scenario = aux.get_single_scenario(scenario_id)
+    inject = scenario.get_inject_by_slug(inject_slug)
+    inject_form = InjectForm()
+    if inject_form.validate_on_submit():
+        new_entries = inject_form.data
+        remove_image = new_entries.get("remove_image", False)
+        if not inject_form.media_path.data and not remove_image:
+            new_entries["media_path"] = inject.media_path
+        if inject_form.media_path.data:
+            filename = secure_filename(inject_form.media_path.data.filename)
+            from presentation_layer.app import app
+            upload_path = app.config['UPLOAD_FOLDER']
+            inject_form.media_path.data.save(os.path.join(upload_path, filename))
+            new_entries["media_path"] = filename
+        inject_data = inject.dict()
+        inject_data.update(new_entries)
+        inject = EditableInject(**inject_data)
+        scenario.update_inject(inject)
+        EditableScenarioRepository.save_scenario(scenario)
+        flash("Successfully updated the inject!", category="success")
+    elif inject:
+        inject_form = InjectForm(scenario=scenario, inject=inject)
+    return render_template("/forms/inject_core_form.html", inject_form=inject_form,
+                           inject=inject, scenario=scenario)
 
 
 def process_inject_form(scenario, form_data):
@@ -91,13 +122,77 @@ def process_inject_form(scenario, form_data):
             upload_path = app.config['UPLOAD_FOLDER']
             inject_form.media_path.data.save(os.path.join(upload_path, filename))
             inject_dict["media_path"] = filename
-        if inject_form.condition.variable_name.data:
-            inject_dict["condition"] = inject_form.condition.data
-        inject_dict["choices"] = inject_form.get_inject_choices()
         return inject_dict
     else:
         print(inject_form.errors)
         return None
+
+
+@injects_bp.route("/<scenario_id>/injects/<inject_slug>/condition", methods=["GET", "POST", "DELETE"])
+def inject_condition_form(scenario_id, inject_slug):
+    scenario = aux.get_single_scenario(scenario_id)
+    inject = scenario.get_inject_by_slug(inject_slug)
+    condition_form = InjectConditionForm()
+    condition_form.initialize(scenario=scenario, inject=inject)
+    if condition_form.validate_on_submit():
+        condition_data = condition_form.data
+        inject.condition = InjectCondition(**condition_data)
+        scenario.update_inject(inject)
+        EditableScenarioRepository.save_scenario(scenario)
+        flash("Successfully updated the condition!", category="success")
+    elif request.method == "POST":
+        flash("Something went wrong!", category="failure")
+        print(condition_form.data)
+        print(condition_form.errors)
+    return render_template("/forms/inject_condition_form.html", condition_form=condition_form,
+                           inject=inject, scenario=scenario)
+
+
+@injects_bp.route("/<scenario_id>/injects/<inject_slug>/choices", methods=["GET", "POST"])
+def inject_choices_form(scenario_id, inject_slug):
+    scenario = aux.get_single_scenario(scenario_id)
+    inject = scenario.get_inject_by_slug(inject_slug)
+    choices_form = InjectChoicesForm(scenario)
+    if request.method == "GET":
+        choices_form.populate(inject=inject)
+    elif request.method == "POST":
+        if choices_form.validate_on_submit():
+            inject.choices = []
+            for choice_entry in choices_form.choice_forms.entries:
+                choice_data = choice_entry.data
+                inject_choice = InjectChoiceTransformer.transform_choice_data(choice_data, scenario)
+                inject.choices.append(inject_choice)
+            scenario.update_inject(inject)
+            EditableScenarioRepository.save_scenario(scenario)
+            choices_form.initialize()
+            flash("Successfully updated the condition!", category="success")
+        else:
+            flash("Something went wrong!", category="failure")
+            print(choices_form.errors)
+            print(choices_form.data)
+    choices_form.add_option()
+    return render_template("/forms/inject_choices_form.html", choices_form=choices_form,
+                           inject=inject, scenario=scenario)
+
+
+@injects_bp.route("/<scenario_id>/injects/<inject_slug>/choices", methods=["DELETE"])
+def delete_choice(scenario_id, inject_slug):
+    scenario = aux.get_single_scenario(scenario_id=scenario_id)
+    inject = scenario.get_inject_by_slug(inject_slug)
+    choice_index = request.form.get("choice_index", -1)
+    if isinstance(choice_index, str) and choice_index.isnumeric:
+        choice_index = int(choice_index)
+    if isinstance(choice_index, int):
+        if inject.choices and -1 < choice_index < len(inject.choices):
+            deleted_choice = inject.choices.pop(choice_index)
+            scenario.update_inject(inject)
+            EditableScenarioRepository.save_scenario(scenario)
+            flash("Successfully deleted choice {}!".format(deleted_choice.label), category="success")
+            return make_response(200)
+        else:
+            flash("Failed to find a choice at this index: {}".format(choice_index), category="failure")
+            return make_response(404)
+    return redirect(url_for('injects.inject_choices_form', scenario_id=scenario_id, inject_slug=inject_slug))
 
 
 @injects_bp.route("/<scenario_id>/injects/<inject_slug>/delete", methods=["DELETE"])

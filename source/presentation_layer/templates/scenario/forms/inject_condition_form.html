@@ -1,0 +1,23 @@
+{% extends '/forms/base_form.html' %}
+
+{% block form_body %}
+    <div class="collapse" id="conditionForm">
+        <form action="{{ url }}" method="POST"
+              class="form" enctype="multipart/form-data" id="injectForm">
+            {{ condition_form.csrf_token }}
+            {{ render_field(condition_form.variable_name) }}
+            {{ render_field(condition_form.comparison_operator) }}
+            {{ render_field(condition_form.variable_threshold) }}
+            {{ render_field(condition_form.alternative_inject) }}
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i>Save Condition
+            </button>
+            <button class="btn btn-danger" type="button" onclick="resetForm('conditionForm')">Delete Condition</button>
+        </form>
+    </div>
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#conditionForm"
+            aria-expanded="false" aria-controls="conditionForm">
+        Add/Edit Condition
+    </button>
+
+{% endblock %}

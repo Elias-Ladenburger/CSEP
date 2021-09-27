@@ -2,7 +2,7 @@ import json
 from typing import List
 
 from domain_layer.common.auxiliary import BaseVariableChange
-from domain_layer.common.injects import BaseChoiceInject, InjectResult
+from domain_layer.common.injects import BaseChoiceInject, BaseInjectResult
 from domain_layer.common.scenarios import BaseStory, BaseScenario
 from domain_layer.gameplay.games import GroupGame
 from domain_layer.scenariodesign.injects import InjectChoice
@@ -206,7 +206,7 @@ class InjectChoiceTransformer:
         variable_changes = VarChangeTransformer.transform_var_change_form(choice_raw_data.get("variable_changes"),
                                                                           scenario=scenario)
 
-        outcome = InjectResult(next_inject=next_inject,
-                               variable_changes=variable_changes)
+        outcome = BaseInjectResult(next_inject=next_inject,
+                                   variable_changes=variable_changes)
         inject_choice = InjectChoice(label=label, outcome=outcome)
         return inject_choice

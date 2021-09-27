@@ -5,7 +5,7 @@ from werkzeug.datastructures import CombinedMultiDict
 from werkzeug.utils import secure_filename
 
 from application_layer.m2m_transformation import InjectChoiceTransformer
-from domain_layer.common.injects import InjectResult
+from domain_layer.common.injects import BaseInjectResult
 from domain_layer.scenariodesign.injects import EditableInject, InjectCondition, InjectChoice
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository
 from presentation_layer.controllers.scenario_design import auxiliary as aux

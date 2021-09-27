@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Dict, Optional, List
 
 from domain_layer.common.auxiliary import BaseScenarioVariable, LegalOperator, BaseVariableChange
-from domain_layer.common.injects import BaseChoiceInject, InjectResult, BaseInjectCondition
+from domain_layer.common.injects import BaseChoiceInject, BaseInjectResult, BaseInjectCondition
 
 
 class GameInject(BaseChoiceInject):
@@ -25,9 +25,16 @@ class GameInject(BaseChoiceInject):
             solution = self._parse_solution(solution)
             if solution:
                 next_inject = solution.outcome.next_inject or self.next_inject
-                variable_changes = [GameVariableChange(**var_change.dict()) for var_change in outcome.variable_changes]
+                variable_changes = self._parse_var_changes(solution.outcome.variable_changes)
                 outcome = GameInjectResult(next_inject=next_inject, variable_changes=variable_changes)
         return outcome
+
+    def _parse_var_changes(self, var_changes):
+        parsed_changes = []
+        for var_change in var_changes:
+            raw_dict = var_change.dict()
+            parsed_changes.append(GameVariableChange(**raw_dict))
+        return parsed_changes
 
     def _parse_solution(self, solution):
         """
@@ -64,9 +71,11 @@ class GameInjectCondition(BaseInjectCondition):
         if self.variable_name not in game_variables:
             raise ValueError("This variable is not in the gameplay's variables. Cannot evaluate condition!")
         else:
-            current_value = game_variables[self.variable_name].value
+            var_to_evaluate = game_variables[self.variable_name]
+            current_value = var_to_evaluate.value
+            threshold = var_to_evaluate.legalize_value(self.variable_threshold)
             operator_method = LegalOperator.get_comparison_operator(self.comparison_operator)
-            return operator_method(current_value, self.variable_threshold)
+            return operator_method(current_value, threshold)
 
 
 class GameVariableChange(BaseVariableChange):
@@ -81,8 +90,8 @@ class GameVariableChange(BaseVariableChange):
         """
         operator = self.get_operator(self.operator)
         try:
-            old_value = self.var.legal_value(old_value)
-            new_value = self.var.legal_value(self._new_value)
+            old_value = self.var.legalize_value(old_value)
+            new_value = self.var.legalize_value(self._new_value)
             result = operator(old_value, new_value)
             return result
         except TypeError as te:
@@ -111,13 +120,10 @@ class GameVariable(BaseScenarioVariable):
         """Set the value of this variable to the new value.
 
         :raise ValueError: If a value is not legal for this type of variable."""
-        if self.is_value_legal(new_value):
-            self._value = new_value
-        else:
-            raise ValueError("The value '{}' is not legal for the variable {}!".format(new_value, self.name))
+        self._value = new_value
 
 
-class GameInjectResult(InjectResult):
+class GameInjectResult(BaseInjectResult):
     """The outcome of solving an inject.
     Provides the next inject as well as a list of effects that may change the scenario."""
     next_inject: Optional[str] = ""

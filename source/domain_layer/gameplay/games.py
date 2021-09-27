@@ -6,6 +6,7 @@ from typing import Optional, List, Dict, Union
 from pydantic import PrivateAttr
 
 from domain_layer.common._domain_objects import AggregateRoot
+from domain_layer.common.auxiliary import BaseVariableChange
 from domain_layer.common.scenarios import BaseScenario, BaseStory
 from domain_layer.gameplay.injects import GameInject, GameVariableChange, GameInjectResult, GameVariable
 from domain_layer.gameplay.participants import GameParticipant
@@ -165,10 +166,18 @@ class Game(AggregateRoot):
         """Evaluate an InjectResult object, such that all effects on the game are resolved.
         :param inject_result: the result to be evaluated.
         :returns: the next inject in this game. Returns None, if this game is finished."""
-        for var_change in inject_result.variable_changes:
-            self._evaluate_change(var_change)
+        self._evaluate_changes(inject_result.variable_changes)
         next_inject = self._determine_next_inject(inject_result.next_inject)
         return next_inject
+
+    def _evaluate_changes(self, changes: List[GameVariableChange]):
+        for var_change in changes:
+            if not isinstance(var_change, GameVariableChange):
+                if isinstance(var_change, BaseVariableChange):
+                    var_change = GameVariableChange(**var_change.dict())
+                elif isinstance(var_change, dict):
+                    var_change = GameVariableChange(**var_change)
+            self._evaluate_change(var_change)
 
     def _evaluate_change(self, change: GameVariableChange):
         """Evaluate the conditions and variable changes of a given transition.

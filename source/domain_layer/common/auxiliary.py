@@ -56,7 +56,7 @@ class BaseScenarioVariable(BaseModel):
 
     @property
     def value(self):
-        return self._value
+        return self.legalize_value(self._value)
 
     @value.setter
     def value(self, new_value):
@@ -69,10 +69,10 @@ class BaseScenarioVariable(BaseModel):
         try:
             self.datatype.parse_value(value)
             return True
-        except ValueError as ve:
+        finally:
             return False
 
-    def legal_value(self, value_candidate):
+    def legalize_value(self, value_candidate):
         return self.datatype.parse_value(value_candidate)
 
     def __eq__(self, other):
@@ -148,7 +148,7 @@ class BaseVariableChange(BaseModel):
         if isinstance(var, dict):
             var = BaseScenarioVariable(**var)
         super().__init__(var=var, new_value=new_value, operator=operator, **keyword_args)
-        self._new_value = self._parse_new_value(var, new_value)
+        self._new_value = var.legalize_value(new_value)
 
     @property
     def new_value(self):
@@ -157,7 +157,7 @@ class BaseVariableChange(BaseModel):
     @staticmethod
     def _parse_new_value(var, new_value):
         if var.is_value_legal(new_value):
-            return var.legal_value(new_value)
+            return var.legalize_value(new_value)
         else:
             raise ValueError("The variable {} must have a value of type {}!".format(var.name, var.datatype.value))
 

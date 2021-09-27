@@ -1,5 +1,5 @@
 from domain_layer.common.auxiliary import DataType, BaseScenarioVariable
-from domain_layer.common.injects import InjectResult
+from domain_layer.common.injects import BaseInjectResult
 from domain_layer.gameplay.game_management import GameFactory
 from domain_layer.gameplay.games import Game
 from domain_layer.scenariodesign.injects import EditableInject, InjectChoice, InjectCondition
@@ -85,7 +85,7 @@ class BranchingScenarioBuilder(MockScenarioBuilder):
         condition = InjectCondition(budget_var.name, comparison_operator="=",
                                         variable_threshold=100000, alternative_inject=new_inject.slug)
         choice_1 = InjectChoice(label=transition_label,
-                                    outcome=InjectResult(next_inject=new_inject.slug, variable_changes=[]))
+                                outcome=BaseInjectResult(next_inject=new_inject.slug, variable_changes=[]))
 
         inject_0.choices.append(choice_1)
         story.add_inject(new_inject)

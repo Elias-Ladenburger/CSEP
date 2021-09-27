@@ -1,6 +1,6 @@
 from flask import Blueprint, url_for, render_template, request, redirect
 
-from domain_layer.common.injects import BaseInjectChoice, InjectResult
+from domain_layer.common.injects import BaseInjectChoice, BaseInjectResult
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository
 from presentation_layer.controllers.scenario_design.scenario_forms import InjectForm
 
@@ -27,8 +27,8 @@ def test_inject_form(scenario_id, inject_slug):
     elif inject_form.validate_on_submit():
         for choice in inject_form.choices.entries:
             new_choice = BaseInjectChoice(label=choice.data["label"],
-                                          outcome=InjectResult(next_inject=choice.data["next_inject"],
-                                                               variable_changes=choice.data["variable_changes"]))
+                                          outcome=BaseInjectResult(next_inject=choice.data["next_inject"],
+                                                                   variable_changes=choice.data["variable_changes"]))
             print(new_choice.json())
         inject_form.choices.append_entry()
     else:

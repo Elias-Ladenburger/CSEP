@@ -9,7 +9,7 @@ from wtforms.validators import DataRequired, Optional, StopValidation
 from wtforms.widgets import HiddenInput
 
 from domain_layer.common.auxiliary import BaseScenarioVariable, DataType, LegalOperator
-from domain_layer.common.injects import BaseInjectChoice, InjectResult
+from domain_layer.common.injects import BaseInjectChoice, BaseInjectResult
 from domain_layer.common.scenarios import BaseScenario
 from domain_layer.scenariodesign.scenarios import EditableScenario, BaseStory
 

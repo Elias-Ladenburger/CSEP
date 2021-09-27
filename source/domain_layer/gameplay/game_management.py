@@ -98,11 +98,15 @@ class GameRepository(Repository):
         for game_dict in resultset:
             game_id = str(game_dict.pop("_id"))
             scenario_id = game_dict.pop("scenario_id")
-            scenario = ScenarioRepository.get_scenario_by_id(scenario_id)
-            game_dict["game_id"] = game_id
-            game = factory.build_from_dict(scenario=scenario, **game_dict)
-            yield game
-
+            try:
+                scenario = ScenarioRepository.get_scenario_by_id(scenario_id)
+                game_dict["game_id"] = game_id
+                game = factory.build_from_dict(scenario=scenario, **game_dict)
+                yield game
+            except ValueError as ve:
+                print("VALUE ERROR!")
+                print(ve)
+                pass
 
 class GroupGameRepository(GameRepository):
     """Provides methods for accessing and persising GroupGames."""

@@ -59,7 +59,7 @@ class BaseInject(GraphNode):
         return return_str
 
 
-class InjectResult(BaseModel):
+class BaseInjectResult(BaseModel):
     """The outcome of solving an inject.
     Provides the next inject as well as a list of effects that may change the scenario."""
     next_inject: Optional[str] = ""
@@ -73,13 +73,13 @@ class BaseInjectChoice(BaseModel):
     """A choice is a decision made in a scenario,
     that may change the course of the story or change the variables of the scenario."""
     label: str
-    outcome: Optional[InjectResult] = None
+    outcome: Optional[BaseInjectResult] = None
 
-    def __init__(self, label: str, outcome: InjectResult = None, **keyword_args):
+    def __init__(self, label: str, outcome: BaseInjectResult = None, **keyword_args):
         self.update_forward_refs()
         super().__init__(label=label, outcome=outcome, **keyword_args)
         if not outcome:
-            self.outcome = InjectResult(next_inject=None, variable_changes=[])
+            self.outcome = BaseInjectResult(next_inject=None, variable_changes=[])
 
     def dict(self, **kwargs):
         update_args = kwargs.get("exclude") or {}

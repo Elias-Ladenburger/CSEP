@@ -31,9 +31,16 @@
 
                 <canvas id="qrcode-gameurl"></canvas>
                 <br>
-                <a href="#" type="button" class="btn btn-light"
-                   onclick="copyToClipboard('{{ game_url }}')">{{ game_url }}<i class="far fa-copy"></i>
-                </a>
+                <a type="button" class="btn btn-light" data-toggle="collapse" data-target="#participant-link"
+                                onclick="copyToClipboard('{{ game_url }}')">{{ game_url }}<i class="far fa-copy"></i>
+                    </a>
+                <div class="collapse" id="participant-link">
+                    <p class="small">
+                    Above Link should have already copied the link to your clipboard.<br>
+                    If this did not work, please copy the link from below:<br>
+                    <span class="text-blue">{{ game_url }}</span>
+                        </p>
+                </div>
                 <hr/>
             </div>
         </div>

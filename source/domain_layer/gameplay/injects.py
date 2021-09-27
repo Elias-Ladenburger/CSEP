@@ -24,10 +24,9 @@ class GameInject(BaseChoiceInject):
         if self.has_choices:
             solution = self._parse_solution(solution)
             if solution:
-                outcome = solution.outcome
-                if not outcome.next_inject:
-                    variable_changes = [GameVariableChange(**var_change.dict()) for var_change in outcome.variable_changes]
-                    outcome = GameInjectResult(next_inject=self.next_inject, variable_changes=variable_changes)
+                next_inject = solution.outcome.next_inject or self.next_inject
+                variable_changes = [GameVariableChange(**var_change.dict()) for var_change in outcome.variable_changes]
+                outcome = GameInjectResult(next_inject=next_inject, variable_changes=variable_changes)
         return outcome
 
     def _parse_solution(self, solution):

@@ -87,8 +87,10 @@ def save_inject(scenario_id):
 def inject_core_form(scenario_id, inject_slug):
     scenario = aux.get_single_scenario(scenario_id)
     inject = scenario.get_inject_by_slug(inject_slug)
-    inject_form = InjectForm()
-    if inject_form.validate_on_submit():
+    inject_form = InjectForm(scenario=scenario)
+    if request.method == "GET":
+        inject_form.initialize(scenario=scenario, inject=inject)
+    elif inject_form.validate_on_submit():
         new_entries = inject_form.data
         remove_image = new_entries.get("remove_image", False)
         if not inject_form.media_path.data and not remove_image:
@@ -105,7 +107,8 @@ def inject_core_form(scenario_id, inject_slug):
         scenario.update_inject(inject)
         EditableScenarioRepository.save_scenario(scenario)
         flash("Successfully updated the inject!", category="success")
-    elif inject:
+    else:
+        print(inject_form.errors)
         inject_form = InjectForm(scenario=scenario, inject=inject)
     return render_template("/forms/inject_core_form.html", inject_form=inject_form,
                            inject=inject, scenario=scenario)

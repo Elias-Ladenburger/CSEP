@@ -27,9 +27,14 @@ class GameParticipant(BaseModel):
         """
         :returns: True, if the solution history of this participant contains this inject, False otherwise.
         """
-        for entry in reversed(self.history):
+        return self.solved_count(inject_slug) > 0
+
+    def solved_count(self, inject_slug: str):
+        solved_count = 0
+        for entry in self.history:
             if entry.inject_slug == inject_slug:
-                return True
+                solved_count += 1
+        return solved_count
 
     def get_solution(self, inject_slug):
         """Check, how this participant has solved a given inject.

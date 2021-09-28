@@ -108,6 +108,7 @@ class GameRepository(Repository):
                 print(ve)
                 pass
 
+
 class GroupGameRepository(GameRepository):
     """Provides methods for accessing and persising GroupGames."""
     @classmethod

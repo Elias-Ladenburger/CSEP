@@ -61,6 +61,7 @@ class Game(AggregateRoot):
     _type: str = "GAME"
     scenario: GameScenario
     game_variables: Dict[str, GameVariable] = {}
+    _inject_counter: Dict[str, int] = PrivateAttr({})
 
     def __init__(self, scenario: GameScenario, **kwargs):
         super().__init__(scenario=scenario, **kwargs)
@@ -70,6 +71,16 @@ class Game(AggregateRoot):
         self._game_state = GameState(kwargs.get("game_state", "open"))
         self._current_story_index = kwargs.get("current_story_index", 0)
         self._current_inject_slug = kwargs.get("current_inject", "")
+        self._inject_counter = kwargs.get("inject_counter", self._initialize_inject_counter())
+
+    def _initialize_inject_counter(self):
+        inject_counter = {}
+        for index, story in enumerate(self.scenario.stories):
+            for inject_slug in story.injects:
+                #tmp_slug = str(index) + "_" + inject_slug
+                tmp_slug = inject_slug
+                inject_counter[tmp_slug] = 0
+        return inject_counter
 
     @property
     def game_id(self):
@@ -230,7 +241,8 @@ class Game(AggregateRoot):
              "current_story_index": self._current_story_index,
              "current_inject": self._current_inject_slug,
              "type": self._type,
-             "scenario_id": self.scenario.scenario_id})
+             "scenario_id": self.scenario.scenario_id,
+             "inject_counter": self._inject_counter})
         return_dict.pop("scenario")
         return return_dict
 
@@ -300,7 +312,8 @@ class GroupGame(Game):
     def has_participant_solved(self, participant_hash: str):
         """Check whether a participant has solved the current inject."""
         participant = self.participants[participant_hash]
-        return participant.has_solved(self._current_inject_slug)
+        solved_count = participant.solved_count(self._current_inject_slug)
+        return solved_count >= self._inject_counter[self._current_inject_slug]
 
     def allow_next_inject(self):
         """Allow advancement of the game, even if this were not possible otherwise."""
@@ -313,7 +326,7 @@ class GroupGame(Game):
         if self._current_inject_slug in self.breakpoints:
             return False
         for participant in self.participants:
-            if not self.participants[participant].has_solved(self._current_inject_slug):
+            if not self.has_participant_solved(participant):
                 return False
         return True
 
@@ -326,6 +339,7 @@ class GroupGame(Game):
         outcome = self.current_story.solve_inject(self._current_inject_slug, solution)
         next_inject = self._evaluate_outcome(outcome)
         if next_inject:
+            self._inject_counter[self._current_inject_slug] += 1
             self._current_inject_slug = next_inject.slug
             return next_inject
         else:

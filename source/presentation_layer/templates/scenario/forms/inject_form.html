@@ -31,21 +31,21 @@
         <div class="col-sm-12">
             <div class="tab-content" id="injectTabContent">
                 <div class="tab-pane fade show active" id="inject-core" role="tabpanel" aria-labelledby="core-tab">
-                    <div class="embed-responsive embed-responsive-21by9">
-                        <iframe class="embed-responsive-item"
+                    <div class="embed-responsive embed-responsive-21by9" id="core-frame-parent">
+                        <iframe class="embed-responsive-item" id="core-frame"
                                 src="{{ url_for('injects.inject_core_form', scenario_id=scenario.scenario_id, inject_slug=inject.slug) }}"></iframe>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="inject-condition" role="tabpanel"
                      aria-labelledby="inject-condition-tab">
-                    <div class="embed-responsive embed-responsive-21by9">
-                        <iframe class="embed-responsive-item"
+                    <div class="embed-responsive embed-responsive-21by9" id="condition-frame-parent">
+                        <iframe class="embed-responsive-item" id="condition-frame"
                                 src="{{ url_for('injects.inject_condition_form', scenario_id=scenario.scenario_id, inject_slug=inject.slug) }}"></iframe>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="inject-choices" role="tabpanel" aria-labelledby="inject-choices-tab">
-                    <div class="embed-responsive embed-responsive-21by9">
-                        <iframe class="embed-responsive-item"
+                    <div class="embed-responsive embed-responsive-21by9" id="choice-frame-parent">
+                        <iframe class="embed-responsive-item" id="choice-frame"
                                 src="{{ url_for('injects.inject_choices_form', scenario_id=scenario.scenario_id, inject_slug=inject.slug) }}"></iframe>
                     </div>
                 </div>
@@ -55,4 +55,21 @@
     <hr/>
 
 
+{% endblock %}
+
+{% block custom_scripts %}
+    {{ super() }}
+    <script>
+        $(document).ready(function () {
+            // Taken from https://stackoverflow.com/a/2967406/9816924
+            // automatically resize iframes to correct height
+            setInterval("$('#core-frame').height($('#core-frame').contents().find('body').height())", 1);
+            setInterval("$('#core-frame-parent').height($('#core-frame').contents().find('body').height())", 1);
+            setInterval("$('#condition-frame').height($('#condition-frame').contents().find('body').height())", 1);
+            setInterval("$('#condition-frame-parent').height($('#condition-frame').contents().find('body').height())", 1);
+            setInterval("$('#choice-frame').height($('#choice-frame').contents().find('body').height())", 1);
+            setInterval("$('#choice-frame-parent').height($('#choice-frame').contents().find('body').height())", 1);
+
+        });
+    </script>
 {% endblock %}

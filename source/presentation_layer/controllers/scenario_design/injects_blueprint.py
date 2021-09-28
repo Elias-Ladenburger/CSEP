@@ -168,7 +168,7 @@ def inject_choices_form(scenario_id, inject_slug):
             scenario.update_inject(inject)
             EditableScenarioRepository.save_scenario(scenario)
             choices_form.initialize()
-            flash("Successfully updated the condition!", category="success")
+            flash("Successfully updated choices!", category="success")
         else:
             flash("Something went wrong!", category="failure")
             print(choices_form.errors)

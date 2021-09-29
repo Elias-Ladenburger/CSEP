@@ -128,9 +128,9 @@ class Game(AggregateRoot):
     def start_game(self):
         """Begin the actual game and prepare to show the inject."""
         self._game_state = GameState.In_Progress
-        self._current_story_index = 0
-        self._current_inject_slug = self.current_story.entry_node.slug
         self.game_variables = copy.deepcopy(self.scenario.variables)
+        self._current_inject_slug = self.current_story.entry_node.slug
+        self._current_story_index = 0
 
     def abort_game(self):
         """Prematurely end this game."""
@@ -214,6 +214,18 @@ class Game(AggregateRoot):
         self._current_inject_slug = inject.slug
         return inject
 
+    def _show_next_inject(self, next_inject):
+        """If a next inject exists, this will be returned. Otherwise the game will end.
+
+        :param next_inject: either an object of type GameInject or None"""
+        if next_inject:
+            self._inject_counter[self._current_inject_slug] += 1
+            self._current_inject_slug = next_inject.slug
+            return next_inject
+        else:
+            self.end_game()
+            return next_inject
+
     def _begin_next_story(self):
         """Begin the next story and return the first inject from that story.
         :returns: the first inject of the next story if one exists, None otherwise."""
@@ -255,7 +267,7 @@ class Game(AggregateRoot):
 
 class SingleGame(Game):
     """A game played by a single person."""
-    def solve_inject(self, inject_slug, solution):
+    def solve_inject(self, inject_candidate, solution):
         """Evaluates a solution to a given inject and provides the next inject in response.
         Side effects include appending the solution to the gameplay history
         and ending the gameplay, if no more injects exist.
@@ -264,7 +276,7 @@ class SingleGame(Game):
         of the inject or an instance of Inject itself.
         :param solution: The solution to be passed. Implementation will vary, depending on inject type.
         :return: The next inject if one exists. Otherwise returns 'None' and ends the gameplay."""
-        inject = self.get_inject(inject_slug)
+        inject = self.get_inject(inject_candidate)
         inject_result = self.current_story.solve_inject(inject.slug, solution)
         next_inject = self._evaluate_outcome(inject_result)
         return next_inject
@@ -297,8 +309,8 @@ class GroupGame(Game):
         """Add another participant to this game."""
         if participant_hash not in self.participants:
             participant = GameParticipant(participant_id=participant_hash)
-            if self._inject_counter[self.current_inject] > 0:
-                participant.initialize_history(self._inject_counter)
+            if self._current_inject_slug and self._inject_counter[self._current_inject_slug] > 0:
+                participant.initialize_history(self._inject_counter, self._current_inject_slug)
             self.participants[participant_hash] = participant
 
     def number_of_participants(self):
@@ -340,13 +352,7 @@ class GroupGame(Game):
             solution = self._determine_groups_solution(self._current_inject_slug)
         outcome = self.current_story.solve_inject(self._current_inject_slug, solution)
         next_inject = self._evaluate_outcome(outcome)
-        if next_inject:
-            self._inject_counter[self._current_inject_slug] += 1
-            self._current_inject_slug = next_inject.slug
-            return next_inject
-        else:
-            self.end_game()
-            return next_inject
+        return self._show_next_inject(next_inject)
 
     def _determine_groups_solution(self, inject_slug: str):
         """Count how often each solution to an inject has been submitted.

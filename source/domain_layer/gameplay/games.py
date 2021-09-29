@@ -131,6 +131,7 @@ class Game(AggregateRoot):
         self.game_variables = copy.deepcopy(self.scenario.variables)
         self._current_inject_slug = self.current_story.entry_node.slug
         self._current_story_index = 0
+        self._inject_counter[self._current_inject_slug] += 1
 
     def abort_game(self):
         """Prematurely end this game."""
@@ -309,7 +310,7 @@ class GroupGame(Game):
         """Add another participant to this game."""
         if participant_hash not in self.participants:
             participant = GameParticipant(participant_id=participant_hash)
-            if self._current_inject_slug and self._inject_counter[self._current_inject_slug] > 0:
+            if self.is_in_progress and self._inject_counter[self._current_inject_slug] >= 0:
                 participant.initialize_history(self._inject_counter, self._current_inject_slug)
             self.participants[participant_hash] = participant
 

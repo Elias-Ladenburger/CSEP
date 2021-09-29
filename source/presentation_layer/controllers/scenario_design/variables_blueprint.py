@@ -22,14 +22,15 @@ def save_variable(scenario_id):
     variable_form = ScenarioVariableForm(raw_form)
     if variable_form.validate():
         variable_dict = variable_form.data
+        variable_dict["is_private"] = not variable_dict["visible_to_participants"]
 
         variable = BaseScenarioVariable(**variable_dict)
         scenario = EditableScenarioRepository.save_variable(scenario_id=scenario_id, variable=variable)
         flash("Save successful!", category="success")
-        return redirect(request.referrer + "#" + variables_bp.name)
+        return redirect(request.referrer)
     else:
         flash("Something went wrong!", category="failure")
-        redirect(request.referrer + "#" + variables_bp.name)
+        redirect(request.referrer)
     return redirect(request.referrer)
 
 
@@ -39,7 +40,7 @@ def delete_variable(scenario_id):
     scenario = aux.get_single_scenario(scenario_id=scenario_id)
     scenario.remove_variable(scenario_var)
     EditableScenarioRepository.save_scenario(scenario)
-    return redirect(url_for('variables.edit_variables', scenario_id=scenario_id) + "#" + variables_bp.name)
+    return redirect(url_for('variables.edit_variables', scenario_id=scenario_id))
 
 
 @variables_bp.route('<scenario_id>/variables/<var_name>/edit')

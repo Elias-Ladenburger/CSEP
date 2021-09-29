@@ -14,12 +14,12 @@
             {{ variables_form.name.process_data(variable.name) }}
             {{ variables_form.datatype.process_data(variable.datatype) }}
             {{ variables_form.value.process_data(variable.value) }}
-            {{ variables_form.is_private.process_data(variable.is_private) }}-->
+            {{ variables_form.visible_to_participants.process_data(not variable.is_private) }}-->
         {% endif %}
         {{ render_field(variables_form.name) }}
         {{ render_field(variables_form.datatype) }}
         {{ render_field(variables_form.value) }}
-        {{ render_field(variables_form.is_private) }}
+        {{ render_field(variables_form.visible_to_participants) }}
     </div>
     <div class="modal-footer">
         <button type="submit" class="btn btn-primary">

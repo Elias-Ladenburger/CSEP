@@ -294,10 +294,10 @@ class ScenarioVariableForm(CustomForm):
                                "data-toggle='tooltip' title='The starting value of this variable'></i>"),
                         validators=[DataRequired("Please provide a default value for the variable")])
 
-    is_private = BooleanField(Markup("Hide from Participants? <i class='fas fa-info-circle' "
+    visible_to_participants = BooleanField(Markup("Visible to Participants? <i class='fas fa-info-circle' "
                                      "data-toggle='tooltip' title='You might want some variables to influence the "
                                      "course of the scenario, but not make participants aware of this.'></i>"),
-                              default=False)
+                                           default=True)
 
 
 class ScenarioForm(FlaskForm):

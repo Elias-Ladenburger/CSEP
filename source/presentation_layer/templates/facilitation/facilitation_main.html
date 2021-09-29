@@ -13,16 +13,10 @@
     <div class="container-fluid bg-2 text-light">
         <h2 class="h2">Scenario: {{ game.name }}</h2>
         {% set game_url = url_for('games.group_game', game_id=game.game_id, _external=True) %}
-        <a type="button" class="btn btn-light" data-toggle="collapse" data-target="#participant-link"
-           onclick="copyToClipboard('{{ game_url }}')">{{ game_url }}<i class="far fa-copy"></i>
-        </a>
-        <div class="collapse" id="participant-link">
-            <p class="small">
-                Above Link should have already copied the link to your clipboard.<br>
-                If this did not work, please copy the link from below:<br>
-                <span class="text-white">{{ game_url }}</span>
-            </p>
-        </div>
+        <p>{{ game_url }}
+            <button type="button" href="{{ game_url }}" class="btn btn-light"
+                    onclick="copyToClipboard('{{ game_url }}')"><i class="far fa-copy"></i></button>
+        </p>
         <hr/>
         <div class="container-fluid bg-light">
             <div class="row bg-light align-items-center justify-content-center">

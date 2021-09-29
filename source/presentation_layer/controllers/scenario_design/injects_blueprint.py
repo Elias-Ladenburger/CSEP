@@ -4,8 +4,7 @@ from flask import Blueprint, flash, redirect, render_template, request, make_res
 from werkzeug.datastructures import CombinedMultiDict
 from werkzeug.utils import secure_filename
 
-from application_layer.m2m_transformation import InjectChoiceTransformer
-from domain_layer.common.injects import BaseInjectResult
+from application_layer.m2m_transformation import InjectChoiceTransformer, InjectTransformer
 from domain_layer.scenariodesign.injects import EditableInject, InjectCondition, InjectChoice
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository
 from presentation_layer.controllers.scenario_design import auxiliary as aux
@@ -14,6 +13,16 @@ from presentation_layer.controllers.scenario_design.scenario_forms import Inject
 
 injects_bp = Blueprint('injects', __name__,
                        template_folder='../../templates/scenario', url_prefix="/scenarios")
+
+
+@injects_bp.route("<scenario_id>/injects")
+def edit_injects(scenario_id):
+    scenario = aux.get_single_scenario(scenario_id)
+    injects = scenario.get_all_injects()
+    nodes, edges = InjectTransformer.transform_injects_to_visjs(injects)
+    inject_form = InjectForm(scenario)
+    return render_template("tab_injects.html", scenario=scenario, inject_form=inject_form,
+                           graphnodes=nodes, graphedges=edges, active_tab="injects")
 
 
 @injects_bp.route("<scenario_id>/injects/modal")
@@ -62,7 +71,7 @@ def add_inject(scenario_id):
         scenario.add_inject(inject=inject, story_index=0, preceded_by_inject=preceded_by, make_entry_node=is_entry_node)
         EditableScenarioRepository.save_scenario(scenario)
         flash("Successfully added the inject!", category="success")
-    return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario_id) + "#" + injects_bp.name)
+    return redirect(url_for('injects.edit_injects', scenario_id=scenario_id))
 
 
 @injects_bp.route("/<scenario_id>/injects/update", methods=["POST", "PUT"])
@@ -80,7 +89,7 @@ def save_inject(scenario_id):
         scenario.update_inject(inject, 0, new_entry_node)
         EditableScenarioRepository.save_scenario(scenario)
         flash("Successfully updated the inject!", category="success")
-    return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario_id) + "#" + injects_bp.name)
+    return redirect(url_for('injects.edit_injects', scenario_id=scenario_id))
 
 
 @injects_bp.route("/<scenario_id>/injects/<inject_slug>/core", methods=["GET", "POST"])
@@ -203,4 +212,4 @@ def delete_inject(scenario_id, inject_slug):
     scenario = aux.get_single_scenario(scenario_id)
     scenario.remove_inject(inject_slug)
     EditableScenarioRepository.save_scenario(scenario)
-    return redirect(url_for('scenarios.edit_scenario', scenario_id=scenario_id)+ "#" + injects_bp.name)
+    return redirect(url_for('injects.edit_injects', scenario_id=scenario_id))

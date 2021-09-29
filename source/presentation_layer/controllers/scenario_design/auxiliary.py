@@ -1,3 +1,5 @@
+from flask import render_template
+
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository
 
 
@@ -14,3 +16,7 @@ def get_scenario_details(scenario_id, **details):
         elif isinstance(scenario_dict, dict) and detail in scenario_dict:
             scenario_dict = scenario_dict[detail]
     return scenario_dict
+
+
+def tab_details(template, scenario, form, **kwargs):
+    return render_template(template, scenario=scenario, form=form, **kwargs)

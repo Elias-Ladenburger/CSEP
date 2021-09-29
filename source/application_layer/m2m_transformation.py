@@ -12,13 +12,14 @@ class InjectTransformer:
     """This class transforms domain-layer injects to other datastructures."""
 
     @classmethod
-    def transform_inject_to_visjs(cls, injects: List[BaseChoiceInject]):
+    def transform_injects_to_visjs(cls, injects: List[BaseChoiceInject]):
         """Transform a number of injects to JSON, so that they can be used as input for the VISJS-network
          Javascript library.
         :param injects: the injects to be transformed.
         :return: a tuple of nodes and edges in JSON-format."""
         injects, edges = cls.transform_injects_to_visjs_dict(injects)
         return json.dumps(injects), json.dumps(edges)
+
 
     @classmethod
     def transform_injects_to_visjs_dict(cls, injects: List[BaseChoiceInject],
@@ -105,11 +106,6 @@ class InjectTransformer:
                         next_id += str(group_id)
                 edge_list.append({"from": tmp_id, "to": next_id, "label": choice.label, "title": title})
         return edge_list
-
-    @classmethod
-    def transform_injects_to_visjs(cls, injects):
-        injects, edges = cls.transform_injects_to_visjs_dict(injects)
-        return json.dumps(injects), json.dumps(edges)
 
 
 class ScenarioTransformer:

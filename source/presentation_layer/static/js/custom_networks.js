@@ -1,3 +1,17 @@
+function load_inject_graph(source_url, target_graph_id) {
+    $.ajax({
+        url: source_url,
+        success: function (data) {
+            //$(target_graph_id).html(data);
+            renderNetwork(target_graph_id, data["nodes"], data["edges"])
+        },
+        complete: function () {
+            // Schedule the next request when the current one's complete
+            setTimeout(load_inject_graph, 5000);
+        }
+    });
+}
+
 function renderNetwork(networkId, injectData, edgeData) {
     let nodeData = renderNodes(injectData);
     let connectionData = renderEdges(edgeData);
@@ -71,7 +85,7 @@ function renderEdges(edgeData) {
                 if (edge["from"] === newEdge["from"] && edge["to"] === newEdge["to"]) {
                     roundness = roundness + 0.3;
                     type = (type === "curvedCW") ? "curvedCCW" : "curvedCW";
-                    newEdge["smooth"] = {enabled:true, type: type, roundness: roundness};
+                    newEdge["smooth"] = {enabled: true, type: type, roundness: roundness};
                 }
             }
         }

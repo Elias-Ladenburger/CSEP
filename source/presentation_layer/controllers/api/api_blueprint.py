@@ -2,7 +2,7 @@
 import flask
 from flask import Blueprint, jsonify
 
-from application_layer.m2m_transformation import ScenarioTransformer
+from application_layer.m2m_transformation import ScenarioTransformer, InjectTransformer
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository, EditableScenarioFactory
 from domain_layer.scenariodesign.scenarios import EditableStory
 from presentation_layer.controllers.scenario_design import auxiliary as aux
@@ -62,3 +62,10 @@ def edit_story(scenario_id, story_id):
     scenario = EditableScenarioRepository.save_scenario(scenario)
     return jsonify(scenario.dict())
 
+
+@api_bp.route("/transformation/<scenario_id>/injects", methods=["GET"])
+def get_transformed_injects(scenario_id):
+    scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id)
+    injects = scenario.get_all_injects()
+    nodes, edges = InjectTransformer.transform_injects_to_visjs_dict(injects)
+    return jsonify({"nodes": nodes, "edges": edges})

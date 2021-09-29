@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, redirect, flash, url_for, request
 
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository
 from presentation_layer.controllers.scenario_design import auxiliary as aux
-from presentation_layer.controllers.scenario_design.scenario_blueprint import tab_details
 from presentation_layer.controllers.scenario_design.scenario_forms import *
 
 variables_bp = Blueprint('variables', __name__,
@@ -12,8 +11,8 @@ variables_bp = Blueprint('variables', __name__,
 @variables_bp.route("/<scenario_id>/variables")
 def edit_variables(scenario_id):
     scenario = aux.get_single_scenario(scenario_id=scenario_id)
-    form = ScenarioVariableForm()
-    return tab_details("tab_variables.html", scenario=scenario, form=form)
+    var_form = ScenarioVariableForm()
+    return render_template("tab_variables.html", scenario=scenario, variables_form=var_form, active_tab="variables")
 
 
 @variables_bp.route("/<scenario_id>/variables/add", methods=["POST"])

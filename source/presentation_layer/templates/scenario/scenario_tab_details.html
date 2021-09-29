@@ -1,3 +1,10 @@
+{% extends 'scenario_edit_main.html' %}
+
 {% block details_content %}
 {% endblock details_content %}
 <hr/>
+
+{% block scripts %}
+    {{ super() }}
+    document.getElementById('{{ active_tab }}-tab').className += ' active';
+{% endblock %}

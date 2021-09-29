@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, redirect, flash, url_for
 from application_layer.m2m_transformation import InjectTransformer
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository, EditableScenarioFactory
 from presentation_layer.controllers.scenario_design.scenario_forms import *
+import presentation_layer.controllers.scenario_design.auxiliary as aux
 
 scenario_bp = Blueprint('scenarios', __name__,
                         template_folder='../../templates/scenario', url_prefix="/scenarios")
@@ -19,10 +20,7 @@ def show_scenarios():
 
 @scenario_bp.route("/<scenario_id>/edit", methods=["GET", "POST"])
 def edit_scenario(scenario_id):
-    scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
-    stories = scenario.stories
-    nodes, edges = InjectTransformer.transform_stories_to_visjs(stories)
-    return edit_scenario_view(scenario=scenario, graphnodes=nodes, graphedges=edges)
+    return redirect(url_for('scenarios.edit_core', scenario_id=scenario_id))
 
 
 @scenario_bp.route("/new")
@@ -30,15 +28,6 @@ def new_scenario():
     scenario = EditableScenarioFactory.create_scenario(scenario_id="new")
     core_form = ScenarioCoreForm()
     return render_template("tab_core_info.html", scenario=scenario, core_form=core_form)
-
-
-def edit_scenario_view(scenario: EditableScenario, **kwargs):
-    core_form = ScenarioCoreForm()
-    inject_form = InjectForm()
-    inject_form.initialize(scenario)
-    variables_form = ScenarioVariableForm()
-    return render_template("scenario_edit.html", scenario=scenario, core_form=core_form,
-                           inject_form=inject_form, variables_form=variables_form, **kwargs)
 
 
 @scenario_bp.route("/save", methods=["POST"])
@@ -71,45 +60,14 @@ def delete_scenario():
     return show_scenarios()
 
 
-@scenario_bp.route("/<scenario_id>/stories")
-def view_stories(scenario_id):
-    scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
-    form = StoryForm()
-    return tab_details("tab_stories.html", scenario=scenario, form=form)
-
-
-@scenario_bp.route("/<scenario_id>/essentials")
+@scenario_bp.route("/<scenario_id>/core")
 def edit_core(scenario_id):
     scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id)
-    form = ScenarioCoreForm()
-    return tab_details("tab_core_info.html", scenario=scenario, form=form)
-
-
-@scenario_bp.route("/<scenario_id>/stories/<story_id>")
-def edit_story(scenario_id, story_id):
-    scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
-    if story_id.isnumeric():
-        story_id = int(story_id)
-    story = scenario.stories[story_id]
-    form = StoryForm()
-    return tab_details("tab_injects.html", scenario=scenario, form=form, story=story)
-
-
-@scenario_bp.route("/<scenario_id>/stories", methods=["POST"])
-def insert_story(scenario_id):
-    scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
-    story_params = flask.request.form
-    story = BaseStory(**story_params)
-    story = scenario.add_story(story)
-    flash("Successfully added story!")
-    return edit_story(scenario_id=scenario_id, story_id=story.story_id)
+    core_form = ScenarioCoreForm()
+    return render_template("tab_core_info.html", scenario=scenario, core_form=core_form, active_tab="core")
 
 
 @scenario_bp.route("/<scenario_id>/stats")
 def show_stats(scenario_id):
     scenario = EditableScenarioRepository.get_scenario_by_id(scenario_id=scenario_id)
     return render_template("scenario_stats.html", scenarios=[scenario])
-
-
-def tab_details(template, scenario, form, **kwargs):
-    return render_template(template, scenario=scenario, form=form, **kwargs)

@@ -7,28 +7,39 @@
 {% block body %}
     <ul class="nav nav-tabs mx-auto" id="scenarioTabs" role="tablist">
         <li class="nav-item">
-            <a class="nav-link active" id="core-tab" data-toggle="tab" href="#core" role="tab" aria-controls="core"
+            <a class="nav-link" id="core-tab" href="{{ url_for('scenarios.edit_core',
+                    scenario_id=scenario.scenario_id) }}" role="tab" aria-controls="core"
                aria-selected="true">Core Information</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="injects-tab" data-toggle="tab" href="#injects" role="tab"
+            <a class="nav-link" id="injects-tab" href="{{ url_for('injects.edit_injects',
+                    scenario_id=scenario.scenario_id) }}" role="tab"
                aria-controls="injects" aria-selected="false">Injects</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="variables-tab" data-toggle="tab" href="#variables" role="tab"
+            <a class="nav-link" id="variables-tab" href="{{ url_for('variables.edit_variables',
+                    scenario_id=scenario.scenario_id) }}" role="tab"
                aria-controls="variables" aria-selected="false">Variables</a>
         </li>
     </ul>
 
     <div class="tab-content" id="myTabContent">
+    {% block details_content %}
+
+    {% endblock %}
+    <!--
         <div class="tab-pane fade show active" id="core" role="tabpanel" aria-labelledby="core-tab">
-            {% include 'tab_core_info.html' %}</div>
+            {#  include 'tab_core_info.html' #}</div>
         <div class="tab-pane fade" id="injects" role="tabpanel" aria-labelledby="injects-tab">
-            {% include 'tab_injects.html' %}</div>
+            {# include 'tab_injects.html' #}</div>
         <div class="tab-pane fade" id="variables" role="tabpanel" aria-labelledby="variables-tab">
-            {% include 'tab_variables.html' %}
-        </div>
+            {# include 'tab_variables.html' #}
+        </div>-->
     </div>
 
 
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
 {% endblock %}

@@ -32,7 +32,7 @@ function copyToClipboard(clipboardText) {
 
 
 function deleteElement(deleteURL, requestData, elemToRemove = "") {
-    let confirmation = confirm('Do you really want to delete this element?')
+    let confirmation = confirm('Do you really want to delete this element?');
     if (confirmation === true) {
         if (elemToRemove !== "") {
             $('#' + elemToRemove).remove();
@@ -40,9 +40,8 @@ function deleteElement(deleteURL, requestData, elemToRemove = "") {
         jQuery.ajax({
             url: deleteURL,
             method: 'DELETE',
-            data: requestData
+            data: requestData,
         });
-        window.reload();
     }
 }
 
@@ -93,15 +92,15 @@ function removeImage(imageId = '#inject_image') {
     $('remove_image').checked = true;
 }
 
-function resetForm(formId){
+function resetForm(formId) {
     let resetForm = document.getElementById(formId);
     let formElements = resetForm.elements;
-    for(let i = 0; i<formElements.length;i++){
+    for (let i = 0; i < formElements.length; i++) {
         let currentElement = formElements[i];
-        if(currentElement.type === "text"){
+        if (currentElement.type === "text") {
             currentElement.value = "";
         }
-        if(currentElement.tag === "select"){
+        if (currentElement.tag === "select") {
             currentElement.value = "---";
         }
     }

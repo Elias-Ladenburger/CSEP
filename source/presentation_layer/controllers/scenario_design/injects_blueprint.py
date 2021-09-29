@@ -187,7 +187,7 @@ def inject_choices_form(scenario_id, inject_slug):
                            inject=inject, scenario=scenario)
 
 
-@injects_bp.route("/<scenario_id>/injects/<inject_slug>/choices", methods=["DELETE"])
+@injects_bp.route("/<scenario_id>/injects/<inject_slug>/choices/delete", methods=["DELETE, POST"])
 def delete_choice(scenario_id, inject_slug):
     scenario = aux.get_single_scenario(scenario_id=scenario_id)
     inject = scenario.get_inject_by_slug(inject_slug)
@@ -200,10 +200,8 @@ def delete_choice(scenario_id, inject_slug):
             scenario.update_inject(inject)
             EditableScenarioRepository.save_scenario(scenario)
             flash("Successfully deleted choice {}!".format(deleted_choice.label), category="success")
-            return make_response(200)
         else:
             flash("Failed to find a choice at this index: {}".format(choice_index), category="failure")
-            return make_response(404)
     return redirect(url_for('injects.inject_choices_form', scenario_id=scenario_id, inject_slug=inject_slug))
 
 

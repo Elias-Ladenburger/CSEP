@@ -74,6 +74,7 @@ function scenario_table_buttons() {
                 class: 'btn btn-primary'
             }
         },
+        /*
         btnScenarioTutorial: {
             text: 'Start Tutorial',
             icon: 'fas fa-graduation-cap',
@@ -83,7 +84,7 @@ function scenario_table_buttons() {
             attributes: {
                 title: 'Start a tutorial to create a scenario'
             }
-        },
+        },*/
     }
 }
 

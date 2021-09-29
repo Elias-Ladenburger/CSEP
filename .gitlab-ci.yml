@@ -23,6 +23,7 @@ test-job:
   stage: test
   script:
     - echo "This job tests something"
+    - echo $(pwd)
     - python3 -m unittest discover
 
 deploy-dev:

@@ -44,6 +44,11 @@ class GameParticipant(BaseModel):
                 return entry.solution
         return None
 
+    def initialize_history(self, inject_counter):
+        for inject_slug in inject_counter:
+            for count in range(inject_slug[inject_slug]):
+                self.solve_inject(inject_slug, solution=-1)
+
 
 class AuthenticatedParticipant(BaseModel):
     pass

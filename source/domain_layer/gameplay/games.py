@@ -297,6 +297,8 @@ class GroupGame(Game):
         """Add another participant to this game."""
         if participant_hash not in self.participants:
             participant = GameParticipant(participant_id=participant_hash)
+            if self._inject_counter[self.current_inject] > 0:
+                participant.initialize_history(self._inject_counter)
             self.participants[participant_hash] = participant
 
     def number_of_participants(self):

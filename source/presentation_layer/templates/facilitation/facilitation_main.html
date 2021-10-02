@@ -1,5 +1,6 @@
 {% extends '/facilitation/facilitation_main_base.html' %}
 {% from '/helpers/_detail_helpers.html' import inject_details %}
+{% from '/helpers/_graph_helpers.html' import render_injects_graph %}
 
 {% block headings %}
     {{ super() }}
@@ -71,9 +72,9 @@
                         </script>
                         <div id="injectFeedbackChart" style="height: 370px; width: 100%;"></div>
                         <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-
                     </div>
                     <hr/>
+                    {{ render_injects_graph(nodedata=nodedata, edgedata=edgedata, scenario=scenario) }}
                 </div>
                 <div class="col-sm-5">
                     <div class="row ml-md-0">
@@ -98,5 +99,6 @@
                     </div>
                 </div>
             </div>
-
+        </div>
+    </div>
 {% endblock %}

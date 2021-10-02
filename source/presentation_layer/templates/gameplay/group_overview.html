@@ -1,9 +1,6 @@
 {% extends 'base.html' %}
 {% block main_content %}
 
- <!-- Primary Page Layout
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-
 <div class="container-fluid bg-white text-center text-blue">
     <div class="container mb-5">
     <form action="{{url_for('games.find_game')}}" class="form-inline">
@@ -36,6 +33,7 @@
                 <thead class="bg-blue-2">
                 <tr>
                     <th scope="col" id="game_name" data-sortable="true" data-field="title">Game</th>
+                    <th scope="col" id="game_description" data-sortable="false" data-field="description">Description</th>
                     <th scope="col" id="game_actions" title="actions">Actions</th>
                 </tr>
                 </thead>
@@ -44,6 +42,7 @@
                     {% set game_url = url_for('games.group_game', game_id=game.game_id, _external=True) %}
                     <tr id="{{ game.game_id }}">
                         <td>{{ game.name }}</td>
+                        <td>{{ game.scenario.description }}</td>
                         <td>
                             <a href="{{ game_url }}" class="btn btn-primary" type="button"><i class="far fa-copy"></i> Join
                             </a></td>

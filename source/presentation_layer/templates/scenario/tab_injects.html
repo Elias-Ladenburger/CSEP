@@ -1,10 +1,11 @@
 {% extends 'scenario_tab_details.html' %}
+{% from '/helpers/_graph_helpers.html' import render_injects_graph %}
 
 {% block details_content %}
     <div class="container-fluid ">
         <div class="row">
             <div class="col-sm-5 text-white-50">
-                {% include 'injects_graph.html' %}
+                {{ render_injects_graph(nodedata=graphnodes, edgedata=graphedges, scenario=scenario) }}
             </div>
             <div class="col-sm-7">
                 <button class="btn btn-secondary" onclick="network.fit()">Render Injects Graph</button>

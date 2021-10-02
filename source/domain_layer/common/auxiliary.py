@@ -99,7 +99,10 @@ class LegalOperator:
                              ">": operator.gt,
                              ">=": operator.ge,
                              "<=": operator.le,
-                             "==": operator.eq}
+                             "!=": operator.ne,
+                             "==": operator.eq,
+                             "contains": operator.contains,
+                             "does not contain": lambda a, b: b not in a}
 
     @classmethod
     def comparison_operators(cls):

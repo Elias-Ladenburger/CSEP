@@ -1,0 +1,25 @@
+{% macro render_injects_graph(nodedata, edgedata, scenario=None) %}
+    <div id="injectGraph" class="border border-primary"></div>
+
+    <script>
+        let injectData = {{ nodedata|safe }};
+
+        // create an array with edges
+        let injectConnections = {{ edgedata|safe }};
+
+        let network = renderNetwork('injectGraph', injectData, injectConnections);
+
+        {% if scenario %}
+            network.on('click', function (properties) {
+                let ids = properties.nodes;
+                let injects = new vis.DataSet(injectData);
+                let clickedNodes = injects.get(ids);
+                let clickedNode = clickedNodes[0];
+                let url = '{{ url_for("injects.get_inject_details", scenario_id=scenario.scenario_id) }}';
+                url += '?inject_slug=' + clickedNode["slug"];
+                renderInjectDetails(url);
+            });
+        {% endif %}
+    </script>
+
+{% endmacro %}

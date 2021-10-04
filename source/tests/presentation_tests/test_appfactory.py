@@ -5,6 +5,7 @@ from flask import Flask
 from domain_layer.gameplay.mock_interface import MockScenarioBuilder
 from presentation_layer import app_factory
 
+
 class AppFactoryTest(TestCase):
     @classmethod
     def setUpClass(cls):

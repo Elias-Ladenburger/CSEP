@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint, flash, redirect, render_template, request, make_response, url_for
+from flask import Blueprint, flash, redirect, render_template, request, make_response, url_for, Response
 from werkzeug.datastructures import CombinedMultiDict
 from werkzeug.utils import secure_filename
 
@@ -147,16 +147,22 @@ def inject_condition_form(scenario_id, inject_slug):
     condition_form = InjectConditionForm(scenario=scenario)
     if request.method == "GET":
         condition_form.initialize(scenario=scenario, inject=inject)
-    if condition_form.validate_on_submit():
-        condition_data = condition_form.data
-        inject.condition = InjectCondition(**condition_data)
+    elif request.method == "POST":
+        if condition_form.validate_on_submit():
+            condition_data = condition_form.data
+            inject.condition = InjectCondition(**condition_data)
+            scenario.update_inject(inject)
+            EditableScenarioRepository.save_scenario(scenario)
+            flash("Successfully updated the condition!", category="success")
+        else:
+            flash("Something went wrong!", category="failure")
+            print(condition_form.data)
+            print(condition_form.errors)
+    elif request.method == "DELETE":
+        inject.condition = None
         scenario.update_inject(inject)
         EditableScenarioRepository.save_scenario(scenario)
-        flash("Successfully updated the condition!", category="success")
-    elif request.method == "POST":
-        flash("Something went wrong!", category="failure")
-        print(condition_form.data)
-        print(condition_form.errors)
+        return Response("successfully deleted the condition!", status=200)
     return render_template("/forms/inject_condition_form.html", condition_form=condition_form,
                            inject=inject, scenario=scenario)
 
@@ -188,11 +194,10 @@ def inject_choices_form(scenario_id, inject_slug):
                            inject=inject, scenario=scenario)
 
 
-@injects_bp.route("/<scenario_id>/injects/<inject_slug>/choices/delete", methods=["DELETE", "POST"])
-def delete_choice(scenario_id, inject_slug):
+@injects_bp.route("/<scenario_id>/injects/<inject_slug>/choices/<choice_index>", methods=["DELETE"])
+def delete_choice(scenario_id, inject_slug, choice_index):
     scenario = aux.get_single_scenario(scenario_id=scenario_id)
     inject = scenario.get_inject_by_slug(inject_slug)
-    choice_index = request.form.get("choice_index", -1)
     if isinstance(choice_index, str) and choice_index.isnumeric:
         choice_index = int(choice_index)
     if isinstance(choice_index, int):
@@ -201,9 +206,21 @@ def delete_choice(scenario_id, inject_slug):
             scenario.update_inject(inject)
             EditableScenarioRepository.save_scenario(scenario)
             flash("Successfully deleted choice {}!".format(deleted_choice.label), category="success")
+            return redirect(url_for('injects.inject_choices_form', scenario_id=scenario_id, inject_slug=inject_slug))
         else:
             flash("Failed to find a choice at this index: {}".format(choice_index), category="failure")
     return redirect(url_for('injects.inject_choices_form', scenario_id=scenario_id, inject_slug=inject_slug))
+
+
+@injects_bp.route("<scenario_id>/injects/<inject_slug>/choices/<choice_index>/var_changes/<var_change_index>",
+                  methods=["DELETE"])
+def delete_variable_change(scenario_id, inject_slug, choice_index, var_change_index):
+    scenario = aux.get_single_scenario(scenario_id=scenario_id)
+    inject = scenario.get_inject_by_slug(inject_slug)
+    inject.choices[choice_index].outcome.variable_changes.pop(var_change_index)
+    scenario.update_inject(inject)
+    EditableScenarioRepository.save_scenario(scenario)
+    return Response("successfully deleted the variable change!", status=200)
 
 
 @injects_bp.route("/<scenario_id>/injects/<inject_slug>/delete", methods=["DELETE"])
@@ -211,4 +228,4 @@ def delete_inject(scenario_id, inject_slug):
     scenario = aux.get_single_scenario(scenario_id)
     scenario.remove_inject(inject_slug)
     EditableScenarioRepository.save_scenario(scenario)
-    return redirect(url_for('injects.edit_injects', scenario_id=scenario_id))
+    return Response("successfully deleted the inject!", status=200)

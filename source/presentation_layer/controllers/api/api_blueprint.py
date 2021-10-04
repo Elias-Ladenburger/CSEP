@@ -33,8 +33,7 @@ def get_scenario(scenario_id):
 @api_bp.route("/scenarios/<scenario_id>/<path:details>", methods=["GET"])
 def get_scenario_details(scenario_id, details):
     details = details.split("/")
-    scenario_dict = aux.get_scenario_details(scenario_id=scenario_id, details=details)
-
+    scenario_dict = aux.get_scenario_details(scenario_id=scenario_id, details_path=details)
     return jsonify(scenario_dict)
 
 
@@ -69,3 +68,9 @@ def get_transformed_injects(scenario_id):
     injects = scenario.get_all_injects()
     nodes, edges = InjectTransformer.transform_injects_to_visjs_dict(injects)
     return jsonify({"nodes": nodes, "edges": edges})
+
+
+@api_bp.route("/scenarios/<scenario_id>/<path:details>", methods=["DELETE"])
+def delete_scenario_element(scenario_id, details):
+    details = details.split("/")
+    scenario_dict = aux.get_scenario_details(scenario_id=scenario_id, details=details)

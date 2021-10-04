@@ -34,6 +34,7 @@ function copyToClipboard(clipboardText) {
 function deleteElement(deleteURL, requestData, elemToRemove = "") {
     let confirmation = confirm('Do you really want to delete this element?');
     if (confirmation === true) {
+        let startingURL = window.location.href;
         if (elemToRemove !== "") {
             $('#' + elemToRemove).remove();
         }
@@ -41,7 +42,11 @@ function deleteElement(deleteURL, requestData, elemToRemove = "") {
             url: deleteURL,
             method: 'DELETE',
             data: requestData,
-        });
+            complete: function (data) {
+                window.location.href = startingURL;
+                // window.location.reload(true);
+            }
+        })
     }
 }
 
@@ -90,20 +95,6 @@ function scenario_table_buttons() {
 function removeImage(imageId = '#inject_image') {
     hideElement(imageId);
     $('remove_image').checked = true;
-}
-
-function resetForm(formId) {
-    let resetForm = document.getElementById(formId);
-    let formElements = resetForm.elements;
-    for (let i = 0; i < formElements.length; i++) {
-        let currentElement = formElements[i];
-        if (currentElement.type === "text") {
-            currentElement.value = "";
-        }
-        if (currentElement.tag === "select") {
-            currentElement.value = "---";
-        }
-    }
 }
 
 function variableTableButtons() {
@@ -158,21 +149,6 @@ function showElement(elemId = '') {
 
 function getMapHeight() {
     return (window.innerHeight - 120);
-}
-
-function deleteVariable(variableName, rowId) {
-    let confirmation = confirm('Do you really want to delete the variable ' + variableName + '?')
-    document.getElementById(rowId).remove();
-    if (confirmation === true) {
-        const deleteURL = $('#variablesTable').data()["deleteUrl"];
-        jQuery.ajax({
-            url: deleteURL,
-            method: 'DELETE',
-            data: {
-                variable_name: variableName
-            }
-        });
-    }
 }
 
 function renderInjectDetails(url, showForm = false) {

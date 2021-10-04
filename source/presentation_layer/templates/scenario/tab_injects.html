@@ -8,7 +8,6 @@
                 {{ render_injects_graph(nodedata=graphnodes, edgedata=graphedges, scenario=scenario) }}
             </div>
             <div class="col-sm-7">
-                <button class="btn btn-secondary" onclick="network.fit()">Render Injects Graph</button>
                 <button class="btn btn-primary" onclick="showFormModal('#create-inject-form-modal',
                     '{{ url_for("injects.get_inject_modal", scenario_id=scenario.scenario_id) }}')">
                     New inject</button>

@@ -9,8 +9,9 @@
             </div>
             <div class="col-sm-7">
                 <button class="btn btn-primary" onclick="showFormModal('#create-inject-form-modal',
-                    '{{ url_for("injects.get_inject_modal", scenario_id=scenario.scenario_id) }}')">
-                    New inject</button>
+                        '{{ url_for("injects.get_inject_modal", scenario_id=scenario.scenario_id) }}')">
+                    New inject
+                </button>
                 <hr/>
                 <div id="inject-details">
                     <div class="remote-content">
@@ -21,12 +22,8 @@
         </div>
     </div>
 
-    <div class="modal" tabindex="-1" role="dialog" id="create-inject-form-modal">
-        <div class="modal-dialog" role="document">
-            <div id="variable-modal-content" class="modal-content">
-                {% include 'forms/injects_modal_form.html' %}
-            </div>
-        </div>
-    </div>
+
+    {% include 'forms/injects_modal_form.html' %}
+
 
 {% endblock details_content %}

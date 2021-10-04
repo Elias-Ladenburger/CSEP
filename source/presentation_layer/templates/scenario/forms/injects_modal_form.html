@@ -1,31 +1,38 @@
 {% from 'helpers/_form_helpers.html' import render_field %}
 
-<div class="modal-header">
-    <h5 class="modal-title">{% if title %}{{ title }}{% else %}Add Inject{% endif %}</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-<form action="{{ url_for('injects.add_inject', scenario_id=scenario.scenario_id) }}" method="POST"
-      class="form" enctype="multipart/form-data">
-    <div class="modal-body">
-        {{ inject_form.csrf_token }}
-        {{ inject_form.slug }}
-        {{ render_field(inject_form.label, class="form-control") }}
-        {{ render_field(inject_form.text, class="form-control") }}
-        {{ render_field(inject_form.media_path, class="form-control-file") }}
-        {{ render_field(inject_form.next_inject, class="form-control") }}
-        {{ render_field(inject_form.preceded_by, class="form-control") }}
+<div class="modal" tabindex="-1" role="dialog" id="create-inject-form-modal">
+    <div class="modal-dialog" role="document">
+        <div id="variable-modal-content" class="modal-content">
 
-        <div class="row">
-            <div class="col">{{ inject_form.is_entry_node.label }}</div>
-            <div class="col"> {{ inject_form.is_entry_node() }} </div>
+            <div class="modal-header">
+                <h5 class="modal-title">{% if title %}{{ title }}{% else %}Add Inject{% endif %}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ url_for('injects.add_inject', scenario_id=scenario.scenario_id) }}" method="POST"
+                  class="form" enctype="multipart/form-data">
+                <div class="modal-body">
+                    {{ inject_form.csrf_token }}
+                    {{ inject_form.slug }}
+                    {{ render_field(inject_form.label, class="form-control") }}
+                    {{ render_field(inject_form.text, class="form-control") }}
+                    {{ render_field(inject_form.media_path, class="form-control-file") }}
+                    {{ render_field(inject_form.next_inject, class="form-control") }}
+                    {{ render_field(inject_form.preceded_by, class="form-control") }}
+
+                    <div class="row">
+                        <div class="col">{{ inject_form.is_entry_node.label }}</div>
+                        <div class="col"> {{ inject_form.is_entry_node() }} </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>Save Changes
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
         </div>
     </div>
-    <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save"></i>Save Changes
-        </button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-    </div>
-</form>
+</div>

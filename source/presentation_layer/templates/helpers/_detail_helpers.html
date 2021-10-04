@@ -1,4 +1,4 @@
-{% macro inject_details(inject, facilitation_view=False, edit_view=False, game=None) %}
+{% macro inject_details(inject, facilitation_view=False, edit_view=False, scenario=None) %}
 
     {% if edit_view %}{% set facilitation_view = True %}{% endif %}
     <div class="card text-body" id="injectCard">
@@ -10,20 +10,17 @@
 
         <div class="card-body">
             {% if facilitation_view and inject.condition %}
-                <p class="bg-2 rounded">Condition: IF (<span
-                        class="badge badge-primary">{{ inject.condition.variable_name }}</span> {{ inject.condition.comparison_operator }}
-                    <span class="badge badge-primary">{{ inject.condition.variable_threshold }}</span>) then go to
-                    inject <span class="badge badge-primary">{{ inject.condition.alternative_inject }}</span>
-                </p>{% endif %}
+                {{ render_inject_condition(inject, scenario=scenario) }}
+            {% endif %}
             <h5 class="card-title" id="injectName">{{ inject.label }}</h5>
             <p class="card-text" id="injectText">{{ inject.text }}</p>
-            {% if facilitation_view %}{{ render_choices_for_trainer(inject, game=game) }}{% else %}
+            {% if facilitation_view %}{{ render_choices_for_trainer(inject, scenario=scenario) }}{% else %}
                 {{ render_choices_for_participant(inject) }}{% endif %}
         </div>
     </div>
 {% endmacro %}
 
-{% macro render_choices_for_trainer(inject, game=None) %}
+{% macro render_choices_for_trainer(inject, scenario=None) %}
     {% if inject.has_choices %}
         <ul class="text-body">
             {% for choice in inject.choices %}
@@ -31,13 +28,13 @@
                     {% if choice.outcome.next_inject %}
                         {% set next_inject = choice.outcome.next_inject %}
                         <p class="small">
-                            Leads to inject: {{ render_inject_link(inject_slug=next_inject, game=game) }}</p>
+                            Leads to inject: {{ render_inject_link(inject_slug=next_inject, scenario=scenario) }}</p>
                     {% endif %}
                     {% if choice.outcome.variable_changes %}
                         <p class="small">Variable Changes:
-                        {% for var_change in choice.outcome.variable_changes %}
-                            <span class="badge badge-primary">{{ var_change.var.name }} {{ var_change.operator }} {{ var_change.new_value }}</span>
-                        {% endfor %}
+                            {% for var_change in choice.outcome.variable_changes %}
+                                <span class="badge badge-primary">{{ var_change.var.name }} {{ var_change.operator }} {{ var_change.new_value }}</span>
+                            {% endfor %}
                         </p>
                     {% endif %}
                 </li>
@@ -46,10 +43,24 @@
     {% endif %}
 {% endmacro %}
 
-{% macro render_inject_link(inject_slug, game=None) %}
+{% macro render_inject_condition(inject, scenario=None) %}
+    {% set condition_slug = inject.condition.alternative_inject %}
+    {% set condition_inject = scenario.get_inject_by_slug(condition_slug) %}
+    <div class="position-relative">
+        <p class="bg-2 rounded text-wrap">Condition: IF (<span
+                class="badge badge-primary">{{ inject.condition.variable_name }}</span> {{ inject.condition.comparison_operator }}
+            <span class="badge badge-primary">{{ inject.condition.variable_threshold }}</span>) then go to
+            inject <span class="badge badge-primary">{{ condition_inject.label }}</span>
+        </p>
+        {{ render_inject_link(inject_slug=inject.condition.alternative_inject, scenario=scenario) }}
+    </div>
+{% endmacro %}
+
+{% macro render_inject_link(inject_slug, scenario=None) %}
     {% if game %}
-        {% set inject = game.get_inject_by_slug(inject_slug) %}
-        <a class="btn-link" data-toggle="modal" data-target="#inject-modal-{{ inject.slug }}">{{ inject.label }}</a>
+        {% set inject = scenario.get_inject_by_slug(inject_slug) %}
+        <a class="text-reset stretched-link" data-toggle="modal"
+           data-target="#inject-modal-{{ inject.slug }}"></a>
         {{ render_inject_modal(inject) }}
     {% else %}
         {{ inject_slug }}

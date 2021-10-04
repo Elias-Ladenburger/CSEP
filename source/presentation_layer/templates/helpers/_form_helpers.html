@@ -61,7 +61,7 @@ Arguments:
                 {{ render_field(field, class="form_control") }}
             {% endif %}
         {% endfor %}
-        <a class="remove" href="#">Remove</a>
+        {# <a class="btn-danger" onclick="removeFormElement('{{ subform.id }}')">Remove</a> #}
     </div>
     </div>
     <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#{{ subform.id }}-{{ index }}-form-collapse"

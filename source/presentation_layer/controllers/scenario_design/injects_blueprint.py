@@ -17,11 +17,26 @@ injects_bp = Blueprint('injects', __name__,
 
 @injects_bp.route("<scenario_id>/injects")
 def edit_injects(scenario_id):
+    return get_inject_page(scenario_id)
+
+
+@injects_bp.route("<scenario_id>/injects/<inject_slug>")
+def edit_inject(scenario_id, inject_slug):
+    scenario = aux.get_single_scenario(scenario_id)
+    injects = scenario.get_all_injects()
+    inject = scenario.get_inject_by_slug(inject_slug)
+    nodes, edges = InjectTransformer.transform_injects_to_visjs(injects)
+    inject_form = InjectForm(scenario)
+    return render_template("tab_injects.html", scenario=scenario, inject_form=inject_form,
+                           graphnodes=nodes, graphedges=edges, active_tab="injects")
+
+
+def get_inject_page(scenario_id, inject=None):
     scenario = aux.get_single_scenario(scenario_id)
     injects = scenario.get_all_injects()
     nodes, edges = InjectTransformer.transform_injects_to_visjs(injects)
     inject_form = InjectForm(scenario)
-    return render_template("tab_injects.html", scenario=scenario, inject_form=inject_form,
+    return render_template("tab_injects.html", scenario=scenario, inject_form=inject_form, inject=inject,
                            graphnodes=nodes, graphedges=edges, active_tab="injects")
 
 
@@ -38,7 +53,7 @@ def get_inject_details(scenario_id):
     if inject_slug and inject_slug != "new":
         scenario = aux.get_single_scenario(scenario_id)
         inject = scenario.get_inject_by_slug(inject_slug)
-        return render_template('/forms/inject_details.html', inject=inject, scenario_id=scenario_id)
+        return render_template('/forms/inject_details.html', inject=inject, scenario=scenario)
     else:
         return make_response(404, "No inject found!")
 

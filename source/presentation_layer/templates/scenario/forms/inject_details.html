@@ -1,11 +1,11 @@
 {% from '/helpers/_detail_helpers.html' import inject_details %}
-
-{{ inject_details(inject=inject, edit_view=True) }}
 <button
         onclick="renderInjectDetails(
-                '{{ url_for("injects.get_inject_form", scenario_id=scenario_id, inject_slug=inject.slug) }}')"
+                '{{ url_for("injects.get_inject_form", scenario_id=scenario.scenario_id, inject_slug=inject.slug) }}')"
         class="btn btn-primary">Edit Inject
 </button>
-<button onclick="deleteElement('{{ url_for('injects.delete_inject', scenario_id=scenario_id, inject_slug=inject.slug) }}')"
+<button onclick="deleteElement('{{ url_for('injects.delete_inject', scenario_id=scenario.scenario_id, inject_slug=inject.slug) }}')"
         class="btn btn-danger">Delete Inject
 </button>
+<hr/>
+{{ inject_details(inject=inject, edit_view=True, scenario=scenario) }}

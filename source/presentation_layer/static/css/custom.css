@@ -28,6 +28,10 @@ p {
     font-size: 16px;
 }
 
+.hidden {
+    visibility: hidden;
+}
+
 .text-blue {
     color: var(--blue-space-cadet);
 }

@@ -201,6 +201,10 @@ label {
     color: var(--light-gray)
 }
 
+.card-text {
+ white-space: pre-line;
+}
+
 .danger {
     color: var(--danger);
 }

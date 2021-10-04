@@ -213,6 +213,11 @@ class InjectConditionForm(CustomForm):
     alternative_inject = InjectField(Markup("Then I should go to this inject instead <i class='fas fa-info-circle' "
                                             "data-toggle='tooltip' title='What happens if the condition is met?'></i>"))
 
+    def __init__(self, scenario=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if scenario:
+            self.initialize(scenario=scenario)
+
     def initialize(self, scenario, inject=None):
         self.variable_name.parse_available_options(scenario)
         self.alternative_inject.parse_available_options(scenario)

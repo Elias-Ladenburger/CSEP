@@ -144,8 +144,9 @@ def process_inject_form(scenario, form_data):
 def inject_condition_form(scenario_id, inject_slug):
     scenario = aux.get_single_scenario(scenario_id)
     inject = scenario.get_inject_by_slug(inject_slug)
-    condition_form = InjectConditionForm()
-    condition_form.initialize(scenario=scenario, inject=inject)
+    condition_form = InjectConditionForm(scenario=scenario)
+    if request.method == "GET":
+        condition_form.initialize(scenario=scenario, inject=inject)
     if condition_form.validate_on_submit():
         condition_data = condition_form.data
         inject.condition = InjectCondition(**condition_data)
@@ -187,7 +188,7 @@ def inject_choices_form(scenario_id, inject_slug):
                            inject=inject, scenario=scenario)
 
 
-@injects_bp.route("/<scenario_id>/injects/<inject_slug>/choices/delete", methods=["DELETE, POST"])
+@injects_bp.route("/<scenario_id>/injects/<inject_slug>/choices/delete", methods=["DELETE", "POST"])
 def delete_choice(scenario_id, inject_slug):
     scenario = aux.get_single_scenario(scenario_id=scenario_id)
     inject = scenario.get_inject_by_slug(inject_slug)

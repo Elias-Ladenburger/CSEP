@@ -3,6 +3,7 @@ import flask
 from flask import Blueprint, jsonify
 
 from application_layer.m2m_transformation import ScenarioTransformer, InjectTransformer
+from domain_layer.gameplay.game_management import GameRepository
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository, EditableScenarioFactory
 from domain_layer.scenariodesign.scenarios import EditableStory
 from presentation_layer.controllers.scenario_design import auxiliary as aux
@@ -33,7 +34,7 @@ def get_scenario(scenario_id):
 @api_bp.route("/scenarios/<scenario_id>/<path:details>", methods=["GET"])
 def get_scenario_details(scenario_id, details):
     details = details.split("/")
-    scenario_dict = aux.get_scenario_details(scenario_id=scenario_id, details_path=details)
+    scenario_dict = aux.get_entity_details(scenario_id=scenario_id, details_path=details)
     return jsonify(scenario_dict)
 
 
@@ -73,4 +74,12 @@ def get_transformed_injects(scenario_id):
 @api_bp.route("/scenarios/<scenario_id>/<path:details>", methods=["DELETE"])
 def delete_scenario_element(scenario_id, details):
     details = details.split("/")
-    scenario_dict = aux.get_scenario_details(scenario_id=scenario_id, details=details)
+    scenario_dict = aux.get_entity_details(scenario_id=scenario_id, details=details)
+
+
+@api_bp.route("/games/<game_id>/<path:details>", methods=["GET"])
+def get_game_details(game_id, details):
+    details = details.split("/")
+    game = GameRepository.get_game_by_id(game_id)
+    game_dict = aux.get_entity_details(entity=game, details_path=details)
+    return jsonify(scenario_dict)

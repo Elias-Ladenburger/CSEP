@@ -7,10 +7,12 @@ def get_single_scenario(scenario_id):
     return EditableScenarioRepository.get_scenario_by_id(scenario_id)
 
 
-def get_scenario_details(scenario_id, details_path):
-    scenario = get_single_scenario(scenario_id)
-    scenario_dict = scenario.dict()
-    return get_scenario_element(scenario_dict, details_path)
+def get_entity_details(entity, details_path):
+    if isinstance(entity, dict):
+        entity_dict = entity
+    else:
+        entity_dict = entity.dict()
+    return get_scenario_element(entity_dict, details_path)
 
 
 def update_scenario_element(scenario_id, element_path, new_value=None):

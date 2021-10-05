@@ -48,19 +48,19 @@
     {% set condition_inject = scenario.get_inject_by_slug(condition_slug) %}
     <div class="position-relative">
         <p class="bg-2 rounded text-wrap">Condition: IF (<span
-                class="badge badge-primary">{{ inject.condition.variable_name }}</span> {{ inject.condition.comparison_operator }}
-            <span class="badge badge-primary">{{ inject.condition.variable_threshold }}</span>) then go to
-            inject <span class="badge badge-primary">{{ condition_inject.label }}</span>
+                class="badge badge-light">{{ inject.condition.variable_name }}</span> {{ inject.condition.comparison_operator }}
+            <span class="badge badge-light">{{ inject.condition.variable_threshold }}</span>) then go to
+            inject <span class="badge badge-primary">{{ render_inject_link(condition_inject.slug, scenario=scenario) }}{# condition_inject.label #}</span>
         </p>
-        {{ render_inject_link(inject_slug=inject.condition.alternative_inject, scenario=scenario) }}
+
     </div>
 {% endmacro %}
 
 {% macro render_inject_link(inject_slug, scenario=None) %}
-    {% if game %}
+    {% if scenario %}
         {% set inject = scenario.get_inject_by_slug(inject_slug) %}
-        <a class="text-reset stretched-link" data-toggle="modal"
-           data-target="#inject-modal-{{ inject.slug }}"></a>
+        <a class="link-unstyled clickable" data-toggle="modal"
+           data-target="#inject-modal-{{ inject.slug }}">{{ inject.label }}</a>
         {{ render_inject_modal(inject) }}
     {% else %}
         {{ inject_slug }}

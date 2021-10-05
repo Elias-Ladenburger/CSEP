@@ -28,12 +28,16 @@ p {
     font-size: 16px;
 }
 
-.hidden {
-    visibility: hidden;
-}
-
 .text-blue {
     color: var(--blue-space-cadet);
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.hidden {
+    visibility: hidden;
 }
 
 .margin {
@@ -171,6 +175,11 @@ p {
 
 .dropdown:hover .dropdown-content:hover a:hover {
     color: var(--blue-uno) !important;
+}
+
+.link-unstyled, .link-unstyled:link, .link-unstyled:hover {
+  color: inherit;
+  text-decoration: inherit;
 }
 
 .row-fluid {

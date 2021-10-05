@@ -89,14 +89,10 @@ class GameVariableChange(BaseVariableChange):
         :return: the result of this operation.
         """
         operator = self.get_operator(self.operator)
-        try:
-            old_value = self.var.legalize_value(old_value)
-            new_value = self.var.legalize_value(self._new_value)
-            result = operator(old_value, new_value)
-            return result
-        except TypeError as te:
-            print(te)
-
+        old_value = self.var.legalize_value(old_value)
+        new_value = self.var.legalize_value(self._new_value)
+        result = operator(old_value, new_value)
+        return result
 
     def get_new_value(self, old_value):
         """

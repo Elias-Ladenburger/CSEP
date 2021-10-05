@@ -77,9 +77,16 @@ def delete_scenario_element(scenario_id, details):
     scenario_dict = aux.get_entity_details(scenario_id=scenario_id, details=details)
 
 
+@api_bp.route("/games/<game_id>", methods=["GET"])
+def get_game(game_id):
+    game = GameRepository.get_game_by_id(game_id)
+    game_dict = game.dict()
+    return jsonify(game_dict)
+
+
 @api_bp.route("/games/<game_id>/<path:details>", methods=["GET"])
 def get_game_details(game_id, details):
     details = details.split("/")
     game = GameRepository.get_game_by_id(game_id)
     game_dict = aux.get_entity_details(entity=game, details_path=details)
-    return jsonify(scenario_dict)
+    return jsonify(game_dict)

@@ -127,6 +127,10 @@ p {
     border-color: transparent;
 }
 
+.btn-secondary {
+    background-color: var(--blue-uno);
+}
+
 .btn:hover {
     text-decoration: underline;
     border-color: inherit;

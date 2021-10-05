@@ -55,7 +55,12 @@ Arguments:
                 {{ render_subform(field) }}
             {% elif field.type == "FieldList" %}
                 {% for subfield in field %}
-                    {{ render_subform(field, loop.index) }}
+                    {% if subfield.name %}
+                        {% set subform_title = subfield.name %}
+                    {% else %}
+                        {% set subform_title = "" %}
+                    {% endif %}
+                    {{ render_subform(field, loop.index, subform_title) }}
                 {% endfor %}
             {% else %}
                 {{ render_field(field, class="form_control") }}
@@ -63,8 +68,9 @@ Arguments:
         {% endfor %}
         {# <a class="btn-danger" onclick="removeFormElement('{{ subform.id }}')">Remove</a> #}
     </div>
+        <hr/>
     </div>
-    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#{{ subform.id }}-{{ index }}-form-collapse"
+    <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#{{ subform.id }}-{{ index }}-form-collapse"
             aria-expanded="false">
         Add/Edit {{ form_title }}
     </button>

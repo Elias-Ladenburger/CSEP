@@ -45,12 +45,11 @@
 
 {% macro render_inject_condition(inject, scenario=None) %}
     {% set condition_slug = inject.condition.alternative_inject %}
-    {% set condition_inject = scenario.get_inject_by_slug(condition_slug) %}
     <div class="position-relative">
         <p class="bg-2 rounded text-wrap">Condition: IF (<span
                 class="badge badge-light">{{ inject.condition.variable_name }}</span> {{ inject.condition.comparison_operator }}
             <span class="badge badge-light">{{ inject.condition.variable_threshold }}</span>) then go to
-            inject <span class="badge badge-primary">{{ render_inject_link(condition_inject.slug, scenario=scenario) }}{# condition_inject.label #}</span>
+            inject <span class="badge badge-primary">{{ render_inject_link(condition_slug, scenario=scenario) }}</span>
         </p>
 
     </div>

@@ -4,7 +4,7 @@ function renderAnswerChart(chartName, data, type="pie") {
         exportEnabled: false,
         animationEnabled: false,
         title: {
-            text: "Results"
+            text: "Participant Answers"
         },
         data: [{
             type: type, // alternative types: "pie", "column"

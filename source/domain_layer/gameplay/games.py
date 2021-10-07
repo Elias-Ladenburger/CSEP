@@ -92,6 +92,10 @@ class Game(AggregateRoot):
         return self.scenario.title
 
     @property
+    def game_state(self):
+        return self._game_state
+
+    @property
     def is_open(self):
         """determine whether this game is currently open."""
         return self._game_state == GameState.Open
@@ -143,6 +147,8 @@ class Game(AggregateRoot):
         var = self.game_variables.get(var_name, None)
         if var:
             self.game_variables[var.name].set_value(new_value)
+            return True
+        return False
 
     def get_visible_vars(self):
         """:return: all Game Variables that are visible to participants."""

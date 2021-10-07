@@ -9,8 +9,6 @@
 
 
 {% block content %}
-    {% set inject = game.scenario.stories[0].entry_node %}
-
     <div class="container-fluid bg-2 text-light">
         <h2 class="h2">Scenario: {{ game.name }}</h2>
         {% set game_url = url_for('games.group_game', game_id=game.game_id, _external=True) %}
@@ -22,47 +20,18 @@
         <div class="container-fluid bg-light">
             <div class="row bg-light align-items-center justify-content-center">
                 <a href="{{ url_for('facilitation.allow_next', game_id=game.game_id) }}"
-                   class="btn btn-primary" title="Facilitate this Game">
-                    <i class="fas fa-play"></i> Allow Next Inject
+                   class="btn btn-primary" title="Move the story to the next inject">
+                    <i class="fas fa-play"></i> Proceed to Next Inject
                 </a>
                 <a href="{{ url_for('facilitation.abort_game', game_id=game.game_id) }}"
-                   class="btn btn-danger" title="Abort this Game">
+                   class="btn btn-danger" title="Stop playing this game">
                     <i class="fas fa-times-circle"></i> Abort Game
                 </a>
             </div>
             <hr/>
             <div class="row bg-light text-body ml-md-0">
                 <div class="col-sm-5">
-                    <div class="row">
-                        {% if game.game_variables|length > 0 %}
-                            <div class="col-auto">
-                                <h3 class="h3">Variables</h3>
-                                {% for var_name, game_var in game.game_variables.items() %}
-                                    <div class="row">
-                                        <div class="col-auto">
-                                            {% set var_id = var_name.replace(" ", "-").lower().replace("?","") %}
-                                            <form action="{{ url_for('facilitation.set_variables', game_id=game.game_id) }}"
-                                                  method="post" class="form">
-                                                <label class="col-form-label" for="{{ var_id }}">
-                                                    {{ var_name }}
-                                                    {% if game_var.is_private %}
-                                                        <small>(hidden)</small>{% endif %}
-                                                    <i class='fas fa-info-circle' data-toggle='tooltip'
-                                                       title={{ game_var.datatype.value }}></i>
-                                                </label>
-                                                <div class="form-inline form-group">
-                                                    <input class="form-control" id="{{ var_id }}" name="{{ var_name }}"
-                                                           type="text"
-                                                           value="{{ game_var.value }}">
-                                                    <button class="btn btn-primary" type="submit">Update</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
+                    {% include 'components/show_variables.html' %}
                     <hr/>
                     <div class="row">
                         <script>
@@ -76,28 +45,7 @@
                     <hr/>
                     {{ render_injects_graph(nodedata=nodedata, edgedata=edgedata, scenario=scenario) }}
                 </div>
-                <div class="col-sm-5">
-                    <div class="row ml-md-0">
-                        <h4 class="h4">Current Inject</h4>
-                        <div class="container">
-                            {{ inject_details(game.current_inject, True, scenario=game.scenario) }}
-                        </div>
-                    </div>
-                    <hr/>
-                    <div class="row ml-md-0">
-                        <h4 class="h4">Next Inject</h4><br>
-                        <div class="container">
-                            {% if not next_inject %}
-                                <h3 class="h3">End of Scenario</h3>
-                            {% else %}
-                                {{ inject_details(inject=next_inject, facilitation_view=True, scenario=game.scenario) }}
-                            {% endif %}
-                            <div>
-                            </div>
-                            <hr/>
-                        </div>
-                    </div>
-                </div>
+                {% include 'components/show_injects.html' %}
             </div>
         </div>
     </div>

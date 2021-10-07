@@ -14,22 +14,36 @@
                         {% set title = choice_entry.choice_label.data %}
                         {% if not title or title == " " %}
                             <a class="btn btn-primary" data-toggle="collapse"
-                               data-target="#choice-{{ loop.index }}-collapse"
+                               data-target="#choice-{{ loop.index0 }}-collapse"
                                aria-expanded="false"><i class="fas fa-plus-square"></i> New Choice</a>
                         {% else %}
                             <a class="btn btn-primary" data-toggle="collapse"
-                               data-target="#choice-{{ loop.index }}-collapse"
+                               data-target="#choice-{{ loop.index0 }}-collapse"
                                aria-expanded="false">{{ title | safe }}</a>
                             <a class="btn btn-danger"
                                onclick="deleteElement('{{ url_for('injects.delete_choice', scenario_id=scenario.scenario_id, inject_slug=inject.slug,
                                        choice_index = loop.index0) }}')">
                                 <i class="fas fa-minus-square"></i></a>
                         {% endif %}
-                        <div class="collapse" id="choice-{{ loop.index }}-collapse">
+                        <div class="collapse" id="choice-{{ loop.index0 }}-collapse">
                             {{ choice_entry.csrf_token }}
                             {{ render_field(choice_entry.choice_label) }}
-                            {{ render_field(choice_entry.next_inject) }}
-                            {{ render_subform(choice_entry.variable_changes, form_title="Variable Changes") }}
+                            <div class="collapse" id="choice-{{ loop.index0 }}-alternative">
+                                {{ render_field(choice_entry.next_inject) }}
+                            </div>
+                            <a class="btn btn-secondary" data-toggle="collapse"
+                               data-target="#choice-{{ loop.index0 }}-alternative">Branch to another inject</a>
+                            <br>
+                            <div class="collapse" id="choice-{{ loop.index0 }}-var-changes">
+                            <hr/>
+                                {% for var_change in choice_entry.variable_changes %}
+                                    {% set change_title=var_change.data.get("variable_name", "New Variable Change") %}
+                                    {% if "---" in change_title %}{% set change_title = "New Variable Change" %}{% else %}{% set change_title = "Edit " + change_title %}{% endif %}
+                                    {{ render_subform(var_change, form_title=change_title) }}
+                                {% endfor %}
+                            </div>
+                            <a class="btn btn-secondary" data-toggle="collapse"
+                               data-target="#choice-{{ loop.index0 }}-var-changes">Change Variable Values</a>
                             <hr/>
                         </div>
                     </li>

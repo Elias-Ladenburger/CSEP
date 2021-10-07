@@ -69,7 +69,8 @@ class BaseScenarioVariable(BaseModel):
         try:
             self.datatype.parse_value(value)
             return True
-        finally:
+        except Exception as e:
+            print(e)
             return False
 
     def legalize_value(self, value_candidate):

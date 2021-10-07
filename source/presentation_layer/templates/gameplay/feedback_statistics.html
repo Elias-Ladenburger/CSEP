@@ -11,6 +11,13 @@
             <div class="col-sm">
                 <h3 class="h3">{{ inject.label }}</h3>
                 <p>{{ inject.text }}</p>
+                {% if inject.has_choices %}
+                <ul class=>
+                    {% for choice in inject.choices %}
+                    <li><small>{{ choice.label }}</small></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
                 <div class="row">
                     <script>
                         window.onload = function () {

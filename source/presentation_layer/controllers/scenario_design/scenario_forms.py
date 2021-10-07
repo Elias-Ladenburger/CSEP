@@ -36,8 +36,7 @@ class CustomForm(FlaskForm):
 class CustomSelect(SelectField):
     def parse_available_options(self, scenario, allow_empty=True):
         """Prepare this field."""
-        if not self.choices:
-            self.choices = []
+        self.choices = []
         if allow_empty:
             self.choices.append(empty_pair)
             self.default = empty_pair

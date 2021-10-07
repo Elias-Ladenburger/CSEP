@@ -1,0 +1,33 @@
+{% macro render_set_variable_value_form(game_var) %}
+    {% set var_id = game_var.name.replace(" ", "-").lower().replace("?","") %}
+
+    {{ render_label(game_var, var_id) }}
+    <div class="form-inline form-group col-auto">
+        {% if game_var.datatype.value == "numeric" %}
+            <input class="form-control" id="{{ var_id }}" name="{{ game_var.name }}"
+                   type="number" value="{{ game_var.value }}">
+        {% elif game_var.datatype.value == "boolean" %}
+            <select id="{{ var_id }}" class="form-control" name="{{ game_var.name }}">
+                <option value="True" {% if game_var.value %}selected="selected"{% endif %}>True</option>
+                <option value="False" {% if not game_var.value %}selected="selected"{% endif %}>False</option>
+            </select>
+        {% else %}
+            <input class="form-control" id="{{ var_id }}" name="{{ game_var.name }}"
+                   type="text" value="{{ game_var.value }}">
+        {% endif %}
+        <div class="col"></div>
+        <button class="btn btn-primary" type="submit">Set New Value</button>
+    </div>
+{% endmacro %}
+
+{% macro render_label(game_var, var_id) %}
+    <label class="col-form-label" for="{{ var_id }}">
+        {{ game_var.name }}
+        {% if game_var.is_private %}
+            <small>
+                <i class="fas fa-eye-slash" data-toggle='tooltip'
+                   title="This variable is not visible to participants"></i>
+            </small>
+        {% endif %}
+    </label>
+{% endmacro %}

@@ -8,13 +8,13 @@
                     <h3>Current KPIs, Assets and Variables</h3>
                     {% set game_vars = game.get_visible_vars() %}
                     {% for game_var in game_vars %}
-                        <h5 class="h5"><b>{{ game_var }}:</b> {{ game_vars[game_var].value }}</h5>
+                        <h5 class="h5"><b>{{ game_var }}:</b> <span class="badge-pill badge-dark">{{ game_vars[game_var].value }}</span></h5>
                     {% endfor %}
                 </div>
             </div>
         </div>
-        <div class="cols- align-content-center align-middle">
-            <a href="{{ url_for('games.group_game', game_id=game.game_id, inject_slug=inject_slug) }}"
+        <div class="align-content-center align-middle">
+            <a href="{{ url_for('games.group_game', game_id=game.game_id) }}"
                class="btn btn-primary">Go back</a>
         </div>
     </div>

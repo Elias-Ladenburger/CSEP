@@ -94,10 +94,12 @@ def set_variables(game_id):
         for var in var_changes:
             try:
                 game.set_game_variable(var, var_changes[var])
+                GameRepository.save_game(game)
                 flash("Changed value successfully!", "success")
             except ValueError as ve:
                 flash(str(ve), "failure")
-        GameRepository.save_game(game)
+            except TypeError as te:
+                flash(str(te), "failure")
         return redirect(url_for("facilitation.facilitate_game", game_id=game_id))
     else:
         print("error")

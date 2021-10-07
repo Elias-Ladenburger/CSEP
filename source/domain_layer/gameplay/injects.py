@@ -116,7 +116,11 @@ class GameVariable(BaseScenarioVariable):
         """Set the value of this variable to the new value.
 
         :raise ValueError: If a value is not legal for this type of variable."""
-        self._value = new_value
+        if self.is_value_legal(new_value):
+            self._value = self.legalize_value(new_value)
+        else:
+            raise ValueError("{} is not a legal value for the variable {}. "
+                            "Should be {}".format(new_value, self.name, self.datatype.value))
 
 
 class GameInjectResult(BaseInjectResult):

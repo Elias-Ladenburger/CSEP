@@ -1,0 +1,18 @@
+{% from '/helpers/_facilitation_helpers.html' import render_set_variable_value_form %}
+<div class="row">
+    {% if game.game_variables|length > 0 %}
+        <div class="col-auto">
+            <h3 class="h3">Variables</h3>
+            {% for var_name, game_var in game.game_variables.items() %}
+                <div class="row">
+                    <div class="col-auto">
+                        <form action="{{ url_for('facilitation.set_variables', game_id=game.game_id) }}"
+                              method="post" class="form">
+                            {{ render_set_variable_value_form(game_var) }}
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

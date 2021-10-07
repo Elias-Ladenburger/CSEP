@@ -197,10 +197,16 @@ p {
     margin: 0 auto;
 }
 
-input[type=text], input[type=password], input[type=email] {
+input[type=text], input[type=password], input[type=email], input[type=number] {
     margin-left: 10px;
     margin-right: 10px;
     width: 100%;
+}
+
+input[type="checkbox"]
+{
+    vertical-align:middle;
+    alignment: center;
 }
 
 .alert-failure {

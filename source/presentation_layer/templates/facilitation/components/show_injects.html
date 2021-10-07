@@ -1,0 +1,22 @@
+<div class="col-sm-5">
+    <div class="row ml-md-0">
+        <h4 class="h4">Current Inject</h4>
+        <div class="container">
+            {{ inject_details(game.current_inject, True, scenario=game.scenario) }}
+        </div>
+    </div>
+    <hr/>
+    <div class="row ml-md-0">
+        <h4 class="h4">Next Inject</h4><br>
+        <div class="container">
+            {% if not next_inject %}
+                <h3 class="h3">End of Scenario</h3>
+            {% else %}
+                {{ inject_details(inject=next_inject, facilitation_view=True, scenario=game.scenario) }}
+            {% endif %}
+            <div>
+            </div>
+            <hr/>
+        </div>
+    </div>
+</div>

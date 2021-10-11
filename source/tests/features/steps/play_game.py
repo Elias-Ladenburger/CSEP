@@ -7,9 +7,9 @@ from domain_layer.scenariodesign.scenarios import EditableScenario, BaseStory
 use_step_matcher("parse")
 
 
-@step("a learning scenario")
+@step("a learning scenario_design")
 def step_impl(context):
-    learning_scenario = EditableScenario(title="test scenario", description="test description")
+    learning_scenario = EditableScenario(title="test scenario_design", description="test description")
 
     some_inject = BaseChoiceInject(title="Some inject", text="Some text")
     some_story = BaseStory(title="Some Story", entry_node=some_inject)
@@ -19,15 +19,15 @@ def step_impl(context):
     return context.scenario
 
 
-@given("one scenario")
+@given("one scenario_design")
 def step_impl(context):
-    context.execute_steps("Given a learning scenario")
+    context.execute_steps("Given a learning scenario_design")
 
 
 @given(u'a gameplay in progress')
 def step_impl(context):
     context.execute_steps('''
-    Given one scenario
+    Given one scenario_design
     ''')
     context.execute_steps('''
     Given one source inject to start from

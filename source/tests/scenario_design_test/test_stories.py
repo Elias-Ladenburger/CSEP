@@ -20,7 +20,7 @@ class ScenarioTest(TestCase):
                               'choices': [], 'condition': None,
                               'next_inject': ""},
             'introduction': {'label': 'Introduction',
-                             'text': 'Hello Player! In this scenario you will indulge in your dark side: '
+                             'text': 'Hello Player! In this scenario_design you will indulge in your dark side: '
                                      'playing through the eyes of an expert social engineer. Your first target is '
                                      'Jaffa Bezous, the Chief Operating Officer of a global bookstore. '
                                      'What will your preparation look like?',
@@ -32,7 +32,7 @@ class ScenarioTest(TestCase):
                              'condition': None,
                              'next_inject': 'Second Inject'},
             'finish': {'label': 'Finish',
-                       'text': 'You have completed the test scenario!',
+                       'text': 'You have completed the test scenario_design!',
                        'slug': 'finish',
                        'media_path': '', 'choices': [],
                        'condition': None, 'next_inject': ""},

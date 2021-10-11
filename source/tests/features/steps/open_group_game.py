@@ -3,9 +3,9 @@ from behave import *
 use_step_matcher("re")
 
 
-@when("the trainer selects a scenario")
+@when("the trainer selects a scenario_design")
 def step_impl(context):
-    raise NotImplementedError(u'STEP: When the trainer selects a scenario')
+    raise NotImplementedError(u'STEP: When the trainer selects a scenario_design')
 
 
 @step('selects "open group gameplay"')

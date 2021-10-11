@@ -5,7 +5,7 @@ from domain_layer.scenariodesign.scenario_management import EditableScenarioRepo
 from presentation_layer.controllers.scenario_design.scenario_forms import InjectForm
 
 _test_bp = Blueprint('tests', __name__,
-                    template_folder='../../templates/scenario', url_prefix="/test")
+                    template_folder='../../templates/scenario_design', url_prefix="/test")
 
 
 @_test_bp.route("<scenario_id>/forms_test", methods=["GET", "POST"])

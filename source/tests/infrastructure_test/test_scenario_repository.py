@@ -31,7 +31,7 @@ class ScenarioPersistenceTest(TestCase):
         self.test_scenario = self.repo.save_scenario(test_scenario)
 
     def test_insert_scenario_title_description(self):
-        scenario = ScenarioFactory.create_scenario(title="yay!", description="This is a new scenario")
+        scenario = ScenarioFactory.create_scenario(title="yay!", description="This is a new scenario_design")
         self.assertIsNotNone(scenario.scenario_id)
 
     def test_delete_scenario(self):

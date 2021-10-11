@@ -12,7 +12,7 @@ from presentation_layer.controllers.scenario_design.scenario_forms import Inject
     InjectChoicesForm
 
 injects_bp = Blueprint('injects', __name__,
-                       template_folder='../../templates/scenario', url_prefix="/scenarios")
+                       template_folder='../../templates/scenario_design', url_prefix="/scenarios")
 
 
 @injects_bp.route("<scenario_id>/injects")

@@ -10,7 +10,7 @@ class EditableStory(BaseStory):
     """
     A class that provides method so that it may be modified.
 
-    A Story is a collection of injects within a scenario design."""
+    A Story is a collection of injects within a scenario."""
     injects: Dict[str, EditableInject] = {}
 
     class Config:

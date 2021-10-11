@@ -5,7 +5,7 @@ from presentation_layer.controllers.scenario_design import auxiliary as aux
 from presentation_layer.controllers.scenario_design.scenario_forms import *
 
 variables_bp = Blueprint('variables', __name__,
-                        template_folder='../../templates/scenario', url_prefix="/scenarios")
+                        template_folder='../../templates/scenario_design', url_prefix="/scenarios")
 
 
 @variables_bp.route("/<scenario_id>/variables")

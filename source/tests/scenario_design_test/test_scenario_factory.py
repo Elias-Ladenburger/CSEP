@@ -13,6 +13,6 @@ class ScenarioFactoryTest(TestCase):
         self.assertIsInstance(scenario, BaseScenario)
 
     def test_create_scenario_from_dict(self):
-        scenario_dict = {"title": "test scenario", "description": "some description", "scenario_id": "asd234sr32"}
+        scenario_dict = {"title": "test scenario_design", "description": "some description", "scenario_id": "asd234sr32"}
         scenario = EditableScenarioFactory.build_from_dict(**scenario_dict)
         self.assertIsInstance(scenario, EditableScenario)

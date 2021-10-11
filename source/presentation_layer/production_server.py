@@ -17,7 +17,7 @@ app = AppFactory.create_app()
 
 @werkzeug.serving.run_with_reloader
 def run_server():
-    app.debug = True # while in development - enables hot reload
+    app.debug = True  # while in development - enables hot reload
     serve(app, listen='*:8080')
 
 

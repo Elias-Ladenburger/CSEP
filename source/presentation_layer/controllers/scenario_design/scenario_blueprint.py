@@ -7,7 +7,7 @@ from presentation_layer.controllers.scenario_design.scenario_forms import *
 import presentation_layer.controllers.scenario_design.auxiliary as aux
 
 scenario_bp = Blueprint('scenarios', __name__,
-                        template_folder='../../templates/scenario', url_prefix="/scenarios")
+                        template_folder='../../templates/scenario_design', url_prefix="/scenarios")
 
 
 @scenario_bp.route("/", strict_slashes=False)

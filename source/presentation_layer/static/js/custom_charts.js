@@ -1,3 +1,13 @@
+function getAnswerChart(chartName, getURL, type="pie") {
+    jQuery.ajax({
+            url: getURL,
+            method: 'GET',
+            success: function (data) {
+                renderAnswerChart(chartName, data, type)
+            }
+        })
+}
+
 function renderAnswerChart(chartName, data, type="pie") {
     let chart = new CanvasJS.Chart(chartName, {
         theme: "light1", // "light1", "light2", "dark1", "dark2"

@@ -62,9 +62,7 @@ def handle_facilitation(game):
     next_inject = None
     if next_inject_slug != "":
         next_inject = game.get_inject_by_slug(next_inject_slug)
-    chartdata = SolutionTransformer.transform_solution_to_canvasjs(game, game.current_inject)
-    return render_template("facilitation_main.html", game=game, next_inject=next_inject,
-                           chartdata=chartdata)
+    return render_template("facilitation_main.html", game=game, next_inject=next_inject)
 
 
 @facilitation_bp.route("/games/<game_id>/allownext")

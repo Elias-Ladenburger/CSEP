@@ -31,7 +31,7 @@
             <tbody>
             {% for scenario in scenarios %}
                 <tr id="{{ scenario.scenario_id }}">
-                    <td>{{ scenario.title }}</td>
+                    <td><b>{{ scenario.title }}</b></td>
                     <td>{{ scenario.description }}</td>
                     <td>
                         <a href="{{ url_for('facilitation.open_game', scenario_id=scenario.scenario_id) }}"

@@ -92,6 +92,10 @@ class Game(AggregateRoot):
         return self.scenario.title
 
     @property
+    def start_time(self):
+        return self._start_time
+
+    @property
     def game_state(self):
         return self._game_state
 
@@ -131,6 +135,7 @@ class Game(AggregateRoot):
 
     def start_game(self):
         """Begin the actual game and prepare to show the inject."""
+        self._start_time = datetime.now()
         self._game_state = GameState.In_Progress
         self.game_variables = copy.deepcopy(self.scenario.variables)
         self._current_inject_slug = self.current_story.entry_node.slug

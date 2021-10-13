@@ -163,6 +163,8 @@ class SolutionTransformer:
             occurrence = solution_occurrences[solution]
             if isinstance(solution, int) or solution.isnumeric():
                 solution = "Continue"
+            if solution == "no solution":
+                solution = "waiting for answer"
             return_data.append({"y": occurrence, "label": solution})
         return return_data
 

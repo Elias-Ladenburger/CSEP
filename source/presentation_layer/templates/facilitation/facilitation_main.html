@@ -36,7 +36,8 @@
                     <div class="row">
                         <script>
                             window.onload = function () {
-                                renderAnswerChart("injectFeedbackChart", {{ chartdata|tojson }}, "pie")
+                                setInterval('getAnswerChart("injectFeedbackChart", ' +
+                                    '"{{ url_for('api.solution_stats', game_id=game.game_id) }}", "pie")', 1);
                             }
                         </script>
                         <div id="injectFeedbackChart" style="height: 370px; width: 100%;"></div>

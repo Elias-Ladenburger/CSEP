@@ -2,8 +2,8 @@
 import flask
 from flask import Blueprint, jsonify
 
-from application_layer.m2m_transformation import ScenarioTransformer, InjectTransformer
-from domain_layer.gameplay.game_management import GameRepository
+from application_layer.m2m_transformation import ScenarioTransformer, InjectTransformer, SolutionTransformer
+from domain_layer.gameplay.game_management import GameRepository, GroupGameRepository
 from domain_layer.scenariodesign.scenario_management import EditableScenarioRepository, EditableScenarioFactory
 from domain_layer.scenariodesign.scenarios import EditableStory
 from presentation_layer.controllers.scenario_design import auxiliary as aux
@@ -90,3 +90,10 @@ def get_game_details(game_id, details):
     game = GameRepository.get_game_by_id(game_id)
     game_dict = aux.get_entity_details(entity=game, details_path=details)
     return jsonify(game_dict)
+
+
+@api_bp.route("games/<game_id>/solutions")
+def solution_stats(game_id):
+    game = GroupGameRepository.get_game_by_id(game_id)
+    chartdata = SolutionTransformer.transform_solution_to_canvasjs(game, game.current_inject)
+    return jsonify(chartdata)

@@ -9,7 +9,6 @@
                    data-buttons-class="primary"
 
                    data-toggle="table"
-                   data-show-toggle="true"
                    data-card-view="false"
 
                    data-pagination="true"
@@ -25,6 +24,8 @@
                 <tr>
                     <th scope="col" id="game_name" data-sortable="true" data-field="title">Scenario Name</th>
                     <th data-visible="true" scope="col" id="game_status" data-field="status">Status</th>
+                    <th data-visible="true" data-sortable="true" scope="col" id="start_time"
+                        data-field="start_time">Date Started</th>
                     <th data-visible="true" scope="col" id="game_link" data-field="game_link">Participant Link</th>
                     <th scope="col" id="game_actions" title="actions">Actions</th>
                 </tr>
@@ -33,10 +34,11 @@
                 {% for game in games %}
                     {% set game_url = url_for('games.group_game', game_id=game.game_id, _external=True) %}
                     <tr id="{{ game.game_id }}">
-                        <td>{{ game.name }}</td>
+                        <td><b>{{ game.name }}</b></td>
                         <td>{{ game.game_state.value }}</td>
+                        <td>{{ game.start_time.strftime('%Y-%m-%d %H:%M') }}</td>
                         <td>
-                            <a>{{ game_url }}
+                            <a><small>{{ game_url }}</small>
                                 <button type="button" class="input-group-text btn btn-primary"
                                         onclick="copyToClipboard('{{ game_url }}')"><i class="far fa-copy"></i></button>
                             </a></td>

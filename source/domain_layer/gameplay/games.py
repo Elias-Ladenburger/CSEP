@@ -1,6 +1,8 @@
 import copy
+import string
 from datetime import datetime
 from enum import Enum
+import random
 from typing import Optional, List, Dict, Union
 
 from pydantic import PrivateAttr
@@ -110,6 +112,10 @@ class Game(AggregateRoot):
         return self._game_state == GameState.In_Progress
 
     @property
+    def is_playable(self):
+        return self._game_state in [GameState.Open, GameState.In_Progress]
+
+    @property
     def is_closed(self):
         """determine whether this game is already closed."""
         return self._game_state in [GameState.Aborted, GameState.Finished]
@@ -185,7 +191,7 @@ class Game(AggregateRoot):
             inject = self.scenario.get_inject_by_slug(inject_slug=inject_slug)
         return inject
 
-    def _evaluate_outcome(self, inject_result: GameInjectResult):
+    def _resolve_outcome(self, inject_result: GameInjectResult):
         """Evaluate an InjectResult object, such that all effects on the game are resolved.
         :param inject_result: the result to be evaluated.
         :returns: the next inject in this game. Returns None, if this game is finished."""
@@ -290,7 +296,7 @@ class SingleGame(Game):
         :return: The next inject if one exists. Otherwise returns 'None' and ends the gameplay."""
         inject = self.get_inject(inject_candidate)
         inject_result = self.current_story.solve_inject(inject.slug, solution)
-        next_inject = self._evaluate_outcome(inject_result)
+        next_inject = self._resolve_outcome(inject_result)
         return next_inject
 
 
@@ -317,13 +323,16 @@ class GroupGame(Game):
         """Remove a breakpoint for a given inject."""
         self.breakpoints.remove(inject_slug)
 
-    def add_participant(self, participant_hash):
+    def add_participant(self, participant_hash: ""):
         """Add another participant to this game."""
+        if not participant_hash:
+            participant_hash = self._generate_participant_hash()
         if participant_hash not in self.participants:
             participant = GameParticipant(participant_id=participant_hash)
             if self.is_in_progress and self._inject_counter[self._current_inject_slug] >= 0:
                 participant.initialize_history(self._inject_counter, self._current_inject_slug)
             self.participants[participant_hash] = participant
+        return participant_hash
 
     def number_of_participants(self):
         """:return: how many active participants this game currently has."""
@@ -356,20 +365,20 @@ class GroupGame(Game):
                 return False
         return True
 
-    def advance_story(self):
+    def advance(self):
         """Returns the next inject in the story."""
         self.next_inject_allowed = False
         solution = "0"
         if self.current_inject.has_choices:
             solution = self._determine_groups_solution(self._current_inject_slug)
         outcome = self.current_story.solve_inject(self._current_inject_slug, solution)
-        next_inject = self._evaluate_outcome(outcome)
+        next_inject = self._resolve_outcome(outcome)
         return self._show_next_inject(next_inject)
 
     def _determine_groups_solution(self, inject_slug: str):
         """Count how often each solution to an inject has been submitted.
         :return: the most popular solution."""
-        solution_occurrences = self.solution_occurrence(inject_slug)
+        solution_occurrences = self.determine_group_answers(inject_slug)
         max_occurrence = 0
         most_popular = ""
         for solution in solution_occurrences:
@@ -378,7 +387,7 @@ class GroupGame(Game):
                 most_popular = solution
         return most_popular
 
-    def solution_occurrence(self, inject_slug: str):
+    def determine_group_answers(self, inject_slug: str):
         """Evaluate how often each solution has occurred."""
         inject = self.get_inject(inject_slug)
         solution_occurrences = {}
@@ -392,3 +401,9 @@ class GroupGame(Game):
             number_of_occurrences = solution_occurrences.get(solution, 0) + 1
             solution_occurrences[solution] = number_of_occurrences
         return solution_occurrences
+
+    @staticmethod
+    def _generate_participant_hash():
+        letters = string.ascii_lowercase
+        random_string = ''.join(random.choice(letters) for i in range(10))
+        return random_string

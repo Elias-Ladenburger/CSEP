@@ -42,7 +42,7 @@ def group_game(game_id):
         template_name = "participant_lobby.html"
     elif game.is_in_progress:
         if game.is_next_inject_allowed():
-            game.advance_story()
+            game.advance()
             game_repo.save_game(game)
         return play_game(game, participant_hash)
     elif game.is_closed:
@@ -113,17 +113,8 @@ def game_end(game_id):
 
 def get_game_participant(game):
     if "participant_hash" not in session:
-        participant_hash = generate_sid()
+        participant_hash = game.add_participant()
         session["participant_hash"] = participant_hash
     participant_hash = session["participant_hash"]
-
-    if participant_hash not in game.participants:
-        game.add_participant(participant_hash)
-        game_repo.save_game(game)
     return participant_hash
 
-
-def generate_sid():
-    letters = string.ascii_lowercase
-    random_string = ''.join(random.choice(letters) for i in range(10))
-    return random_string

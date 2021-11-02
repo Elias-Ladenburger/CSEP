@@ -156,7 +156,7 @@ class SolutionTransformer:
         :returns: a list of dictionaries of the format [{"y": number_of_solutions, "label": solution_label}, ...]
         """
         return_data = []  # [{"y": 5, "label": "Answer 1"}, {"y": 5, "label": "Answer 2"}]
-        solution_occurrences = game.solution_occurrence(inject_slug)
+        solution_occurrences = game.determine_group_answers(inject_slug)
         inject = game.get_inject(inject_slug)
 
         for solution in solution_occurrences:

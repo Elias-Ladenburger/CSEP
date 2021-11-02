@@ -65,11 +65,11 @@ def handle_facilitation(game):
     return render_template("facilitation_main.html", game=game, next_inject=next_inject)
 
 
-@facilitation_bp.route("/games/<game_id>/allownext")
-def allow_next(game_id):
+@facilitation_bp.route("/games/<game_id>/advancegame")
+def advance_game(game_id):
     game = game_repo.get_game_by_id(game_id)
     game.allow_next_inject()
-    game.advance_story()
+    game.advance()
     game_repo.save_game(game)
     return redirect(url_for("facilitation.facilitate_game", game_id=game_id))
 

@@ -44,6 +44,7 @@ def group_game(game_id):
         if game.is_next_inject_allowed():
             game.advance()
             game_repo.save_game(game)
+        participant_hash = get_game_participant(game)
         return play_game(game, participant_hash)
     elif game.is_closed:
         flash("This game is now closed!")
@@ -60,7 +61,7 @@ def play_game(game, participant_hash):
         return redirect(url_for('games.group_game', game_id=game.game_id))
     if game.has_participant_solved(participant_hash):
         flash("You have already solved this inject. Please wait a few moments until the next inject becomes active.", "success")
-        return show_feedback(game)  #redirect(url_for('games.inject_feedback', game_id=game.game_id))
+        return show_feedback(game)  # redirect(url_for('games.inject_feedback', game_id=game.game_id))
     return render_template('choice_inject.html', game=game, inject=current_inject)
 
 

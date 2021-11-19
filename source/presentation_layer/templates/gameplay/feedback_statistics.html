@@ -30,7 +30,7 @@
                     <div id="injectFeedbackChart" style="height: 370px; width: 100%;"></div>
                     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
                 </div>
-            {% if game.next_inject_allowed %}
+            {% if game.is_next_inject_allowed %}
                 <a href="{{ url_for('games.group_game', game_id=game.game_id) }}" class="btn btn-choice">Continue</a>
             {% else %}
                 <h4 class="h4">Please wait until all participants have answered, before continuing.</h4>

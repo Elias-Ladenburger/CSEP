@@ -28,13 +28,15 @@ The SCAG itself will follow a collaborative, scenario-based approach, wherein a 
     - _the source code for any and all files necessary for running the prototype._
 - licenses
   - _licenses for all of the software modules used in this project._
+- demo_files
+  - _the json-files for the two demo scenarios of this prototype, to reproduce the results described in the thesis._
 - README.md (you are here)
 
 
 ## How to use
 ### Requirements
-This code was written with Python 3.8, but has successfully been tested with python3.7. 
-All other requirements are listed in the requirements.txt file. 
+This code was written with Python 3.8, but has also successfully been tested with python 3.7. 
+All requirements are listed in the requirements.txt file. 
 This code was developed on a Microsoft Windows, although any platform capable of running Python should in principle be able to run this code. 
 
 ### Installation
@@ -105,11 +107,18 @@ To run the production server, simply navigate to the web-project that we have se
     
     cd source/presentation_layer
 
-Then run the flask-app:
+Then run the app:
+
+	python3 app.py
+	
+to run it on port 5000 (debug mode).
+Or
 
     python production_server.py
+
+to run the system on port 8080 (production mode).
     
-You are now able to access the web interface [here](https://127.0.0.1:5000).
+You are now able to access the web interface [here](https://localhost):8080 or :5000 respectively.
 
 ### Testing
 Tests are located in the [source > tests](/source/tests) subdirectory. They can be run by executing 
@@ -119,23 +128,11 @@ Tests are located in the [source > tests](/source/tests) subdirectory. They can 
 ## Future Work
 ### Known Bugs
 
-This project has been put into an almost usable state. However, a few bugs and inconveniences remain:
-- The form for **inject choices** is still very cumbersome and unintuitive to use:
-  - after adding a page, the entire page must be refreshed before a new choice can be added 
-  (_can likely be solved with a simple Javascript function that appends fields based on a template_).
-  - To delete a choice, the "label" of the choice must be cleared
-    (_can likely be solved with a simple Javascript function that automatically removes fields, if the choice is to be deleted_).
-  - It is currently not possible to add a "variable change" to a choice
-    (_There are two obstacles here: one is that the subform for variable changes has the same two issues as the choices form mentioned above._
-  _The other issue is that the form currently does not actually connect to the "Variable Change" object - here some (minor) code changes may still be necessary_).
-- Similarly, it is not yet able to delete InjectConditions with the corresponding button. Instead, the field 'If I take this variable' must be cleared (or set to '---').
+This project has been put into a usable state. However, a few bugs and inconveniences remain:
+It is not yet able to delete InjectConditions with the corresponding button. 
+Instead, the field 'If I take this variable' must be cleared (or set to '---').
 ### Known Change-Requests
-There are also some known change requests that I have so far not been able to implement.
-These include:
-- Allowing the trainer of a game to change the type of diagram that is shown to participants after each inject.
-- Allowing the trainer of a game to set _breakpoints_ at specific injects, beyond which participants are not allowed to advance, until the trainer allows so.
-- Allowing participants to change a previously given answer.
-- Allowing different types of inject (such as text input or multi-select).
+For a list of suggested changes, please refer to the appendix of the thesis that describes this prototype-
 
 ## Licenses
 

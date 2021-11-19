@@ -323,7 +323,7 @@ class GroupGame(Game):
         """Remove a breakpoint for a given inject."""
         self.breakpoints.remove(inject_slug)
 
-    def add_participant(self, participant_hash: ""):
+    def add_participant(self, participant_hash: str = ""):
         """Add another participant to this game."""
         if not participant_hash:
             participant_hash = self._generate_participant_hash()
@@ -346,7 +346,9 @@ class GroupGame(Game):
 
     def has_participant_solved(self, participant_hash: str):
         """Check whether a participant has solved the current inject."""
-        participant = self.participants[participant_hash]
+        participant = self.participants.get(participant_hash, False)
+        if not participant:
+            return False
         solved_count = participant.solved_count(self._current_inject_slug)
         return solved_count >= self._inject_counter[self._current_inject_slug]
 

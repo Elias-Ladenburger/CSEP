@@ -44,7 +44,6 @@ def group_game(game_id):
         if game.is_next_inject_allowed():
             game.advance()
             game_repo.save_game(game)
-        participant_hash = get_game_participant(game)
         return play_game(game, participant_hash)
     elif game.is_closed:
         flash("This game is now closed!")
@@ -89,10 +88,7 @@ def game_reflection(game_id):
 def solve_inject(game_id, inject_slug):
     game = game_repo.get_game_by_id(game_id)
     solution = request.args.get("solution", 0)
-    participant_hash = session.get('participant_hash', False)
-    if not participant_hash:
-        participant_hash = generate_sid()
-        session["participant_hash"] = participant_hash
+    participant_hash = get_game_participant(game)
     game.solve_inject(participant_id=participant_hash, inject_slug=inject_slug, solution=solution)
     game_repo.save_game(game)
     return redirect(url_for('games.inject_feedback', game_id=game.game_id))
@@ -113,9 +109,13 @@ def game_end(game_id):
 
 
 def get_game_participant(game):
-    if "participant_hash" not in session:
+    participant_hash = session.get("participant_hash", False)
+    print("get game participant {}".format(participant_hash))
+    if not participant_hash or participant_hash not in game.participants:
+        print("participant not found. Getting new participant.")
         participant_hash = game.add_participant()
+        game_repo.save_game(game)
         session["participant_hash"] = participant_hash
-    participant_hash = session["participant_hash"]
+        print("Added participant {}.".format(participant_hash))
     return participant_hash
 

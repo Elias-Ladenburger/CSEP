@@ -79,7 +79,7 @@ def delete_scenario_element(scenario_id, details):
 
 @api_bp.route("/games/<game_id>", methods=["GET"])
 def get_game(game_id):
-    game = GameRepository.get_game_by_id(game_id)
+    game = GroupGameRepository.get_game_by_id(game_id)
     game_dict = game.dict()
     return jsonify(game_dict)
 

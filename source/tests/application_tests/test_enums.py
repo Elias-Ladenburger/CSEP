@@ -8,6 +8,11 @@ class TestEnum(Enum):
 
 class EnumTest(TestCase):
 
+    def test_empty_dict(self):
+        mydict = {}
+        mydict[""] = "new value"
+        print(mydict)
+
     def test_enum_serialization(self):
         test_value = TestEnum.GOODBYE
         print(test_value)

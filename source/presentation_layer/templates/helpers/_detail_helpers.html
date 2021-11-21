@@ -4,6 +4,7 @@
     <div class="card text-body" id="injectCard">
         {% if inject.media_path %}
             <img class="card-img-top"
+                 style="max-width: 90%; max-height: 70%"
                  src="{{ url_for('static', filename='assets/uploads/'+inject.media_path) }}"
                  alt="Card image cap">
         {% endif %}
@@ -28,7 +29,9 @@
                     {% if choice.outcome.next_inject %}
                         {% set next_inject = choice.outcome.next_inject %}
                         <p class="small">
-                            Leads to inject: <span class="btn-link">{{ render_inject_link(inject_slug=next_inject, scenario=scenario) }}</span></p>
+                            Leads to inject: <span
+                                class="btn-link">{{ render_inject_link(inject_slug=next_inject, scenario=scenario) }}</span>
+                        </p>
                     {% endif %}
                     {% if choice.outcome.variable_changes %}
                         <p class="small">Variable Changes:
@@ -68,37 +71,39 @@
 
 {% macro render_inject_for_participants(inject, game, informative=False) %}
     <div class="row align-items-center justify-content-center">
-            <div class="card text-body" id="injectCard">
-                {% if inject.media_path %}
+        <div class="card text-body" id="injectCard">
+            {% if inject.media_path %}
+                <div class="container-fluid" style="width:50%; padding:0">
                     <img class="card-img-top img-fluid img-responsive"
                          src="{{ url_for('static', filename='assets/uploads/'+inject.media_path) }}"
                          alt="An image for this inject">
-                {% endif %}
-
-                <div class="card-body">
-                    <h5 class="card-title" id="injectName">{{ inject.label }}</h5>
-                    <p class="card-text" id="injectText">{{ inject.text }}</p>
-                    {% if not informative %}
-                        {% if inject.has_choices %}
-                            <div class="container">
-                                <div class="row">
-                                    {% for choice in inject.choices %}
-                                        <div class="col-sm">
-                                            <li><a class="btn btn-choice"
-                                                   href="{{ url_for('games.solve_inject', inject_slug=inject.slug, solution=loop.index - 1, game_id=game.game_id) }}">{{ choice.label }}</a>
-                                            </li>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% else %}
-                            <a class="btn btn-choice"
-                               href="{{ url_for('games.solve_inject', inject_slug=inject.slug, solution=0, game_id=game.game_id) }}">Continue</a>
-                        {% endif %}
-                    {% endif %}
                 </div>
+            {% endif %}
+
+            <div class="card-body">
+                <h5 class="card-title" id="injectName">{{ inject.label }}</h5>
+                <p class="card-text" id="injectText">{{ inject.text }}</p>
+                {% if not informative %}
+                    {% if inject.has_choices %}
+                        <div class="container">
+                            <div class="row">
+                                {% for choice in inject.choices %}
+                                    <div class="col-sm">
+                                        <li><a class="btn btn-choice"
+                                               href="{{ url_for('games.solve_inject', inject_slug=inject.slug, solution=loop.index - 1, game_id=game.game_id) }}">{{ choice.label }}</a>
+                                        </li>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <a class="btn btn-choice"
+                           href="{{ url_for('games.solve_inject', inject_slug=inject.slug, solution=0, game_id=game.game_id) }}">Continue</a>
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
+    </div>
 
 {% endmacro %}
 

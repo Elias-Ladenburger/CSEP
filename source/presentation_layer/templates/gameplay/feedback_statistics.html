@@ -1,6 +1,7 @@
 {% extends 'base_game.html' %}
 {% block headings %}
     {{ super() }}
+    <meta http-equiv="refresh" content="3">
     <script src="{{ url_for('static', filename='js/custom_charts.js') }}"></script>
 {% endblock %}
 
@@ -23,14 +24,14 @@
                         window.onload = function () {
                             getAnswerChart("injectFeedbackChart",
                                     "{{ url_for('api.solution_stats', game_id=game.game_id) }}", "pie");
-                                setInterval('getAnswerChart("injectFeedbackChart", ' +
-                                    '"{{ url_for('api.solution_stats', game_id=game.game_id) }}", "pie")', 5000);
+                                //setInterval('getAnswerChart("injectFeedbackChart", ' +
+                                //    '"{{ url_for('api.solution_stats', game_id=game.game_id) }}", "pie")', 5000);
                             }
                     </script>
                     <div id="injectFeedbackChart" style="height: 370px; width: 100%;"></div>
                     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
                 </div>
-            {% if game.is_next_inject_allowed %}
+            {% if game.is_next_inject_allowed() %}
                 <a href="{{ url_for('games.group_game', game_id=game.game_id) }}" class="btn btn-choice">Continue</a>
             {% else %}
                 <h4 class="h4">Please wait until all participants have answered, before continuing.</h4>

@@ -2,6 +2,9 @@
 {% from '/helpers/_detail_helpers.html' import render_participants %}
 
 {# requires a Game object #}
+{% block headings %}{{ super() }}
+    <meta http-equiv="refresh" content="3">
+{% endblock %}
 
 {% block main_content %}
     {% set game_url = url_for('games.group_game', game_id=game.game_id, _external=True) %}

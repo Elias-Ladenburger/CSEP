@@ -3,7 +3,9 @@
 {# requires a Game object #}
 
 {% block headings %}{{ super() }}
-    <script src="{{ url_for( 'static', filename='js/libs/qrious.min.js') }}"></script>{% endblock %}
+    <script src="{{ url_for( 'static', filename='js/libs/qrious.min.js') }}"></script>
+    <meta http-equiv="refresh" content="3">
+{% endblock %}
 
 {% block main_content %}
     {% set game_url = url_for('games.group_game', game_id=game.game_id, _external=True) %}

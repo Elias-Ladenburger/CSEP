@@ -1,5 +1,3 @@
-import random
-import string
 
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 
@@ -71,8 +69,12 @@ def inject_feedback(game_id):
 
 
 def show_feedback(game):
-    chartdata = SolutionTransformer.transform_solution_to_canvasjs(game, game.current_inject.slug)
-    return render_template("feedback_statistics.html", game=game, inject=game.current_inject, chartdata=chartdata)
+    participant_hash = get_game_participant(game)
+    if game.has_participant_solved(participant_hash=participant_hash):
+        chartdata = SolutionTransformer.transform_solution_to_canvasjs(game, game.current_inject.slug)
+        return render_template("feedback_statistics.html", game=game, inject=game.current_inject, chartdata=chartdata)
+    else:
+        return redirect(url_for('games.group_game'))
 
 
 @game_gp.route("/<game_id>/reflection")

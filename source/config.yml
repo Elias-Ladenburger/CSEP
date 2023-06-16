@@ -1,32 +1,32 @@
 ---
 DATABASE:
   DEV:
-    DB_NAME: csep-dev
+    DB_NAME: yourDBnameDEV
     DB_HOST: "mongodb://localhost:27017"
   PROD:
-    DB_NAME: csep-prod
-    DB_HOST: "mongodb+srv://db_admin:eyo7mHN6YjrFJOzZ@univie-ladenburger.fygpi.mongodb.net/test"
+    DB_NAME: yourDBnamePROD
+    DB_HOST: "mongodb+srv://db_user:db_password@your-mongodb-instance.mongodb.net"
   TEST:
-    DB_NAME: csep-test
-    DB_HOST: "mongodb://localhost:27017"
+    DB_NAME: yourDBnameTEST
+    DB_HOST: "mongodb://localhost:27018"
 
 FLASK:
   ENV: development
   DEBUG: True
-  MAIL_SERVER: smtp.ait.ac.at
+  MAIL_SERVER: mail.yourserver.com
   MAIL_PORT: 465
-  MAIL_USERNAME: elias.ladenburger@ait.ac.at
-  MAIL_PASSWORD: "Hahahaha, hidden."
-  MAIL_DEFAULT_SENDER: "'SCAG Platform' <scag-platform@ait.ac.at>"
+  MAIL_USERNAME: your.name@yourserver.com
+  MAIL_PASSWORD: "Your password."
+  MAIL_DEFAULT_SENDER: "'CSEP Platform' <csep-platform@yourserver.com>"
   MAIL_USE_SSL: true
   MAIL_USE_TLS: true
 
-  USER_APP_NAME: "SCAG platform"
+  USER_APP_NAME: "CSEP platform"
   USER_ENABLE_EMAIL: "False"
   USER_ENABLE_USERNAME: "True"
   USER_REQUIRE_RETYPE_PASSWORD: "False"
 
-  SECRET_KEY: "asdwasdf3ASD3q289472we%fiSADFsdfr34$2453rfwsidufh2FF89234%%ioup}sdf"
+  SECRET_KEY: "some_secret"
 
   STATIC_FOLDER: "static"
   TEMPLATES_FOLDER: "templates"
